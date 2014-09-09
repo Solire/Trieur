@@ -1,0 +1,6 @@
+{
+  "name"          : "Trieur",
+  "dependencies"  : {
+    "datatables" : "1.10.*"
+  }
+}

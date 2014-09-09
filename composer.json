@@ -1,0 +1,14 @@
+{
+  "name": "Solire/Trieur",
+  "type": "library",
+  "description": "",
+  "keywords": ["dataTables","Export","CSV"],
+  "license": "CC by-nc",
+  "require": {
+    "php": ">=5.5.0",
+    "doctrine/dbal": ">=v2.4.0"
+  },
+  "require-dev": {
+    "atoum/atoum" : "dev-master"
+  }
+}
