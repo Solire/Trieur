@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace solire\trieur;
+namespace Solire\Trieur;
 
 use solire\trieur\Config;
 

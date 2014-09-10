@@ -1,6 +1,6 @@
 <?php
 
-namespace solire\trieur;
+namespace Solire\Trieur;
 
 class Config
 {

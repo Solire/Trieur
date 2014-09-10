@@ -1,8 +1,8 @@
 <?php
 
-namespace solire\trieur\Driver;
+namespace Solire\Trieur\Driver;
 
-use \solire\trieur\Driver;
+use \Solire\Trieur\Driver;
 
 class DataTables extends Driver
 {}

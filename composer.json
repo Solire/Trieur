@@ -4,11 +4,22 @@
   "description": "",
   "keywords": ["dataTables","Export","CSV"],
   "license": "CC by-nc",
+  "authors": [
+    {
+      "name": "thansen",
+      "email": "thansen@solire.fr"
+    }
+  ],
   "require": {
     "php": ">=5.5.0",
     "doctrine/dbal": ">=v2.4.0"
   },
   "require-dev": {
     "atoum/atoum" : "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "Solire\\Trieur\\": "./"
+    }
   }
 }
