@@ -45,3 +45,5 @@ vendor/
 *.csv
 
 bower_components/
+
+connection.ini
