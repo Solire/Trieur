@@ -65,40 +65,68 @@ class Doctrine implements Connection
 
         $this->queryBuilder->select($this->config->getConfig('sql', 'select'));
 
+        /*
+         * Table principale
+         */
         $from = $this->config->getConfig('sql', 'from');
         list($fromTable, $fromAlias) = explode('|', $from);
         $this->queryBuilder->from($fromTable, $fromAlias);
 
+        /*
+         * Jointure classique
+         */
         $joins = $this->config->getConfig('sql', 'join');
         if (!empty($joins)) {
             if (!is_array($joins)) {
                 $joins = array($joins);
             }
+
             foreach ($joins as $join) {
                 list($table, $alias, $condition) = explode('|', $join);
-                $this->queryBuilder->join($fromAlias, $table, $alias, $condition);
+                $this->queryBuilder->innerJoin($fromAlias, $table, $alias, $condition);
             }
         }
 
+        /*
+         * Jointure à gauche
+         */
         $joins = $this->config->getConfig('sql', 'leftJoin');
         if (!empty($joins)) {
             if (!is_array($joins)) {
                 $joins = array($joins);
             }
+
             foreach ($joins as $join) {
                 list($table, $alias, $condition) = explode('|', $join);
-                $this->queryBuilder->join($fromAlias, $table, $alias, $condition);
+                $this->queryBuilder->leftJoin($fromAlias, $table, $alias, $condition);
             }
         }
 
+        /*
+         * Jointure à droite
+         */
+        $joins = $this->config->getConfig('sql', 'rightJoin');
+        if (!empty($joins)) {
+            if (!is_array($joins)) {
+                $joins = array($joins);
+            }
+
+            foreach ($joins as $join) {
+                list($table, $alias, $condition) = explode('|', $join);
+                $this->queryBuilder->rightJoin($fromAlias, $table, $alias, $condition);
+            }
+        }
+
+        /*
+         * Condition
+         */
         $wheres = $this->config->getConfig('sql', 'where');
         if (!empty($wheres)) {
             if (!is_array($wheres)) {
                 $wheres = array($wheres);
             }
             foreach ($wheres as $where) {
-                list($table, $alias, $condition) = explode('|', $join);
-                $this->queryBuilder->join($fromAlias, $table, $alias, $condition);
+                $this->queryBuilder->andWhere($where);
             }
         }
     }
@@ -110,7 +138,7 @@ class Doctrine implements Connection
      */
     public function buildFilteredQuery()
     {
-        $this->queryBuilder = $this->buildRawQuery();
+        $this->buildRawQuery();
 
         $term    = $this->driver->getFilterTerm();
         if (!empty($term)) {
@@ -145,7 +173,7 @@ class Doctrine implements Connection
     public function getRawCountQuery()
     {
         $this->buildRawQuery();
-        $this->queryBuilder->select('COUNT(DISTINCT' . $this->config->getConfig('sql', 'group') . ')');
+        $this->queryBuilder->select('COUNT(DISTINCT ' . $this->config->getConfig('sql', 'group') . ')');
 
         return $this->queryBuilder;
     }
@@ -153,7 +181,7 @@ class Doctrine implements Connection
     public function getFilteredCountQuery()
     {
         $this->buildFilteredQuery();
-        $this->queryBuilder->select('COUNT(DISTINCT' . $this->config->getConfig('sql', 'group') . ')');
+        $this->queryBuilder->select('COUNT(DISTINCT ' . $this->config->getConfig('sql', 'group') . ')');
 
         return $this->queryBuilder;
     }
