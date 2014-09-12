@@ -5,6 +5,25 @@ namespace Solire\Trieur;
 class Trieur
 {
     /**
+     *
+     *
+     * @var Config
+     */
+    protected $config = null;
+
+    /**
+     *
+     * @var Driver
+     */
+    protected $driver = null;
+
+    /**
+     *
+     * @var Connection
+     */
+    protected $connection = null;
+
+    /**
      * List of supported drivers and their mappings to the driver classes.
      *
      * To add your own driver use the 'driverClass' parameter to
@@ -13,27 +32,93 @@ class Trieur
      * @var array
      */
     private static $driverMap = array(
-        'datatables' => 'solire\trieur\Driver\DataTables',
+        'dataTables' => '\Solire\Trieur\Driver\DataTables',
     );
 
-    public function __construct()
-    {}
+    private static $connectionMap = array(
+        'Doctrine\DBAL\Connection' => '\Solire\Trieur\Connection\Doctrine',
+    );
 
-    public static function getDriver($config, $driverName = null)
+    public function __construct($config, $driverName = null, $connection = null)
+    {
+        $this->buildConfig($config);
+        $this->buildDriver($driverName);
+        $this->buildConnection($connection);
+    }
+
+    public function buildConfig($config)
     {
         if (is_array($config)) {
-            $config = new Config($config);
-        }
-
-        $driverName = strtolower($driverName);
-        if (isset(self::$driverMap[$driverName])) {
-            $driverClass = self::$driverMap[$driverName];
+            $this->config = new Config($config);
+        } else if (is_object ($config) && $config instanceof Config) {
+            $this->config = $config;
         } else {
-            $driverClass = 'solire\trieur\Driver';
+            throw new \InvalidArgumentException(
+                  'Wrong argument given for $config, should be '
+                . '\Solire\Trieur\Config or array'
+            );
+        }
+    }
+
+    /**
+     *
+     *
+     * @param string $driverName
+     *
+     * @return void
+     */
+    public function buildDriver($driverName = null)
+    {
+        if ($driverName !== null && !isset(self::$driverMap[$driverName])) {
+            throw new \Exception(
+                'No wrapper class defined for : {' . $driverName . '}'
+            );
         }
 
-        $driver = new $driverClass($config);
+        $driverClass = '\Solire\Trieur\Driver\Driver';
+        if ($driverName !== null) {
+            $this->config->setDriverName($driverName);
+            $driverClass = self::$driverMap[$driverName];
+        }
 
-        return $driver;
+        $this->driver = new $driverClass($this->config);
+    }
+
+    /**
+     *
+     *
+     * @param mixed $connection
+     *
+     * @return void
+     */
+    public function buildConnection($connection = null)
+    {
+        if ($connection === null) {
+            return;
+        }
+
+        $className = get_class($connection);
+        if (!isset(self::$connectionMap[$className])) {
+            throw new \Exception(
+                'No wrapper class for connection class : {' . $className . '}'
+            );
+        }
+
+        $connectionWrapperClass = self::$connectionMap[$className];
+        $this->connection = new $connectionWrapperClass(
+            $connection,
+            $this->driver,
+            $this->config
+        );
+    }
+
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+    public function getConnection()
+    {
+        return $this->connection;
     }
 }

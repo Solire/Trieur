@@ -1,6 +1,7 @@
 {
   "name"          : "Trieur",
   "dependencies"  : {
-    "datatables" : "1.10.*"
+    "datatables" : "1.10.*",
+    "bootstrap"  : "3"
   }
 }
