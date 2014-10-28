@@ -2,47 +2,54 @@
 
 namespace Solire\Trieur\Connection;
 
-use \Solire\Trieur\Connection,
-    \Doctrine\DBAL\Connection as DoctrineConnection,
-    \Solire\Trieur\Driver,
-    \Solire\Trieur\Config;
+use \Solire\Trieur\Connection;
+use \Solire\Trieur\Driver;
+use \Solire\Trieur\Config;
 
+use \Doctrine\DBAL\Connection as DoctrineConnection;
+
+/**
+ * Doctrine connection wrapper
+ *
+ * @author  Thomas <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
+ */
 class Doctrine implements Connection
 {
     /**
-     *
+     * The database doctrine connection
      *
      * @var DoctrineConnection
      */
     protected $connection;
 
     /**
-     *
+     * The driver
      *
      * @var Driver
      */
     protected $driver;
 
     /**
-     *
+     * The configuration
      *
      * @var Config
      */
     protected $config;
 
     /**
-     *
+     * A doctrine query builder
      *
      * @var \Doctrine\DBAL\Query\QueryBuilder
      */
     protected $queryBuilder;
 
     /**
-     * Constructeur
+     * Constructor
      *
-     * @param \Doctrine\DBAL\Connection $connection
-     * @param \Solire\Trieur\Driver     $driver
-     * @param \Solire\Trieur\Config     $config
+     * @param \Doctrine\DBAL\Connection $connection The connection
+     * @param \Solire\Trieur\Driver     $driver     The driver
+     * @param \Solire\Trieur\Config     $config     The configuration
      */
     public function __construct(
         $connection,
@@ -55,7 +62,7 @@ class Doctrine implements Connection
     }
 
     /**
-     *
+     * Builds the raw query
      *
      * @return \Doctrine\DBAL\Query\QueryBuilder
      */
@@ -66,14 +73,14 @@ class Doctrine implements Connection
         $this->queryBuilder->select($this->config->getConfig('sql', 'select'));
 
         /*
-         * Table principale
+         * Main table
          */
         $from = $this->config->getConfig('sql', 'from');
         list($fromTable, $fromAlias) = explode('|', $from);
         $this->queryBuilder->from($fromTable, $fromAlias);
 
         /*
-         * Jointure classique
+         * Inner join
          */
         $joins = $this->config->getConfig('sql', 'join');
         if (!empty($joins)) {
@@ -88,7 +95,7 @@ class Doctrine implements Connection
         }
 
         /*
-         * Jointure à gauche
+         * Left joins
          */
         $joins = $this->config->getConfig('sql', 'leftJoin');
         if (!empty($joins)) {
@@ -103,7 +110,7 @@ class Doctrine implements Connection
         }
 
         /*
-         * Jointure à droite
+         * Right joins
          */
         $joins = $this->config->getConfig('sql', 'rightJoin');
         if (!empty($joins)) {
@@ -132,7 +139,7 @@ class Doctrine implements Connection
     }
 
     /**
-     *
+     * Build the filtered query
      *
      * @return \Doctrine\DBAL\Query\QueryBuilder
      */
@@ -150,7 +157,7 @@ class Doctrine implements Connection
     }
 
     /**
-     *
+     * Build the data query
      *
      * @return \Doctrine\DBAL\Query\QueryBuilder
      */
@@ -170,6 +177,11 @@ class Doctrine implements Connection
         return $this->queryBuilder;
     }
 
+    /**
+     * Build the count of raw query
+     *
+     * @return \Doctrine\DBAL\Query\QueryBuilder
+     */
     public function getRawCountQuery()
     {
         $this->buildRawQuery();
@@ -178,6 +190,11 @@ class Doctrine implements Connection
         return $this->queryBuilder;
     }
 
+    /**
+     * Build the count of filtered query
+     *
+     * @return \Doctrine\DBAL\Query\QueryBuilder
+     */
     public function getFilteredCountQuery()
     {
         $this->buildFilteredQuery();
@@ -187,11 +204,10 @@ class Doctrine implements Connection
     }
 
     /**
-     * Retourne les éléments de tri (WHERE et ORDER BY) pour la requête de
-     * recherche en fonction d'un terme de recherche
+     * Return the sort elements (WHERE et ORDER BY) for a search request
      *
-     * @param string   $term
-     * @param string[] $columns
+     * @param string   $term    Term of search
+     * @param string[] $columns Columns in where to search
      *
      * @return array
      */

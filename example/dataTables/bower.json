@@ -1,5 +1,5 @@
 {
-  "name"          : "Trieur",
+  "name"          : "Trieur DataTables example",
   "dependencies"  : {
     "datatables" : "1.10.*",
     "bootstrap"  : "3"

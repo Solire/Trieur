@@ -3,9 +3,21 @@
 namespace Solire\Trieur\Driver;
 
 use \Solire\Trieur\Config;
+use \Solire\Trieur\Driver as DriverInterface;
 
-class DataTables extends Driver implements \Solire\Trieur\Driver
+/**
+ * Datatables driver
+ *
+ * @author  Thomas <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
+ */
+class DataTables extends Driver implements DriverInterface
 {
+    /**
+     * Constructor
+     *
+     * @param Config $config The configuration
+     */
     public function __construct(Config $config)
     {
         parent::__construct($config);
@@ -14,7 +26,7 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
     }
 
     /**
-     *
+     * Return the filter term
      *
      * @return array
      */
@@ -24,7 +36,7 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
     }
 
     /**
-     *
+     * Return the searchable columns
      *
      * @return array
      */
@@ -40,7 +52,7 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
                 && $column['filter']
                 && ($column['sql'] || $column['filterSql'])
             ) {
-                $sql =  $column['sql'];
+                $sql = $column['sql'];
                 if (isset($column['filterSql'])) {
                     $sql = $column['filterSql'];
                 }
@@ -57,7 +69,7 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
     }
 
     /**
-     *
+     * Return the filter terms for each columns
      *
      * @return array
      */
@@ -75,7 +87,7 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
                 && $column['filter']
                 && ($column['sql'] || $column['filterSql'])
             ) {
-                $sql =  $column['sql'];
+                $sql = $column['sql'];
                 if (isset($column['filterSql'])) {
                     $sql = $column['filterSql'];
                 }
@@ -88,13 +100,19 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
                     $col = array();
 
                     if (!empty($terms[0])) {
-                        $col[0] = \Slrfw\Format\DateTime::frToSql($terms[0]);
+                        /*
+                         * @todo translate from date format sent to sql
+                         */
+                        $col[0] = $terms[0];
                     } else {
                         $col[0] = '';
                     }
 
                     if (!empty($terms[1])) {
-                        $col[1] = \Slrfw\Format\DateTime::frToSql($terms[1]);
+                        /*
+                         * @todo translate from date format sent to sql
+                         */
+                        $col[1] = $terms[1];
                     } else {
                         $col[1] = '';
                     }
@@ -115,7 +133,7 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
     }
 
     /**
-     *
+     * Return the number of lines
      *
      * @return int
      */
@@ -125,7 +143,7 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
     }
 
     /**
-     *
+     * Return the offset
      *
      * @return int
      */
@@ -135,7 +153,7 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
     }
 
     /**
-     *
+     * Return the list of columns for the sort with the direction
      *
      * @return array
      */
@@ -155,6 +173,11 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
         return $orders;
     }
 
+    /**
+     * Return the jquery dataTables columns configuration array
+     *
+     * @return array
+     */
     public function getJsColsConfig()
     {
         $cols = array();
@@ -182,7 +205,7 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
     }
 
     /**
-     * Renvoi la configuration des éléments de language
+     * Return the jquery dataTables language configuration array
      *
      * @return array
      *
@@ -202,9 +225,11 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
 //            // language.decimal : Decimal place character
 //            'decimal' => null,
             // language.emptyTable : Table has no records string
-            'emptyTable' => 'Aucun ' . $this->config->getDriverConfig('itemName') . ' trouvé' . $this->config->getDriverConfig('itemGenre'),
+            'emptyTable' => 'Aucun ' . $this->config->getDriverConfig('itemName')
+                . ' trouvé' . $this->config->getDriverConfig('itemGenre'),
             // language.info : Table summary information display string
-            'info' => '' . $this->config->getDriverConfig('itemsName') . ' _START_ à  _END_ sur _TOTAL_ ' . $this->config->getDriverConfig('itemsName'),
+            'info' => '' . $this->config->getDriverConfig('itemsName')
+                . ' _START_ à  _END_ sur _TOTAL_ ' . $this->config->getDriverConfig('itemsName'),
             // language.infoEmpty : Table summary information string used when the table is empty or records
             'infoEmpty' => 'Aucun ' . $this->config->getDriverConfig('itemName') . '',
             // language.infoFiltered : Appended string to the summary information when the table is filtered
@@ -239,14 +264,17 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
         );
     }
 
+    /**
+     * The jquery dataTables configuration array
+     *
+     * @return array
+     */
     public function getJsConfig()
     {
         $defaultSort = array();
         foreach ($this->config->getDriverConfig('defaultSort') as $l) {
             $defaultSort[] = explode('|', $l);
         }
-
-        $language =
 
         $config = array(
             'processing' => true,
@@ -264,10 +292,5 @@ class DataTables extends Driver implements \Solire\Trieur\Driver
         );
 
         return $config;
-    }
-
-    public function getColumnFilter()
-    {
-
     }
 }

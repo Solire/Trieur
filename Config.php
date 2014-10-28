@@ -2,6 +2,12 @@
 
 namespace Solire\Trieur;
 
+/**
+ * Config
+ *
+ * @author  Thomas <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
+ */
 class Config
 {
     protected $config = array();
@@ -15,9 +21,9 @@ class Config
     protected $columnsMap = array();
 
     /**
+     * Constructor
      *
-     *
-     * @param array $config
+     * @param array $config The configuration
      */
     public function __construct($config)
     {
@@ -35,7 +41,7 @@ class Config
     }
 
     /**
-     * Renvoi le tableau des colonnes
+     * Return the list of columns
      *
      * @return array
      */
@@ -45,11 +51,11 @@ class Config
     }
 
     /**
-     * Renvoi une colonne déterminé par son index ou son nom
+     * Return a column by its name or index in the columns list
      *
-     * @param string|int  $name nom ou index (à partir de 0) de la colonne
-     * @param string|null $key  nom de l'attribut de la colonne ou null pour
-     * récupérer le tableau de config entier de la colonne
+     * @param string|int  $name Name or index (beginning at 0) of the column
+     * @param string|null $key  Column's attribute's name or null to get the
+     * entire column's configuration
      *
      * @return mixed
      */
@@ -69,16 +75,38 @@ class Config
         return $column[$key];
     }
 
+    /**
+     * Set the driver's name
+     *
+     * @param string $name The driver's name
+     *
+     * @return void
+     */
     public function setDriverName($name)
     {
         $this->driverName = $name;
     }
 
+    /**
+     * Return the driver configuration
+     *
+     * @param string $key The attribute's name
+     *
+     * @return array
+     */
     public function getDriverConfig($key = null)
     {
         return $this->getConfig($this->driverName, $key);
     }
 
+    /**
+     * Return a configuration section by its name
+     *
+     * @param string $name The configuration's name
+     * @param string $key  The attrbiute's name
+     *
+     * @return mixed
+     */
     public function getConfig($name, $key = null)
     {
         if (!isset($this->config[$name])) {

@@ -4,24 +4,32 @@ namespace Solire\Trieur\Driver;
 
 use \Solire\Trieur\Config;
 
+/**
+ * Datatables driver
+ *
+ * @author  Thomas <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
+ */
 class Driver
 {
     /**
+     * The configuration
      *
      * @var Config
      */
     protected $config;
 
     /**
+     * The request
      *
      * @var array
      */
     protected $request;
 
     /**
+     * Constructeur
      *
-     *
-     * @param Config $config
+     * @param Config $config The configuration
      */
     public function __construct(Config $config)
     {
@@ -29,9 +37,9 @@ class Driver
     }
 
     /**
+     * Set the request
      *
-     *
-     * @param array $request
+     * @param array $request The request
      *
      * @return void
      */
