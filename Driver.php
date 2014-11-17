@@ -13,9 +13,10 @@ interface Driver
     /**
      * Constructor
      *
-     * @param Config $config The configuration
+     * @param \Solire\Conf\Conf $config  The driver configuration
+     * @param \Solire\Conf\Conf $columns The columns configuration
      */
-    public function __construct(Config $config);
+    public function __construct($config, $columns);
 
     /**
      * Set the request

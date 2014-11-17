@@ -15,7 +15,7 @@ interface Connection
      *
      * @param mixed                 $connection The connection
      * @param \Solire\Trieur\Driver $driver     The driver
-     * @param \Solire\Trieur\Config $config     The configuration
+     * @param \Solire\Conf\Conf     $conf       The configuration
      */
-    public function __construct($connection, Driver $driver, Config $config);
+    public function __construct($connection, Driver $driver, $conf);
 }

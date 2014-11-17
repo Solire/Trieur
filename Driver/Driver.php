@@ -2,15 +2,13 @@
 
 namespace Solire\Trieur\Driver;
 
-use \Solire\Trieur\Config;
-
 /**
  * Datatables driver
  *
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Driver
+abstract class Driver
 {
     /**
      * The configuration
@@ -29,11 +27,13 @@ class Driver
     /**
      * Constructeur
      *
-     * @param Config $config The configuration
+     * @param \Solire\Conf\Conf $config  The driver configuration
+     * @param \Solire\Conf\Conf $columns The columns configuration
      */
-    public function __construct(Config $config)
+    public function __construct($config, $columns)
     {
         $this->config = $config;
+        $this->columns = $columns;
     }
 
     /**

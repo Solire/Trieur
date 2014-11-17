@@ -12,10 +12,12 @@
   ],
   "require": {
     "php": ">=5.5.0",
-    "doctrine/dbal": "~2.4.0"
+    "doctrine/dbal": "2.4.*",
+    "solire/conf": "2.1.*",
+    "symfony/yaml": "2.5.*"
   },
- "require-dev": {
-    "m6web/coke": "~1.2",
+  "require-dev": {
+    "m6web/coke": "1.2",
     "siwayll/phpcs-norme-dpsi": "3.*",
     "atoum/atoum" : ">=0.0.1"
   },

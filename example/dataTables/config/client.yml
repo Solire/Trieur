@@ -1,0 +1,90 @@
+# -------------------------
+# CONFIG
+
+# Js Config
+driver:
+  itemName: client
+  itemsName: clients
+  # masculin ou féminin
+  # "e"|""
+  itemGenre:
+  requestUrl: http://localhost/trieur/example/dataTables/data.json
+  requestMethod: POST
+  dom: <"H"TClfr>t<"F"ip>
+  defaultSort:
+  - [0, asc]
+
+connection:
+  select:
+    - c.societe
+    - c.civilite
+    - c.nom
+    - c.prenom
+    - c.tel1
+    - IF(c.ns > 0, "Oui", "Non") AS offre
+    - CONCAT(a.adresse1, "<br>", IF(a.adresse2 IS NULL, "", a.adresse2), "<br>", a.cp, " ", a.ville, "<br>", a.pays) AS adresse
+
+  from:
+    name: client
+    alias: c
+
+  innerJoin:
+    name: client_adresse
+    alias: a
+    on: a.client_id = c.id AND a.principal = 1
+
+  group: c.id
+
+
+## COLUMNS
+
+columns:
+#  columnName:
+#    name: columnName
+#    label: columnLabel
+#    filter: 1|0
+#    sort: 1|0
+#    sql: sqlExpression (for example a column)
+#    ...
+
+  societe:
+    name: societe
+    label: Société
+    filter: 1
+    sort: 1
+    sql: c.societe
+  email:
+    name: email
+    label: Email
+    filter: true
+    sort: true
+    sql: c.email
+  tel1:
+    name: tel1
+    label: Téléphone
+    filter: true
+    sort: true
+    sql: a.tel1
+  nom:
+    name: nom
+    label: Nom
+    filter: true
+    sort: true
+    sql: c.nom
+  prenom:
+    name: prenom
+    label: Prénom
+    filter: true
+    sort: true
+    sql: c.prenom
+  offre:
+    name: offre
+    label: Offre
+    filter: false
+    sort: true
+    sql: offre
+  adresse:
+    name: adresse
+    label: Adresse
+    filter: false
+    sort: false

@@ -2,6 +2,8 @@
 
 namespace Solire\Trieur;
 
+use Solire\Conf\Conf;
+
 /**
  * Trieur
  *
@@ -13,9 +15,15 @@ class Trieur
     /**
      * Configuration
      *
-     * @var Config
+     * @var Conf
      */
-    protected $config = null;
+    protected $conf = null;
+
+    /**
+     *
+     * @var
+     */
+    protected $columns = null;
 
     /**
      * Driver
@@ -53,37 +61,37 @@ class Trieur
     /**
      * Constructor
      *
-     * @param array|Config $config     The Configuration
-     * @param string       $driverName The driver name
-     * @param mixed        $connection The database connection
+     * @param Conf   $conf       The Configuration
+     * @param string $driverName The driver name
+     * @param mixed  $connection The database connection
      */
-    public function __construct($config, $driverName = null, $connection = null)
+    public function __construct($conf, $driverName = null, $connection = null)
     {
-        $this->buildConfig($config);
+        $this->buildConf($conf);
+        $this->buildColumns();
         $this->buildDriver($driverName);
         $this->buildConnection($connection);
     }
 
     /**
-     * Build and affect the Config object
+     * Build and affect the Configuration object
      *
-     * @param array|Config $config The configuration
+     * @param Conf $conf The Configuration
      *
      * @return void
-     * @throws \InvalidArgumentException
      */
-    public function buildConfig($config)
+    protected function buildConf($conf)
     {
-        if (is_array($config)) {
-            $this->config = new Config($config);
-        } elseif (is_object($config) && $config instanceof Config) {
-            $this->config = $config;
-        } else {
-            throw new \InvalidArgumentException(
-                'Wrong argument given for $config, should be '
-                . '\Solire\Trieur\Config or array'
-            );
-        }
+        $this->conf = $conf;
+
+    }
+
+    protected function buildColumns()
+    {
+        $this->columns = array_merge(
+            (array) $this->conf->columns,
+            array_values((array) $this->conf->columns)
+        );
     }
 
     /**
@@ -93,7 +101,7 @@ class Trieur
      *
      * @return void
      */
-    public function buildDriver($driverName = null)
+    protected function buildDriver($driverName = null)
     {
         if ($driverName !== null && !isset(self::$driverMap[$driverName])) {
             throw new \Exception(
@@ -103,11 +111,13 @@ class Trieur
 
         $driverClass = '\Solire\Trieur\Driver\Driver';
         if ($driverName !== null) {
-            $this->config->setDriverName($driverName);
             $driverClass = self::$driverMap[$driverName];
         }
 
-        $this->driver = new $driverClass($this->config);
+        $this->driver = new $driverClass(
+            $this->conf->driver,
+            $this->columns
+        );
     }
 
     /**
@@ -134,7 +144,7 @@ class Trieur
         $this->connection = new $connectionWrapperClass(
             $connection,
             $this->driver,
-            $this->config
+            $this->conf->connection
         );
     }
 
