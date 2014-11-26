@@ -47,3 +47,5 @@ vendor/
 bower_components/
 
 connection.ini
+
+/tests/units/coverage/

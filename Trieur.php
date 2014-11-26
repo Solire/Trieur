@@ -10,20 +10,21 @@ use Solire\Conf\Conf;
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Trieur
+class Trieur extends \Pimple\Container
 {
+    /**
+     * Columns list
+     *
+     * @var array
+     */
+    protected $columns = [];
+
     /**
      * Configuration
      *
      * @var Conf
      */
     protected $conf = null;
-
-    /**
-     *
-     * @var
-     */
-    protected $columns = null;
 
     /**
      * Driver
@@ -44,9 +45,9 @@ class Trieur
      *
      * @var array
      */
-    private static $driverMap = array(
+    private static $driverMap = [
         'dataTables' => '\Solire\Trieur\Driver\DataTables',
-    );
+    ];
 
     /**
      * List of supported connection class and their mappings to the connection
@@ -54,104 +55,157 @@ class Trieur
      *
      * @var type
      */
-    private static $connectionMap = array(
-        'Doctrine\DBAL\Connection' => '\Solire\Trieur\Connection\Doctrine',
-    );
+    private static $connectionMap = [
+        'doctrine' => '\Solire\Trieur\Connection\Doctrine',
+    ];
 
     /**
-     * Constructor
+     * Initialise the container, and prepare the instanciation of the driver
+     * and connection class
      *
-     * @param Conf   $conf       The Configuration
-     * @param string $driverName The driver name
-     * @param mixed  $connection The database connection
+     * @param Conf  $conf            The configuration
+     * @param mixed $connectionModel The database connection object
+     *
+     * @return self
      */
-    public function __construct($conf, $driverName = null, $connection = null)
+    public function init(Conf $conf, $connectionModel = null)
     {
-        $this->buildConf($conf);
-        $this->buildColumns();
-        $this->buildDriver($driverName);
-        $this->buildConnection($connection);
+        $this->conf = $conf;
+        $this->initDriver();
+
+        if ($connectionModel !== null) {
+            $this['connectionModel'] = $connectionModel;
+            $this->initConnection();
+        }
+
+        return $this;
     }
 
     /**
-     * Build and affect the Configuration object
+     * Instanciate the driver and connection class
      *
-     * @param Conf $conf The Configuration
+     * @return self
+     */
+    public function run()
+    {
+        $this->setDriver($this['driver']);
+        if (isset($this['connection'])) {
+            $this->setConnection($this['connection']);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Find the driver class
      *
      * @return void
      */
-    protected function buildConf($conf)
+    protected function findDriverClass()
     {
-        $this->conf = $conf;
-
-    }
-
-    protected function buildColumns()
-    {
-        $this->columns = array_merge(
-            (array) $this->conf->columns,
-            array_values((array) $this->conf->columns)
-        );
+        if (isset($this->conf->driver->class)) {
+            $this->conf->driver->class = $this->conf->driver->class;
+        } elseif (isset($this->conf->driver->name)
+            && isset(self::$driverMap[$this->conf->driver->name])
+        ) {
+            $this->conf->driver->class = self::$driverMap[
+                $this->conf->driver->name
+            ];
+        } else {
+            $this->conf->driver->class = '\Solire\Trieur\Driver\Driver';
+        }
     }
 
     /**
      * Build Driver object
      *
-     * @param string $driverName The driver's name
-     *
      * @return void
      */
-    protected function buildDriver($driverName = null)
+    protected function initDriver()
     {
-        if ($driverName !== null && !isset(self::$driverMap[$driverName])) {
-            throw new \Exception(
-                'No wrapper class defined for : {' . $driverName . '}'
+        $this->findDriverClass();
+        $this['driver'] = function ($c) {
+            $className = $c->conf->driver->class;
+            return new $className(
+                $c->conf->driver->conf,
+                $c->conf->columns
             );
-        }
-
-        $driverClass = '\Solire\Trieur\Driver\Driver';
-        if ($driverName !== null) {
-            $driverClass = self::$driverMap[$driverName];
-        }
-
-        $this->driver = new $driverClass(
-            $this->conf->driver,
-            $this->columns
-        );
+        };
     }
 
     /**
-     * Build the connection wrapper classe
+     * Find the connection class
      *
-     * @param mixed $connection The database connection object
+     * @return void
+     * @throws \Exception If no wrapper class found
+     */
+    protected function findConnectionClass()
+    {
+        if (isset($this->conf->connection->class)) {
+            $this->conf->connection->class = $this->conf->driver->class;
+        } elseif (isset($this->conf->connection->name)
+            && isset(self::$connectionMap[$this->conf->connection->name])
+        ) {
+            $this->conf->connection->class = self::$connectionMap[
+                $this->conf->connection->name
+            ];
+        } else {
+            throw new \Exception(
+                'No wrapper class for connection class founed'
+            );
+        }
+    }
+
+    /**
+     * Build the connection wrapper class
      *
      * @return void
      */
-    public function buildConnection($connection = null)
+    protected function initConnection()
     {
-        if ($connection === null) {
-            return;
-        }
-
-        $className = get_class($connection);
-        if (!isset(self::$connectionMap[$className])) {
-            throw new \Exception(
-                'No wrapper class for connection class : {' . $className . '}'
+        $this->findConnectionClass();
+        $this['connection'] = function ($c) {
+            $className = $c->conf->connection->class;
+            return new $className(
+                $c['connectionModel'],
+                $c->driver,
+                $c->conf->connection->conf
             );
-        }
+        };
+    }
 
-        $connectionWrapperClass = self::$connectionMap[$className];
-        $this->connection = new $connectionWrapperClass(
-            $connection,
-            $this->driver,
-            $this->conf->connection
-        );
+    /**
+     * Sets the driver
+     *
+     * @param Driver $driver The driver
+     *
+     * @return self
+     */
+    public function setDriver(Driver $driver)
+    {
+        $this->driver = $driver;
+
+        return $this;
+    }
+
+    /**
+     * Sets the connection wrapper
+     *
+     * @param Connection $connection The data connection
+     *
+     * @return self
+     */
+    public function setConnection(Connection $connection)
+    {
+        $this->connection = $connection;
+
+        return $this;
     }
 
     /**
      * Get the Driver
      *
-     * @return Driver\Driver
+     * @return Driver
      */
     public function getDriver()
     {
@@ -166,5 +220,33 @@ class Trieur
     public function getConnection()
     {
         return $this->connection;
+    }
+
+    /**
+     * Set the request
+     *
+     * @param mixed $request The request
+     *
+     * @return self
+     */
+    public function setRequest($request)
+    {
+        $this->driver->setRequest($request);
+
+        return $this;
+    }
+
+    /**
+     * Returns the response
+     *
+     * @return array
+     */
+    public function getResponse()
+    {
+        return $this->driver->getResponse(
+            $this->connection->getData(),
+            $this->connection->getCount(),
+            $this->connection->getFilteredCount()
+        );
     }
 }

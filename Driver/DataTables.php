@@ -3,6 +3,7 @@
 namespace Solire\Trieur\Driver;
 
 use \Solire\Trieur\Driver as DriverInterface;
+use Solire\Conf\Conf;
 
 /**
  * Datatables driver
@@ -30,10 +31,10 @@ class DataTables extends Driver implements DriverInterface
     public function getSearchableColumns()
     {
         $clientColumns = $this->request['columns'];
-        $serverColumns = $this->columns;
+        $serverColumns = $this->columnsByIndex;
 
         foreach ($serverColumns as $index => $serverColumn) {
-            $column = array_merge($serverColumn, $clientColumns[$index]);
+            $column = array_merge((array) $serverColumn, $clientColumns[$index]);
 
             if ($column['searchable']
                 && $column['filter']
@@ -56,6 +57,44 @@ class DataTables extends Driver implements DriverInterface
     }
 
     /**
+     * Determines if a column is searchable and has a search, if so return the
+     * corresponding term
+     *
+     * @param Conf $column The column's configuration
+     *
+     * @return type
+     */
+    protected function getColumnTerm(Conf $column)
+    {
+        $term = $column['search']['value'];
+        if ($term !== ''
+            && $column['searchable']
+            && $column['filter']
+            && ($column['sql'] || $column['filterSql'])
+        ) {
+            return $term;
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the sql expression
+     *
+     * @param Conf $column The column's configuration
+     *
+     * @return type
+     */
+    protected function getColumnFilterSql(Conf $column)
+    {
+        $sql = $column['sql'];
+        if (isset($column['filterSql'])) {
+            $sql = $column['filterSql'];
+        }
+        return $sql;
+    }
+
+    /**
      * Return the filter terms for each columns
      *
      * @return array
@@ -63,21 +102,14 @@ class DataTables extends Driver implements DriverInterface
     public function getFilterTermByColumns()
     {
         $clientColumns = $this->request['columns'];
-        $serverColumns = $this->columns;
+        $serverColumns = $this->columnsByIndex;
 
         foreach ($serverColumns as $index => $serverColumn) {
             $column = array_merge($serverColumn, $clientColumns[$index]);
 
-            $term = $column['search']['value'];
-            if ($term !== ''
-                && $column['searchable']
-                && $column['filter']
-                && ($column['sql'] || $column['filterSql'])
-            ) {
-                $sql = $column['sql'];
-                if (isset($column['filterSql'])) {
-                    $sql = $column['filterSql'];
-                }
+            $term = $this->getTerm($column);
+            if ($term !== null) {
+                $sql = $this->getColumnSql($column);
 
                 if (isset($column['filterType'])
                     && $column['filterType'] == 'date-range'
@@ -149,7 +181,7 @@ class DataTables extends Driver implements DriverInterface
         $orders = array();
         $ordersClient = $this->request['order'];
         foreach ($ordersClient as $order) {
-            $columnName = $this->columns[$order['column']]->name;
+            $columnName = $this->columnsByIndex[$order['column']]->name;
             $dir        = $order['dir'];
 
             $orders[] = array(
@@ -161,6 +193,34 @@ class DataTables extends Driver implements DriverInterface
     }
 
     /**
+     * Returns the response
+     *
+     * @param \Solire\Trieur\Connection $connection The data connection
+     *
+     * @return array
+     */
+
+    /**
+     * Returns the response
+     *
+     * @param array $data          The data filtered by the current search,
+     * offset and length
+     * @param int   $count         The total of available lines filtered by the
+     * current search
+     * @param int   $filteredCount The total of available lines
+     *
+     * @return array
+     */
+    public function getResponse(array $data, $count, $filteredCount)
+    {
+        return array(
+            'data' => $data,
+            'recordsTotal' => $count,
+            'recordsFiltered' => $filteredCount,
+        );
+    }
+
+    /**
      * Return the jquery dataTables columns configuration array
      *
      * @return array
@@ -168,7 +228,7 @@ class DataTables extends Driver implements DriverInterface
     public function getJsColsConfig()
     {
         $cols = array();
-        $columns = $this->columns;
+        $columns = $this->columnsByIndex;
         foreach ($columns as $ii => $col) {
             $dCol = array(
                 'orderable'     => (bool) $col->sort,
