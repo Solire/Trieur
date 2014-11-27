@@ -11,7 +11,7 @@ namespace Solire\Trieur;
 interface Driver
 {
     /**
-     * Constructor
+     * Constructeur
      *
      * @param \Solire\Conf\Conf $config  The driver configuration
      * @param \Solire\Conf\Conf $columns The columns configuration
@@ -21,11 +21,11 @@ interface Driver
     /**
      * Set the request
      *
-     * @param array $request The request
+     * @param mixed $request The request
      *
      * @return void
      */
-    public function setRequest(array $request);
+    public function setRequest($request);
 
     /**
      * Return the offset
@@ -68,4 +68,17 @@ interface Driver
      * @return array
      */
     public function getFilterTermByColumns();
+
+    /**
+     * Returns the response
+     *
+     * @param array $data          The data filtered by the current search,
+     * offset and length
+     * @param int   $count         The total of available lines filtered by the
+     * current search
+     * @param int   $filteredCount The total of available lines
+     *
+     * @return array
+     */
+    public function getResponse(array $data, $count, $filteredCount);
 }

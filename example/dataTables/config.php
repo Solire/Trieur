@@ -8,11 +8,8 @@ class Config
     public static function run()
     {
         $configPath = 'config/client.json';
-        $config = json_decode(file_get_contents($configPath));
-        $conf = new Conf();
-        foreach ($config as $key => $value) {
-            $conf->set($value, $key);
-        }
+        $array = json_decode(file_get_contents($configPath), true);
+        $conf = arrayToConf($array);
 
         $configDbPath = 'config/connection.ini';
         $configDb = parse_ini_file($configDbPath);
@@ -21,13 +18,15 @@ class Config
         );
         $doctrineConnection = \Doctrine\DBAL\DriverManager::getConnection($configDb);
 
-        $trieur = new \Solire\Trieur\Trieur($conf, 'dataTables', $doctrineConnection);
+        $trieur = new \Solire\Trieur\Trieur;
+        $trieur
+            ->init($conf, $doctrineConnection)
+            ->run()
+        ;
+
         return $trieur->getDriver()->getJsConfig();
     }
 }
-
-//$trieur = new \Solire\Trieur\Trieur($config, 'dataTables');
-//$cf = $trieur->getDriver()->getJsConfig();
 
 header('Content-type: application/json');
 echo json_encode(array(

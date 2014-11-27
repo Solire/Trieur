@@ -1,38 +1,44 @@
 {
   "driver": {
-    "itemName": "client",
-    "itemsName": "clients",
-    "itemGenre": "",
-    "requestUrl": "http://localhost/trieur/example/dataTables/data.json",
-    "requestMethod": "POST",
-    "dom": "<\"H\"TClfr>t<\"F\"ip>",
-    "defaultSort": [
-      [0, "asc"]
-    ]
+    "name" : "dataTables",
+    "conf" : {
+      "itemName": "client",
+      "itemsName": "clients",
+      "itemGenre": "",
+      "requestUrl": "http://localhost/trieur/example/dataTables/data.json",
+      "requestMethod": "POST",
+      "dom": "<\"H\"TClfr>t<\"F\"ip>",
+      "defaultSort": [
+        [0, "asc"]
+      ]
+    }
   },
   "connection": {
-    "select": [
-      "CONCAT('<a href=\"mailto:', c.email, '\">', c.email, '</a>') AS email",
-      "c.societe",
-      "c.civilite",
-      "c.nom",
-      "c.prenom",
-      "a.tel1",
-      "IF(c.ns > 0, 'Oui', 'Non') AS offre",
-      "CONCAT(a.adresse1, '<br>', IF(a.adresse2 IS NULL, '', a.adresse2), '<br>', a.cp, ' ', a.ville, '<br>', a.pays) AS adresse"
-    ],
-    "from": {
-      "name": "client",
-      "alias": "c"
-    },
-    "innerJoin": [
-      {
-        "name": "client_adresse",
-        "alias": "a",
-        "on": "a.client_id = c.id AND a.principal = 1"
-      }
-    ],
-    "group": "c.id"
+    "name" : "doctrine",
+    "conf" : {
+      "select": [
+        "CONCAT('<a href=\"mailto:', c.email, '\">', c.email, '</a>') AS email",
+        "c.societe",
+        "c.civilite",
+        "c.nom",
+        "c.prenom",
+        "a.tel1",
+        "IF(c.ns > 0, 'Oui', 'Non') AS offre",
+        "CONCAT(a.adresse1, '<br>', IF(a.adresse2 IS NULL, '', a.adresse2), '<br>', a.cp, ' ', a.ville, '<br>', a.pays) AS adresse"
+      ],
+      "from": {
+        "name": "client",
+        "alias": "c"
+      },
+      "innerJoin": [
+        {
+          "name": "client_adresse",
+          "alias": "a",
+          "on": "a.client_id = c.id AND a.principal = 1"
+        }
+      ],
+      "group": "c.id"
+    }
   },
   "columns": {
     "societe" : {

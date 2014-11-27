@@ -2,9 +2,9 @@
 
 namespace Solire\Trieur\Connection;
 
-use \Solire\Trieur\Connection;
+use \Solire\Trieur\Connection as ConnectionInterface;
 use \Solire\Trieur\Driver;
-
+use Solire\Conf\Conf;
 use \Doctrine\DBAL\Connection as DoctrineConnection;
 
 /**
@@ -13,7 +13,7 @@ use \Doctrine\DBAL\Connection as DoctrineConnection;
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Doctrine implements Connection
+class Doctrine implements ConnectionInterface
 {
     /**
      * The database doctrine connection
@@ -32,7 +32,7 @@ class Doctrine implements Connection
     /**
      * The configuration
      *
-     * @var \Solire\Conf\Conf
+     * @var Conf
      */
     protected $conf;
 
@@ -48,12 +48,12 @@ class Doctrine implements Connection
      *
      * @param \Doctrine\DBAL\Connection $connection The connection
      * @param \Solire\Trieur\Driver     $driver     The driver
-     * @param \Solire\Conf\Conf         $conf       The configuration
+     * @param Conf                      $conf       The configuration
      */
     public function __construct(
         $connection,
         Driver $driver,
-        $conf
+        Conf $conf
     ) {
         $this->connection = $connection;
         $this->driver     = $driver;
@@ -71,7 +71,7 @@ class Doctrine implements Connection
     {
         $this->queryBuilder = $this->connection->createQueryBuilder();
 
-        $this->queryBuilder->select($this->conf->select);
+        $this->queryBuilder->select((array) $this->conf->select);
 
         /*
          * Main table
@@ -103,7 +103,7 @@ class Doctrine implements Connection
         if (isset($this->conf->where)) {
             $wheres = $this->conf->where;
             foreach ($wheres as $where) {
-                $this->queryBuilder->innandWhere($where);
+                $this->queryBuilder->innandWhere((array) $where);
             }
         }
     }
@@ -111,13 +111,13 @@ class Doctrine implements Connection
     /**
      * Add the joins to the main query builder
      *
-     * @param string $joinType the join types 'innerJoin', 'leftJoin', 'rightJoin'
-     * @param array  $joins    an array of joins (defined by an object with at
+     * @param string $joinType The join types 'innerJoin', 'leftJoin', 'rightJoin'
+     * @param array  $joins    An array of joins (defined by an object with at
      * least 'name', 'alias' and 'on' keys)
      *
      * @return void
      */
-    protected function buildJoins($joinType, array $joins)
+    protected function buildJoins($joinType, $joins)
     {
         foreach ($joins as $join) {
             $this->queryBuilder->$joinType(
@@ -144,7 +144,7 @@ class Doctrine implements Connection
      *
      * @return \Doctrine\DBAL\Query\QueryBuilder
      */
-    public function buildFilteredQuery()
+    protected function buildFilteredQuery()
     {
         $queryBuilder = clone $this->queryBuilder;
 
@@ -209,6 +209,42 @@ class Doctrine implements Connection
     }
 
     /**
+     * Return the total of available lines
+     *
+     * @return int Total number
+     */
+    public function getCount()
+    {
+        return $this->getCountQuery()
+            ->execute()
+            ->fetch(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Return the total of available lines filtered by the current search
+     *
+     * @return int Total number
+     */
+    public function getFilteredCount()
+    {
+        return $this->getFilteredCountQuery()
+            ->execute()
+            ->fetch(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Returns the data if there's a current search, filtered by the search
+     *
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->getDataQuery()
+            ->execute()
+            ->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Return the sort elements (WHERE et ORDER BY) for a search request
      *
      * @param string   $term    Term of search
@@ -232,8 +268,8 @@ class Doctrine implements Connection
             array_unshift($words, $stringSearch);
         }
 
-        $filterWords = array();
-        $orderBy     = array();
+        $filterWords = [];
+        $orderBy     = [];
         foreach ($words as $word) {
             foreach ($columns as $key => $value) {
                 if (is_numeric($value)) {
@@ -251,9 +287,9 @@ class Doctrine implements Connection
             }
         }
 
-        return array(
+        return [
             ' (' . implode(' OR ', $filterWords) . ')',
             ' ' . implode(' + ', $orderBy),
-        );
+        ];
     }
 }

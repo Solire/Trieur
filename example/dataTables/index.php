@@ -13,10 +13,10 @@
       <h1>Clients</h1>
       <table id="demo" class="table-condensed table-striped"></table>
     </div>
-    <script type="text/javascript" src="bower_components/jquery/dist/jquery.<?php echo date('YmdHis'); ?>.js"></script>
-    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.<?php echo date('YmdHis'); ?>.js"></script>
-    <script type="text/javascript" src="bower_components/datatables/media/js/jquery.dataTables.<?php echo date('YmdHis'); ?>.js"></script>
-    <script type="text/javascript" src="js/dataTables.bootstrap.<?php echo date('YmdHis'); ?>.js"></script>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="bower_components/datatables/media/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="js/dataTables.bootstrap.js"></script>
     <script type="text/javascript" src="js/main.<?php echo date('YmdHis'); ?>.js"></script>
   </body>
 </html>

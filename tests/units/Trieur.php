@@ -15,38 +15,6 @@ use \atoum;
  *
  * @author thansen
  */
-class Trieur extends \atoum
+class Trieur extends atoum
 {
-    public function testGetDriver()
-    {
-        $this
-            ->if($driver = \solire\trieur\Trieur::getDriver(array(
-                '__dataTables' => array(
-                    'item' => 'objet',
-                    'items' => 'objets',
-                ),
-                'id' => array(
-                    'titre' => 'Identifiant',
-                    'sql' => 'id'
-                )
-            )))
-            ->object($driver)
-                ->isInstanceOf('\\solire\\trieur\\Driver')
-        ;
-
-        $this
-            ->if($driver = \solire\trieur\Trieur::getDriver(array(
-                '__dataTables' => array(
-                    'item' => 'objet',
-                    'items' => 'objets',
-                ),
-                'id' => array(
-                    'titre' => 'Identifiant',
-                    'sql' => 'id'
-                )
-            ), 'DataTables'))
-            ->object($driver)
-                ->isInstanceOf('\\solire\\trieur\\Driver')
-        ;
-    }
 }
