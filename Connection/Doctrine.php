@@ -268,8 +268,8 @@ class Doctrine implements ConnectionInterface
             array_unshift($words, $stringSearch);
         }
 
-        $filterWords = array();
-        $orderBy     = array();
+        $filterWords = [];
+        $orderBy     = [];
         foreach ($words as $word) {
             foreach ($columns as $key => $value) {
                 if (is_numeric($value)) {
@@ -287,9 +287,9 @@ class Doctrine implements ConnectionInterface
             }
         }
 
-        return array(
+        return [
             ' (' . implode(' OR ', $filterWords) . ')',
             ' ' . implode(' + ', $orderBy),
-        );
+        ];
     }
 }

@@ -13,9 +13,9 @@ class Data
 
         $configDbPath = 'config/connection.ini';
         $configDb = parse_ini_file($configDbPath);
-        $configDb['driverOptions'] = array(
+        $configDb['driverOptions'] = [
             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
-        );
+        ];
         $doctrineConnection = \Doctrine\DBAL\DriverManager::getConnection($configDb);
 
         $trieur = new \Solire\Trieur\Trieur();
