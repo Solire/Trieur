@@ -10,7 +10,7 @@ use Solire\Conf\Conf;
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Driver
+abstract class Driver implements \Solire\Trieur\Driver
 {
     /**
      * List of columns with name index

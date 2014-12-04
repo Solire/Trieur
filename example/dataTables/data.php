@@ -18,12 +18,8 @@ class Data
         ];
         $doctrineConnection = \Doctrine\DBAL\DriverManager::getConnection($configDb);
 
-        $trieur = new \Solire\Trieur\Trieur();
-        $trieur
-            ->init($conf, $doctrineConnection)
-            ->run()
-            ->setRequest($_POST)
-        ;
+        $trieur = new \Solire\Trieur\Trieur($conf, $doctrineConnection);
+        $trieur->setRequest($_POST);
 
         $response = $trieur->getResponse();
 

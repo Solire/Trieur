@@ -60,15 +60,27 @@ class Trieur extends \Pimple\Container
     ];
 
     /**
+     * Constructor
+     *
+     * @param Conf  $conf            The configuration
+     * @param mixed $connectionModel The database connection object
+     */
+    public function __construct(Conf $conf, $connectionModel = null)
+    {
+        $this->init($conf, $connectionModel);
+        $this->run();
+    }
+
+    /**
      * Initialise the container, and prepare the instanciation of the driver
      * and connection class
      *
      * @param Conf  $conf            The configuration
      * @param mixed $connectionModel The database connection object
      *
-     * @return self
+     * @return void
      */
-    public function init(Conf $conf, $connectionModel = null)
+    private function init(Conf $conf, $connectionModel = null)
     {
         $this->conf = $conf;
         $this->initDriver();
@@ -77,23 +89,19 @@ class Trieur extends \Pimple\Container
             $this['connectionModel'] = $connectionModel;
             $this->initConnection();
         }
-
-        return $this;
     }
 
     /**
      * Instanciate the driver and connection class
      *
-     * @return self
+     * @return void
      */
-    public function run()
+    private function run()
     {
         $this->setDriver($this['driver']);
         if (isset($this['connection'])) {
             $this->setConnection($this['connection']);
         }
-
-        return $this;
     }
 
     /**

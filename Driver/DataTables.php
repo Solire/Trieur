@@ -11,7 +11,7 @@ use Solire\Conf\Conf;
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class DataTables extends Driver implements DriverInterface
+class DataTables extends Driver
 {
     /**
      * Return the filter term
