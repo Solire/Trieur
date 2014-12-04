@@ -2,6 +2,8 @@
 
 namespace Solire\Trieur;
 
+use Solire\Conf\Conf;
+
 /**
  * Driver interface
  *
@@ -16,7 +18,7 @@ interface Driver
      * @param \Solire\Conf\Conf $config  The driver configuration
      * @param \Solire\Conf\Conf $columns The columns configuration
      */
-    public function __construct($config, $columns);
+    public function __construct(Conf $config, Conf $columns);
 
     /**
      * Set the request
