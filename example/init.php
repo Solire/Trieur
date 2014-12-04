@@ -11,6 +11,15 @@ set_error_handler(function($errno, $errstr, $errfile, $errline){
 
 require __DIR__ . '/autoload.php';
 
+use \Whoops\Run;
+use \Whoops\Handler\PrettyPageHandler;
+
+$run = new Run;
+
+$handler = new PrettyPageHandler;
+$run->pushHandler($handler);
+$run->register();
+
 /**
  * Converts an array to a Conf object
  *
