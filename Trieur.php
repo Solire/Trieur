@@ -1,5 +1,4 @@
 <?php
-
 namespace Solire\Trieur;
 
 use Solire\Conf\Conf;
@@ -178,7 +177,6 @@ class Trieur extends \Pimple\Container
             $className = $c->conf->connection->class;
             return new $className(
                 $c['connectionModel'],
-                $c->driver,
                 $c->conf->connection->conf
             );
         };

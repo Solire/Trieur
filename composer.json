@@ -21,7 +21,6 @@
   "require-dev": {
     "m6web/coke": "1.2",
     "siwayll/phpcs-norme-dpsi": "3.*",
-    "atoum/atoum" : ">=0.0.1",
     "filp/whoops": "1.0.*"
   },
   "autoload": {

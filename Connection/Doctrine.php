@@ -1,11 +1,10 @@
 <?php
-
 namespace Solire\Trieur\Connection;
 
-use \Solire\Trieur\Connection as ConnectionInterface;
-use \Solire\Trieur\Driver;
 use Solire\Conf\Conf;
-use \Doctrine\DBAL\Connection as DoctrineConnection;
+use Doctrine\DBAL\Connection as DoctrineConnection;
+use Doctrine\DBAL\Query\QueryBuilder;
+use Solire\Trieur\Connection;
 
 /**
  * Doctrine connection wrapper
@@ -13,33 +12,12 @@ use \Doctrine\DBAL\Connection as DoctrineConnection;
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Doctrine implements ConnectionInterface
+class Doctrine extends Connection
 {
-    /**
-     * The database doctrine connection
-     *
-     * @var DoctrineConnection
-     */
-    protected $connection;
-
-    /**
-     * The driver
-     *
-     * @var Driver
-     */
-    protected $driver;
-
-    /**
-     * The configuration
-     *
-     * @var Conf
-     */
-    protected $conf;
-
     /**
      * The main doctrine query builder (cloned for each query)
      *
-     * @var \Doctrine\DBAL\Query\QueryBuilder
+     * @var QueryBuilder
      */
     protected $queryBuilder;
 
@@ -47,19 +25,25 @@ class Doctrine implements ConnectionInterface
      * Constructor
      *
      * @param DoctrineConnection $connection The connection
-     * @param Driver             $driver     The driver
      * @param Conf               $conf       The configuration
      */
-    public function __construct(
-        $connection,
-        Driver $driver,
-        Conf $conf
-    ) {
-        $this->connection = $connection;
-        $this->driver     = $driver;
-        $this->conf       = $conf;
+    public function __construct($connection, Conf $conf)
+    {
+        parent::__construct($connection, $conf);
 
         $this->buildQuery();
+    }
+
+    protected function getDistinct()
+    {
+        if (isset($this->conf->group)) {
+            return $this->conf->group;
+        }
+
+        return implode(
+            ', ',
+            $this->queryBuilder->getQueryPart('select')
+        );
     }
 
     /**
@@ -101,9 +85,9 @@ class Doctrine implements ConnectionInterface
          * Condition
          */
         if (isset($this->conf->where)) {
-            $wheres = $this->conf->where;
+            $wheres = (array) $this->conf->where;
             foreach ($wheres as $where) {
-                $this->queryBuilder->innandWhere((array) $where);
+                $this->queryBuilder->andWhere($where);
             }
         }
     }
@@ -132,7 +116,7 @@ class Doctrine implements ConnectionInterface
     /**
      * Returns the main query builder
      *
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @return QueryBuilder
      */
     public function getQuery()
     {
@@ -142,18 +126,14 @@ class Doctrine implements ConnectionInterface
     /**
      * Build the filtered query
      *
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @return QueryBuilder
      */
     protected function buildFilteredQuery()
     {
         $queryBuilder = clone $this->queryBuilder;
 
-        $term = $this->driver->getFilterTerm();
-        if (!empty($term)) {
-            $columns = $this->driver->getSearchableColumns();
-            list($where, $order) = $this->search($term, $columns);
-            $queryBuilder->andWhere($where);
-            $queryBuilder->addOrderBy($order, 'DESC');
+        if ($this->search !== null) {
+            $this->buildSearch($queryBuilder);
         }
 
         return $queryBuilder;
@@ -162,19 +142,25 @@ class Doctrine implements ConnectionInterface
     /**
      * Build the data query
      *
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @return QueryBuilder
      */
     public function getDataQuery()
     {
         $queryBuilder = $this->buildFilteredQuery();
 
-        $queryBuilder->setFirstResult($this->driver->offset());
-        $queryBuilder->setMaxResults($this->driver->length());
+        if ($this->offset !== null) {
+            $queryBuilder->setFirstResult($this->offset);
+        }
 
-        $orders = $this->driver->order();
-        foreach ($orders as $order) {
-            list($col, $dir) = $order;
-            $queryBuilder->addOrderBy($col, $dir);
+        if ($this->length !== null) {
+            $queryBuilder->setMaxResults($this->length);
+        }
+
+        if ($this->order !== null) {
+            foreach ($this->order as $order) {
+                list($col, $dir) = $order;
+                $queryBuilder->addOrderBy($col, $dir);
+            }
         }
 
         return $queryBuilder;
@@ -183,13 +169,13 @@ class Doctrine implements ConnectionInterface
     /**
      * Build the count of raw query
      *
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @return QueryBuilder
      */
     public function getCountQuery()
     {
         $queryBuilder = clone $this->queryBuilder;
 
-        $queryBuilder->select('COUNT(DISTINCT ' . $this->conf->group . ')');
+        $queryBuilder->select('COUNT(DISTINCT ' . $this->getDistinct() . ')');
 
         return $queryBuilder;
     }
@@ -197,13 +183,13 @@ class Doctrine implements ConnectionInterface
     /**
      * Build the count of filtered query
      *
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @return QueryBuilder
      */
     public function getFilteredCountQuery()
     {
         $queryBuilder = $this->buildFilteredQuery();
 
-        $queryBuilder->select('COUNT(DISTINCT ' . $this->conf->group . ')');
+        $queryBuilder->select('COUNT(DISTINCT ' . $this->getDistinct() . ')');
 
         return $queryBuilder;
     }
@@ -245,6 +231,22 @@ class Doctrine implements ConnectionInterface
     }
 
     /**
+     * Add the filter to the query corresponding to the search
+     *
+     * @param QueryBuilder $queryBuilder The query builder
+     *
+     * @return QueryBuilder
+     */
+    protected function buildSearch($queryBuilder)
+    {
+        foreach ($this->search as $term => $column) {
+            list($where, $order) = $this->search($term, $column);
+            $queryBuilder->andWhere($where);
+            $queryBuilder->addOrderBy($order, 'DESC');
+        }
+    }
+
+    /**
      * Return the sort elements (WHERE et ORDER BY) for a search request
      *
      * @param string   $term    Term of search
@@ -252,7 +254,7 @@ class Doctrine implements ConnectionInterface
      *
      * @return array
      */
-    public function search($term, $columns)
+    protected function search($term, $columns)
     {
         /*
          * Variable qui contient la chaine de recherche

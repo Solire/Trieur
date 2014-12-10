@@ -1,20 +1,34 @@
 <?php
+namespace Solire\Trieur\test\units;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+use \atoum as Atoum;
+use Solire\Trieur\Trieur as TestClass;
 
-namespace tests\units\solire\trieur;
+use Solire\Conf\Conf;
 
-use \atoum;
-
-/**
- * Description of Trieur
- *
- * @author thansen
- */
-class Trieur extends atoum
+class Trieur extends Atoum
 {
+    public function testConstruct()
+    {
+        $conf = new Conf;
+
+        $this
+            ->exception(function()use($conf){
+                new TestClass($conf);
+            })
+            ->hasMessage('No class for driver class founed or given')
+        ;
+
+        $conf->driver = new Conf;
+        $conf->driver->class = '\Solire\Trieur\Driver\DataTables';
+        $conf->driver->conf = new Conf;
+
+        $conf->columns = new Conf;
+
+        $this
+            ->object(
+                new TestClass($conf)
+            )
+        ;
+    }
 }
