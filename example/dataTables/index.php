@@ -14,9 +14,9 @@
       <table id="demo" class="table-condensed table-striped"></table>
     </div>
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script type="text/javascript" src="bower_components/datatables/media/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="js/dataTables.bootstrap.js"></script>
-    <script type="text/javascript" src="js/main.<?php echo date('YmdHis'); ?>.js"></script>
+    <script type="text/javascript" src="js/main.<?php echo filemtime('js/main.js'); ?>.js"></script>
   </body>
 </html>

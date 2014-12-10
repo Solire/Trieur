@@ -46,9 +46,9 @@ class Doctrine implements ConnectionInterface
     /**
      * Constructor
      *
-     * @param \Doctrine\DBAL\Connection $connection The connection
-     * @param \Solire\Trieur\Driver     $driver     The driver
-     * @param Conf                      $conf       The configuration
+     * @param DoctrineConnection $connection The connection
+     * @param Driver             $driver     The driver
+     * @param Conf               $conf       The configuration
      */
     public function __construct(
         $connection,

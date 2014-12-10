@@ -120,7 +120,9 @@ class Trieur extends \Pimple\Container
                 $this->conf->driver->name
             ];
         } else {
-            $this->conf->driver->class = '\Solire\Trieur\Driver\Driver';
+            throw new \Exception(
+                'No class for driver class founed or given'
+            );
         }
     }
 
