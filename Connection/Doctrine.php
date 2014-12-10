@@ -242,8 +242,10 @@ class Doctrine extends Connection
         foreach ($this->search as $term => $column) {
             list($where, $order) = $this->search($term, $column);
             $queryBuilder->andWhere($where);
-            $queryBuilder->addOrderBy($order, 'DESC');
+            $orderBy[] = $order;
         }
+
+        $queryBuilder->addOrderBy(implode(' +', $order), 'DESC');
     }
 
     /**
