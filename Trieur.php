@@ -251,14 +251,18 @@ class Trieur extends \Pimple\Container
      */
     public function getResponse()
     {
-        $search = $this->driver->getFilterTermByColumns();
-        $this->connection->addSearch($search);
+        $searches = $this->driver->getFilterTermByColumns();
+        if (!empty($searches)) {
+            $this->connection->addSearches($searches);
+        }
 
         $term = $this->driver->getFilterTerm();
-        $columns = $this->driver->getColumns(true, true);
-        $this->connection->addSearch([
-            [$columns, $term]
-        ]);
+        if ($term) {
+            $columns = $this->driver->getColumns(true, true);
+            $this->connection->addSearch([
+                [$columns, $term]
+            ]);
+        }
 
         $this->connection->setLength($this->driver->length());
         $this->connection->setOffset($this->driver->offset());

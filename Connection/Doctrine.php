@@ -251,6 +251,8 @@ class Doctrine extends Connection
      */
     protected function buildSearch($queryBuilder)
     {
+        $orderBy = [];
+
         foreach ($this->searches as $searches) {
             foreach ($searches as $search) {
                 $type = 'text';
@@ -285,7 +287,9 @@ class Doctrine extends Connection
             }
         }
 
-        $queryBuilder->addOrderBy(implode(' +', $orderBy), 'DESC');
+        if (!empty($orderBy)) {
+            $queryBuilder->addOrderBy(implode(' +', $orderBy), 'DESC');
+        }
     }
 
     /**

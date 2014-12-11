@@ -72,14 +72,14 @@ abstract class Connection
     /**
      * Sets the search
      *
-     * @param array $search An array of arrays where the first element is an array of columns or
+     * @param array $searches An array of arrays where the first element is an array of columns or
      * expressions and the second element is an array of terms to look for
      *
      * @return void
      */
-    public function setSearch($search)
+    public function addSearches($searches)
     {
-        $this->searches = $search;
+        $this->searches = array_merge($this->searches, $searches);
     }
 
     /**
