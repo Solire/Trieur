@@ -149,9 +149,13 @@ class DataTables extends Driver
                         $col[1] = '';
                     }
 
-                    $filteredColumns[] = [$connection, $col, 'date-range'];
+                    $filteredColumns[] = [
+                        [$connection, $col, 'date-range']
+                    ];
                 } else {
-                    $filteredColumns[] = [$connection, $term, 'text'];
+                    $filteredColumns[] = [
+                        [$connection, $term, 'text']
+                    ];
                 }
             }
         }
