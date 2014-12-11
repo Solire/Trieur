@@ -10,11 +10,9 @@ More information on documentation:
 [fr] http://docs.atoum.org/fr/chapter3.html#Fichier-de-configuration
 */
 
-use \atoum;
+use \mageekguy\atoum;
 
 $report = $script->addDefaultReport();
-
-// -- LOGO
 
 // This will add the atoum logo before each run.
 //$report->addField(new atoum\report\fields\runner\atoum\logo());
@@ -23,28 +21,19 @@ $report = $script->addDefaultReport();
 $report->addField(new atoum\report\fields\runner\result\logo());
 
 
-// -- CODE COVERAGE SETUP
+// Please replace in next line "Project Name" by your project name and "/path/to/destination/directory" by your destination directory path for html files.
 if (!is_dir(__DIR__ . '/coverage')) {
     mkdir(__DIR__ . '/coverage');
 }
-
-// Please replace in next line "Project Name" by your project name and "/path/to/destination/directory" by your destination directory path for html files.
-$coverageField = new atoum\report\fields\runner\coverage\html('solire\trieur', __DIR__ . '/coverage');
+$coverageField = new atoum\report\fields\runner\coverage\html('Solire\Lib', __DIR__ . '/coverage');
 
 // Please replace in next line http://url/of/web/site by the root url of your code coverage web site.
-$coverageField->setRootUrl('http://localhost/trieur/tests/units/coverage');
+//$coverageField->setRootUrl('http://url/of/web/site');
 
 $report->addField($coverageField);
 
-
-
-
 // Chargement du fichier bootstrap
 $runner->setBootstrapFile(dirname(__FILE__) . '/.bootstrap.atoum.php');
-
-
-
-
 
 /*
 TEST GENERATOR SETUP

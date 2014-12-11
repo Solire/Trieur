@@ -1,9 +1,8 @@
 <?php
-
 namespace Solire\Trieur\Driver;
 
-use \Solire\Trieur\Driver as DriverInterface;
 use Solire\Conf\Conf;
+use Solire\Trieur\Driver;
 
 /**
  * Datatables driver

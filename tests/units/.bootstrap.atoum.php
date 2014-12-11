@@ -12,25 +12,6 @@ More information on documentation:
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-/**
- * Autoload
- * Chargement de classes dynamiquement
- *
- * @param string $name nom de la classe à charger
- *
- * @return void
- */
-function autoload($name)
-{
-    $name = str_replace('solire\\trieur\\', '', $name);
-    $path = __DIR__ . '/../../' . str_replace('\\', '/', $name) . '.php';
-    if (file_exists($path)) {
-        require_once $path;
-    }
-}
-
-spl_autoload_register('autoload');
-
 // Génération d'un dossier temporaires pour les tests
 define('TEST_TMP_DIR', __DIR__ . '/tmp');
 if (!is_dir(TEST_TMP_DIR)) {

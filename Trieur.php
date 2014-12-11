@@ -1,5 +1,4 @@
 <?php
-
 namespace Solire\Trieur;
 
 use Solire\Conf\Conf;
@@ -120,7 +119,9 @@ class Trieur extends \Pimple\Container
                 $this->conf->driver->name
             ];
         } else {
-            $this->conf->driver->class = '\Solire\Trieur\Driver\Driver';
+            throw new \Exception(
+                'No class for driver class founed or given'
+            );
         }
     }
 
@@ -176,7 +177,6 @@ class Trieur extends \Pimple\Container
             $className = $c->conf->connection->class;
             return new $className(
                 $c['connectionModel'],
-                $c->driver,
                 $c->conf->connection->conf
             );
         };
@@ -251,6 +251,13 @@ class Trieur extends \Pimple\Container
      */
     public function getResponse()
     {
+        $term = $this->driver->getFilterTerm();
+        $columns = $this->driver->getSearchableColumns();
+        $this->connection->setSearch([$term => $columns]);
+
+        $this->connection->setLength($this->driver->length());
+        $this->connection->setOffset($this->driver->offset());
+
         return $this->driver->getResponse(
             $this->connection->getData(),
             $this->connection->getCount(),
