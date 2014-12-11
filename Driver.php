@@ -104,18 +104,23 @@ abstract class Driver
     abstract public function order();
 
     /**
+     * Get the column list (all or only the column that can be searched)
+     *
+     * @param bool   $searchable True to return only the searchable columns
+     * @param string $connection If false returns for each column the entire
+     * configuration, if true returns only the connection parameter for the
+     * search
+     *
+     * @return array
+     */
+    abstract public function getColumns($searchable = false, $connection = false);
+
+    /**
      * Return the filter term
      *
      * @return string
      */
     abstract public function getFilterTerm();
-
-    /**
-     * Return the searchable columns
-     *
-     * @return array
-     */
-    abstract public function getSearchableColumns();
 
     /**
      * Return the filter terms for each columns

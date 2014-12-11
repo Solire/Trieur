@@ -1,8 +1,8 @@
 <?php
 namespace Solire\Trieur\Driver;
 
-use Solire\Conf\Conf;
 use Solire\Trieur\Driver;
+use Solire\Conf\Conf;
 
 /**
  * Datatables driver
@@ -22,38 +22,7 @@ class DataTables extends Driver
         return $this->request['search']['value'];
     }
 
-    /**
-     * Return the searchable columns
-     *
-     * @return array
-     */
-    public function getSearchableColumns()
-    {
-        $clientColumns = $this->request['columns'];
-        $serverColumns = $this->columnsByIndex;
 
-        foreach ($serverColumns as $index => $serverColumn) {
-            $column = array_merge((array) $serverColumn, $clientColumns[$index]);
-
-            if ($column['searchable']
-                && $column['filter']
-                && ($column['sql'] || $column['filterSql'])
-            ) {
-                $sql = $column['sql'];
-                if (isset($column['filterSql'])) {
-                    $sql = $column['filterSql'];
-                }
-
-                if (is_array($sql)) {
-                    $searchableColumns = array_merge($filteredColumns, $column['sql']);
-                } else {
-                    $searchableColumns[] = $column['sql'];
-                }
-            }
-        }
-
-        return $searchableColumns;
-    }
 
     /**
      * Determines if a column is searchable and has a search, if so return the
@@ -63,34 +32,77 @@ class DataTables extends Driver
      *
      * @return type
      */
-    protected function getColumnTerm(Conf $column)
+    protected function getColumnTerm($column)
     {
-        $term = $column['search']['value'];
-        if ($term !== ''
-            && $column['searchable']
+        return $column['search']['value'];
+    }
+
+    /**
+     * Check if a column is searchable, if it is then returns the column
+     * expression
+     *
+     * @param array $column The column configuration
+     *
+     * @return string
+     */
+    protected function getColumnFilterConnection($column)
+    {
+        if ($column['searchable']
             && $column['filter']
-            && ($column['sql'] || $column['filterSql'])
         ) {
-            return $term;
+            if (isset($column['filterConnection'])) {
+                return $column['filterConnection'];
+            }
+
+            if (isset($column['connection'])) {
+                return $column['connection'];
+            }
         }
 
         return null;
     }
 
     /**
-     * Return the sql expression
+     * Get the column list (all or only the column that can be searched)
      *
-     * @param Conf $column The column's configuration
+     * @param bool   $searchable True to return only the searchable columns
+     * @param string $connection If false returns for each column the entire
+     * configuration, if true returns only the connection parameter for the
+     * search
      *
-     * @return type
+     * @return array
      */
-    protected function getColumnFilterSql(Conf $column)
+    public function getColumns($searchable = false, $connection = false)
     {
-        $sql = $column['sql'];
-        if (isset($column['filterSql'])) {
-            $sql = $column['filterSql'];
+        $columns = [];
+
+        $clientColumns = null;
+        if (isset($this->request['columns'])) {
+            $clientColumns = $this->request['columns'];
         }
-        return $sql;
+        $serverColumns = $this->columnsByIndex;
+
+        foreach ($serverColumns as $index => $serverColumn) {
+            if ($clientColumns !== null) {
+                $column = array_merge(
+                    (array) $serverColumn,
+                    $clientColumns[$index]
+                );
+            } else {
+                $column = $serverColumn;
+            }
+
+            $filterConnection = $this->getColumnFilterConnection($column);
+            if (!$searchable || $filterConnection !== null) {
+                if ($connection) {
+                    $columns[] = $filterConnection;
+                } else {
+                    $columns[] = $column;
+                }
+            }
+        }
+
+        return $columns;
     }
 
     /**
@@ -100,15 +112,17 @@ class DataTables extends Driver
      */
     public function getFilterTermByColumns()
     {
-        $clientColumns = $this->request['columns'];
-        $serverColumns = $this->columnsByIndex;
+        $filteredColumns = [];
 
-        foreach ($serverColumns as $index => $serverColumn) {
-            $column = array_merge($serverColumn, $clientColumns[$index]);
+        $columns = $this->getColumns(true);
 
-            $term = $this->getTerm($column);
-            if ($term !== null) {
-                $sql = $this->getColumnSql($column);
+        foreach ($columns as $index => $column) {
+            $term = $this->getColumnTerm($column);
+            if ($term !== '') {
+                $connection = $this->getColumnFilterConnection($column);
+                if (!is_array($connection)) {
+                    $connection = [$connection];
+                }
 
                 if (isset($column['filterType'])
                     && $column['filterType'] == 'date-range'
@@ -119,7 +133,7 @@ class DataTables extends Driver
 
                     if (!empty($terms[0])) {
                         /*
-                         * @todo translate from date format sent to sql
+                         * @todo translate from date format sent to connection
                          */
                         $col[0] = $terms[0];
                     } else {
@@ -128,21 +142,16 @@ class DataTables extends Driver
 
                     if (!empty($terms[1])) {
                         /*
-                         * @todo translate from date format sent to sql
+                         * @todo translate from date format sent to connection
                          */
                         $col[1] = $terms[1];
                     } else {
                         $col[1] = '';
                     }
 
-                    $filteredColumns[$sql] = $col;
+                    $filteredColumns[] = [$connection, $col, 'date-range'];
                 } else {
-                    if (!is_array($sql)) {
-                        $sql = [$sql];
-                    }
-                    foreach ($sql as $row) {
-                        $filteredColumns[$row] = $term;
-                    }
+                    $filteredColumns[] = [$connection, $term, 'text'];
                 }
             }
         }
@@ -180,7 +189,7 @@ class DataTables extends Driver
         $orders = [];
         $ordersClient = $this->request['order'];
         foreach ($ordersClient as $order) {
-            $columnName = $this->columnsByIndex[$order['column']]->name;
+            $columnName = $this->columnsByIndex[$order['column']]->connection;
             $dir        = $order['dir'];
 
             $orders[] = [
@@ -190,14 +199,6 @@ class DataTables extends Driver
         }
         return $orders;
     }
-
-    /**
-     * Returns the response
-     *
-     * @param \Solire\Trieur\Connection $connection The data connection
-     *
-     * @return array
-     */
 
     /**
      * Returns the response

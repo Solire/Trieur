@@ -1,14 +1,14 @@
 <?php
-include '../init.php';
+include '../../init.php';
 
-use Solire\Conf\Conf;
+use \Symfony\Component\Yaml\Yaml;
 
 class Config
 {
     public static function run()
     {
         $configPath = 'config/client.json';
-        $array = json_decode(file_get_contents($configPath), true);
+        $array = Yaml::parse($configPath);
         $conf = arrayToConf($array);
 
         $trieur = new \Solire\Trieur\Trieur($conf);

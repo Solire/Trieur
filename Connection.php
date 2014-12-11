@@ -19,19 +19,19 @@ abstract class Connection
     protected $conf = null;
 
     /**
-     * The database doctrine connection
+     * The connection
      *
-     * @var DoctrineConnection
+     * @var mixed
      */
     protected $connection;
 
     /**
-     * An associative array where keys are a sql column or expression and values
-     * are an array of terms to look for
+     * An array of arrays where the first element is an array of columns or
+     * expressions and the second element is an array of terms to look for
      *
      * @var array
      */
-    protected $search = null;
+    protected $searches = [];
 
     /**
      * An associative array where keys are a sql column or expression and values
@@ -39,7 +39,7 @@ abstract class Connection
      *
      * @var array
      */
-    protected $order = null;
+    protected $order = [];
 
     /**
      * Offset of the query
@@ -72,14 +72,28 @@ abstract class Connection
     /**
      * Sets the search
      *
-     * @param array $search An associative array where keys are a sql column or
-     * expression and values are an array of terms to look for
+     * @param array $search An array of arrays where the first element is an array of columns or
+     * expressions and the second element is an array of terms to look for
      *
      * @return void
      */
     public function setSearch($search)
     {
-        $this->search = $search;
+        $this->searches = $search;
+    }
+
+    /**
+     * Add the search
+     *
+     * @param array $search An array where the first element is an array of
+     * columns or expressions and the second element is an array of terms to
+     * look for
+     *
+     * @return void
+     */
+    public function addSearch($search)
+    {
+        $this->searches[] = $search;
     }
 
     /**
@@ -104,6 +118,32 @@ abstract class Connection
     public function setLength($length)
     {
         $this->length = $length;
+    }
+
+    /**
+     * Sets the order
+     *
+     * @param array $order An array of two elements array where first element
+     * is a column or expression and second element is a string 'ASC' or 'DESC'
+     *
+     * @return void
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+    }
+
+    /**
+     * Add an order
+     *
+     * @param string $column    A column
+     * @param string $direction A direction string 'ASC' or 'DESC'
+     *
+     * @return void
+     */
+    public function addOrder($column, $direction = 'ASC')
+    {
+        $this->order[] = [$column, $direction];
     }
 
     /**

@@ -1,10 +1,10 @@
 <?php
 namespace Solire\Trieur\Connection;
 
+use Solire\Trieur\Connection;
 use Solire\Conf\Conf;
 use Doctrine\DBAL\Connection as DoctrineConnection;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Solire\Trieur\Connection;
 
 /**
  * Doctrine connection wrapper
@@ -14,6 +14,13 @@ use Solire\Trieur\Connection;
  */
 class Doctrine extends Connection
 {
+    /**
+     * The connection
+     *
+     * @var DoctrineConnection
+     */
+    protected $connection;
+
     /**
      * The main doctrine query builder (cloned for each query)
      *
@@ -137,7 +144,7 @@ class Doctrine extends Connection
     {
         $queryBuilder = clone $this->queryBuilder;
 
-        if ($this->search !== null) {
+        if ($this->searches !== null) {
             $this->buildSearch($queryBuilder);
         }
 
@@ -244,10 +251,38 @@ class Doctrine extends Connection
      */
     protected function buildSearch($queryBuilder)
     {
-        foreach ($this->search as $term => $column) {
-            list($where, $order) = $this->search($term, $column);
-            $queryBuilder->andWhere($where);
-            $orderBy[] = $order;
+        foreach ($this->searches as $searches) {
+            foreach ($searches as $search) {
+                $type = 'text';
+                if (count($search) == 3) {
+                    list($columns, $terms, $type) = $search;
+                } else {
+                    list($columns, $terms) = $search;
+                }
+
+                if ($type == 'text') {
+                    foreach ((array) $terms as $term) {
+                        list($where, $order) = $this->search($term, $columns);
+                        $orderBy[] = $order;
+                    }
+
+                    $queryBuilder->andWhere($where);
+                }
+
+                if ($type == 'date-range') {
+                    list($from, $to) = $terms;
+                    foreach ($columns as $column) {
+                        if ($from) {
+                            $where = $column . ' >= ' . $this->connection->quote($from);
+                            $queryBuilder->andWhere($where);
+                        }
+                        if ($to) {
+                            $where = $column . ' <= ' . $this->connection->quote($to);
+                            $queryBuilder->andWhere($where);
+                        }
+                    }
+                }
+            }
         }
 
         $queryBuilder->addOrderBy(implode(' +', $orderBy), 'DESC');
