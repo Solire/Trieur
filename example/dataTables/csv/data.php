@@ -1,14 +1,14 @@
 <?php
-include '../init.php';
+include '../../init.php';
 
-use Solire\Conf\Conf;
+use \Symfony\Component\Yaml\Yaml;
 
 class Data
 {
     public static function run()
     {
-        $configPath = 'config/client.json';
-        $array = json_decode(file_get_contents($configPath), true);
+        $configPath = 'config/client.yml';
+        $array = Yaml::parse($configPath);
         $conf = arrayToConf($array);
 
         $configDbPath = 'config/connection.ini';
