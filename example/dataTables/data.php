@@ -27,11 +27,6 @@ class Data
     }
 }
 
-try {
-    $response = Data::run();
-    header('Content-type: application/json');
-    echo json_encode($response);
-} catch (\Exception $ex) {
-    header('Content-type: text/html; charset: utf-8');
-    echo '<pre>' . print_r($ex, true) . '</pre>';
-}
+$response = Data::run();
+header('Content-type: application/json');
+echo json_encode($response);

@@ -11,13 +11,18 @@ set_error_handler(function($errno, $errstr, $errfile, $errline){
 
 require __DIR__ . '/autoload.php';
 
-use \Whoops\Run;
-use \Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Handler\JsonResponseHandler;
 
 $run = new Run;
 
 $handler = new PrettyPageHandler;
 $run->pushHandler($handler);
+
+$handler = new JsonResponseHandler;
+$run->pushHandler($handler);
+
 $run->register();
 
 /**

@@ -58,9 +58,8 @@ abstract class Connection
     /**
      * Constructor
      *
-     * @param mixed                 $connection The connection
-     * @param \Solire\Trieur\Driver $driver     The driver
-     * @param Conf                  $conf       The configuration
+     * @param mixed $connection The connection
+     * @param Conf  $conf       The configuration
      */
     public function __construct(
         $connection,

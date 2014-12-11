@@ -34,6 +34,11 @@ class Doctrine extends Connection
         $this->buildQuery();
     }
 
+    /**
+     * Returns the sql expression to determinate the distincts numbers of lines
+     *
+     * @return string
+     */
     protected function getDistinct()
     {
         if (isset($this->conf->group)) {
@@ -245,7 +250,7 @@ class Doctrine extends Connection
             $orderBy[] = $order;
         }
 
-        $queryBuilder->addOrderBy(implode(' +', $order), 'DESC');
+        $queryBuilder->addOrderBy(implode(' +', $orderBy), 'DESC');
     }
 
     /**
