@@ -1,17 +1,18 @@
 <?php
 include '../../init.php';
 
-use \Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Yaml;
+use Solire\Trieur\Trieur;
 
 class Config
 {
     public static function run()
     {
-        $configPath = 'config/client.json';
+        $configPath = 'config/client.yml';
         $array = Yaml::parse($configPath);
         $conf = arrayToConf($array);
 
-        $trieur = new \Solire\Trieur\Trieur($conf);
+        $trieur = new Trieur($conf);
 
         return $trieur->getDriver()->getJsConfig();
     }

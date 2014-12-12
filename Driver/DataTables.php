@@ -204,6 +204,25 @@ class DataTables extends Driver
         return $orders;
     }
 
+    protected function formateData(array $data)
+    {
+        $formatedData = [];
+
+        foreach ($data as $row) {
+            $formatedRow = [];
+            foreach ($this->columnsByIndex as $index => $column) {
+                if (isset($row[$column->name])) {
+                    $formatedRow[$column->name] = $row[$column->name];
+                } else {
+                    $formatedRow[$column->name] = $row[$index];
+                }
+            }
+            $formatedData[] = $formatedRow;
+        }
+
+        return $formatedData;
+    }
+
     /**
      * Returns the response
      *
@@ -218,7 +237,7 @@ class DataTables extends Driver
     public function getResponse(array $data, $count, $filteredCount)
     {
         return [
-            'data' => $data,
+            'data' => $this->formateData($data),
             'recordsTotal' => $count,
             'recordsFiltered' => $filteredCount,
         ];

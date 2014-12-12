@@ -254,6 +254,7 @@ class Doctrine extends Connection
         $orderBy = [];
 
         foreach ($this->searches as $searches) {
+            $where = [];
             foreach ($searches as $search) {
                 $type = 'text';
                 if (count($search) == 3) {
@@ -263,28 +264,37 @@ class Doctrine extends Connection
                 }
 
                 if ($type == 'text') {
-                    foreach ((array) $terms as $term) {
-                        list($where, $order) = $this->search($term, $columns);
-                        $orderBy[] = $order;
+                    if (is_array($terms)) {
+                        $term = implode(' ', $terms);
+                    } else {
+                        $term = $terms;
                     }
 
-                    $queryBuilder->andWhere($where);
+                    list($cond, $order) = $this->search($term, $columns);
+
+                    $orderBy[] = $order;
+                    $where[] = $cond;
                 }
 
                 if ($type == 'date-range') {
                     list($from, $to) = $terms;
                     foreach ($columns as $column) {
+                        $conds = [];
+
                         if ($from) {
-                            $where = $column . ' >= ' . $this->connection->quote($from);
-                            $queryBuilder->andWhere($where);
+                            $conds[] = $column . ' >= ' . $this->connection->quote($from);
                         }
                         if ($to) {
-                            $where = $column . ' <= ' . $this->connection->quote($to);
+                            $conds[] = $column . ' <= ' . $this->connection->quote($to);
                             $queryBuilder->andWhere($where);
                         }
+
+                        $where[] = implode(' AND ', $conds);
                     }
                 }
             }
+
+            $queryBuilder->andWhere(implode(' OR ', $where));
         }
 
         if (!empty($orderBy)) {

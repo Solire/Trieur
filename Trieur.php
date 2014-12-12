@@ -46,6 +46,7 @@ class Trieur extends \Pimple\Container
      */
     private static $driverMap = [
         'dataTables' => '\Solire\Trieur\Driver\DataTables',
+        'csv' => '\Solire\Trieur\Driver\Csv',
     ];
 
     /**
@@ -56,6 +57,7 @@ class Trieur extends \Pimple\Container
      */
     private static $connectionMap = [
         'doctrine' => '\Solire\Trieur\Connection\Doctrine',
+        'csv' => '\Solire\Trieur\Connection\Csv',
     ];
 
     /**

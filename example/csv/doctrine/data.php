@@ -21,7 +21,6 @@ class Data
         $doctrineConnection = DriverManager::getConnection($configDb);
 
         $trieur = new Trieur($conf, $doctrineConnection);
-        $trieur->setRequest($_POST);
 
         $response = $trieur->getResponse();
 
@@ -30,5 +29,6 @@ class Data
 }
 
 $response = Data::run();
-header('Content-type: application/json');
-echo json_encode($response);
+header('Content-type: application/vnd.ms-excel');
+header('Content-disposition: attachment; filename="clients.csv"');
+echo ($response);
