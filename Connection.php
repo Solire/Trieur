@@ -19,6 +19,13 @@ abstract class Connection
     protected $conf = null;
 
     /**
+     * The columns configuration
+     *
+     * @var Conf
+     */
+    protected $columns = null;
+
+    /**
      * The connection
      *
      * @var mixed
@@ -60,13 +67,16 @@ abstract class Connection
      *
      * @param mixed $connection The connection
      * @param Conf  $conf       The configuration
+     * @param Conf  $columns    The columns configuration
      */
     public function __construct(
         $connection,
-        Conf $conf
+        Conf $conf,
+        Conf $columns
     ) {
         $this->connection = $connection;
         $this->conf       = $conf;
+        $this->columns    = $columns;
     }
 
     /**

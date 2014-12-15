@@ -33,10 +33,14 @@ class Doctrine extends Connection
      *
      * @param DoctrineConnection $connection The connection
      * @param Conf               $conf       The configuration
+     * @param Conf               $columns    The columns configuration
      */
-    public function __construct($connection, Conf $conf)
-    {
-        parent::__construct($connection, $conf);
+    public function __construct(
+        DoctrineConnection $connection,
+        Conf $conf,
+        Conf $columns
+    ) {
+        parent::__construct($connection, $conf, $columns);
 
         $this->buildQuery();
     }

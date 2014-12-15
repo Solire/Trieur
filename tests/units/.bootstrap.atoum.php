@@ -17,3 +17,25 @@ define('TEST_TMP_DIR', __DIR__ . '/tmp');
 if (!is_dir(TEST_TMP_DIR)) {
     mkdir(TEST_TMP_DIR);
 }
+
+/**
+ * Converts an array to a Conf object
+ *
+ * @param array $array
+ *
+ * @return \Solire\Conf\Conf
+ * @todo the Conf library will evolve
+ */
+function arrayToConf(array $array)
+{
+    $conf = new Solire\Conf\Conf();
+    foreach ($array as $key => $value) {
+        if (is_array($value)) {
+            $conf->set(arrayToConf($value), $key);
+        } else {
+            $conf->set($value, $key);
+        }
+    }
+    return $conf;
+}
+

@@ -179,7 +179,8 @@ class Trieur extends \Pimple\Container
             $className = $c->conf->connection->class;
             return new $className(
                 $c['connectionModel'],
-                $c->conf->connection->conf
+                $c->conf->connection->conf,
+                $c->conf->columns
             );
         };
     }
