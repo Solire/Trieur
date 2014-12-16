@@ -31,4 +31,4 @@ class Data
 $response = Data::run();
 header('Content-type: application/vnd.ms-excel');
 header('Content-disposition: attachment; filename="clients.csv"');
-echo ($response);
+echo $response;

@@ -68,7 +68,7 @@ class Csv extends Atoum
                 ['6', 'c', '5', 'julie'],
             ])
 
-            ->and($c->addOrder('1', 'ASC'))
+            ->and($c->addOrder('1', 'asc'))
             ->array($c->getData())
             ->isEqualTo([
                 ['1', 'a', '3', 'thomas'],
@@ -79,7 +79,7 @@ class Csv extends Atoum
                 ['3', 'z', '2', 'jérôme'],
             ])
 
-            ->and($c->addOrder('3', 'ASC'))
+            ->and($c->addOrder('3', 'asc'))
             ->array($c->getData())
             ->isEqualTo([
                 ['1', 'a', '3', 'thomas'],

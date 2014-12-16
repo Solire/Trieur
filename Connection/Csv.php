@@ -22,11 +22,14 @@ class Csv extends Connection
     protected $md5 = null;
 
     /**
+     * Constructeur
      *
-     * @param type $connection
-     * @param Conf $conf
-     * @param Conf $columns
-     * @throws Exception
+     * @param string $connection Chemin du fichier csv
+     * @param Conf   $conf       Configuration for the csv parse (length,
+     * delimiter, enclosure)
+     * @param Conf   $columns    Configuration des colonnes
+     *
+     * @throws Exception Si le fichier source n'existe pas ou n'est pas lisible
      */
     public function __construct($connection, Conf $conf, Conf $columns)
     {
@@ -51,38 +54,70 @@ class Csv extends Connection
         parent::__construct($connection, $conf, $columns);
     }
 
+    /**
+     * Return the total of available lines
+     *
+     * @return int Total number
+     */
     public function getCount()
     {
-        $this->read();
+        $this->parse();
 
         return $this->count;
     }
 
+    /**
+     * Return the total of available lines filtered by the current search
+     *
+     * @return int Total number
+     */
     public function getFilteredCount()
     {
-        $this->read();
+        $this->parse();
 
         return $this->filteredCount;
     }
 
+    /**
+     * Returns the data filtered by the current search
+     *
+     * @return mixed
+     */
     public function getData()
     {
-        $this->read();
+        $this->parse();
 
         return $this->data;
     }
 
+    /**
+     * Add a row to the data following the defined orders
+     *
+     * @param array $newRow The row
+     *
+     * @return void
+     */
     protected function addToEligible($newRow)
     {
+        $newOffset = count($this->data);
         foreach ($this->data as $offset => $row) {
-            if ($this->inferieur($newRow, $row)) {
-                return $this->insertToEligible($newRow, $offset);
+            if ($this->lowerThan($newRow, $row)) {
+                $newOffset = $offset;
+                break;
             }
         }
 
-        return $this->insertToEligible($newRow, count($this->data));
+        $this->insertToEligible($newRow, $newOffset);
     }
 
+    /**
+     * Inserts a row in the data at a defined offset
+     *
+     * @param array $row    The row
+     * @param int   $offset The offset
+     *
+     * @return void
+     */
     protected function insertToEligible($row, $offset)
     {
         $this->data = array_merge(
@@ -92,7 +127,17 @@ class Csv extends Connection
         );
     }
 
-    protected function inferieur($row1, $row2)
+    /**
+     * Compare two rows of data
+     *
+     * @param type $row1 The first row
+     * @param type $row2 The second row
+     *
+     * @return bool Returns true if $row1 is less than $row2,
+     * false if $row1 is greater or equal than $row2, following the defined
+     * orders
+     */
+    protected function lowerThan($row1, $row2)
     {
         if (empty($this->order)) {
             return false;
@@ -101,21 +146,28 @@ class Csv extends Connection
         foreach ($this->order as $order) {
             list($col, $dir) = $order;
 
-            if ($row1[$col] === $row2[$col]) {
+            $test = strnatcasecmp($row1[$col], $row2[$col]);
+
+            if ($test == 0) {
                 continue;
             }
 
-            $test = $row1[$col] < $row2[$col];
-
-            if ($dir == 'ASC') {
-                return $test;
+            if (strtolower($dir) == 'asc') {
+                return $test < 0;
             }
 
-            return !$test;
+            return $test > 0;
         }
+
+        return false;
     }
 
-    protected function read()
+    /**
+     * Parses the csv file, and build the data array
+     *
+     * @return void
+     */
+    protected function parse()
     {
         $currentMd5 = md5(serialize([
             $this->searches,
@@ -153,6 +205,13 @@ class Csv extends Connection
         );
     }
 
+    /**
+     * Checks if a row follows the defined searches
+     *
+     * @param type $row The row
+     *
+     * @return boolean
+     */
     protected function search($row)
     {
         if (empty($this->searches)) {
@@ -172,6 +231,14 @@ class Csv extends Connection
         return true;
     }
 
+    /**
+     * Check if a row follows a search
+     *
+     * @param array $row    The row
+     * @param array $search The search
+     *
+     * @return bool
+     */
     protected function processSearch($row, $search)
     {
         $type = 'text';

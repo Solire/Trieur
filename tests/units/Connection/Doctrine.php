@@ -42,8 +42,10 @@ class Doctrine extends Atoum
         $conf->from->name = 'tt';
         $conf->from->alias = 't';
 
+        $columns = new Conf;
+
         $this
-            ->if($c = new TestClass($connection, $conf))
+            ->if($c = new TestClass($connection, $conf, $columns))
                 ->object($c)
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
@@ -87,8 +89,10 @@ class Doctrine extends Atoum
         $conf->innerJoin[0]->alias = 'u';
         $conf->innerJoin[0]->on = 'u.c = t.v';
 
+        $columns = new Conf;
+
         $this
-            ->if($c = new TestClass($connection, $conf))
+            ->if($c = new TestClass($connection, $conf, $columns))
                 ->object($c)
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')

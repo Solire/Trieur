@@ -22,8 +22,6 @@ class DataTables extends Driver
         return $this->request['search']['value'];
     }
 
-
-
     /**
      * Determines if a column is searchable and has a search, if so return the
      * corresponding term
@@ -129,24 +127,17 @@ class DataTables extends Driver
                 ) {
                     $terms = explode('~', $term);
 
-                    $col = [];
+                    $col = [
+                        '',
+                        '',
+                    ];
 
                     if (!empty($terms[0])) {
-                        /*
-                         * @todo translate from date format sent to connection
-                         */
                         $col[0] = $terms[0];
-                    } else {
-                        $col[0] = '';
                     }
 
                     if (!empty($terms[1])) {
-                        /*
-                         * @todo translate from date format sent to connection
-                         */
                         $col[1] = $terms[1];
-                    } else {
-                        $col[1] = '';
                     }
 
                     $filteredColumns[] = [
@@ -191,6 +182,11 @@ class DataTables extends Driver
     public function order()
     {
         $orders = [];
+
+        if (!isset($this->request['order'])) {
+            return $orders;
+        }
+
         $ordersClient = $this->request['order'];
         foreach ($ordersClient as $order) {
             $columnName = $this->columnsByIndex[$order['column']]->connection;
@@ -204,6 +200,13 @@ class DataTables extends Driver
         return $orders;
     }
 
+    /**
+     * Formate the data received from the connection
+     *
+     * @param array $data The data received from the connection
+     *
+     * @return array
+     */
     protected function formateData(array $data)
     {
         $formatedData = [];
@@ -214,7 +217,7 @@ class DataTables extends Driver
                 if (isset($row[$column->name])) {
                     $formatedRow[$column->name] = $row[$column->name];
                 } else {
-                    $formatedRow[$column->name] = $row[$index];
+                    $formatedRow[$column->name] = $row[$column->connection];
                 }
             }
             $formatedData[] = $formatedRow;
@@ -247,6 +250,8 @@ class DataTables extends Driver
      * Return the jquery dataTables columns configuration array
      *
      * @return array
+     * @link http://datatables.net/reference/option/#Columns
+     * official documentation
      */
     public function getJsColsConfig()
     {

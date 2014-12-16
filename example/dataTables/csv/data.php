@@ -28,5 +28,6 @@ class Data
 }
 
 $response = Data::run();
+//print_r($response);
 header('Content-type: application/json');
 echo json_encode($response);
