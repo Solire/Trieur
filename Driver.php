@@ -1,6 +1,7 @@
 <?php
 namespace Solire\Trieur;
 
+use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 
 /**
@@ -12,25 +13,18 @@ use Solire\Conf\Conf;
 abstract class Driver
 {
     /**
-     * List of columns with name index
-     *
-     * @var array
-     */
-    protected $columnsByName = [];
-
-    /**
-     * List of columns with numeric index
-     *
-     * @var array
-     */
-    protected $columnsByIndex = [];
-
-    /**
      * The configuration
      *
      * @var Config
      */
     protected $config;
+
+    /**
+     * The configuration
+     *
+     * @var Columns
+     */
+    protected $columns;
 
     /**
      * The request
@@ -45,10 +39,10 @@ abstract class Driver
      * @param Conf $config  The driver configuration
      * @param Conf $columns The columns configuration
      */
-    public function __construct(Conf $config, Conf $columns)
+    public function __construct(Conf $config, Columns $columns)
     {
         $this->config = $config;
-        $this->setColumns($columns);
+        $this->columns = $columns;
     }
 
     /**
@@ -61,25 +55,6 @@ abstract class Driver
     public function setRequest($request)
     {
         $this->request = $request;
-    }
-
-    /**
-     * Set the columns
-     *
-     * @param Conf $columns The columns list
-     *
-     * @return void
-     */
-    protected function setColumns(Conf $columns)
-    {
-        $index = 0;
-        foreach ($columns as $name => $column) {
-            $column->name = $name;
-            $this->columnsByIndex[$index] = $column;
-            $this->columnsByName[$name] = $column;
-
-            $index++;
-        }
     }
 
     /**
@@ -140,5 +115,5 @@ abstract class Driver
      *
      * @return array
      */
-    abstract public function getResponse(array $data, $count, $filteredCount);
+    abstract public function getResponse(array $data, $count = null, $filteredCount = null);
 }

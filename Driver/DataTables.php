@@ -43,17 +43,17 @@ class DataTables extends Driver
      *
      * @return string
      */
-    protected function getColumnFilterConnection($column)
+    protected function getColumnSourceFilter($column)
     {
         if ($column['searchable']
             && $column['filter']
         ) {
-            if (isset($column['filterConnection'])) {
-                return $column['filterConnection'];
+            if (isset($column['sourceFilter'])) {
+                return $column['sourceFilter'];
             }
 
-            if (isset($column['connection'])) {
-                return $column['connection'];
+            if (isset($column['source'])) {
+                return $column['source'];
             }
         }
 
@@ -64,13 +64,12 @@ class DataTables extends Driver
      * Get the column list (all or only the column that can be searched)
      *
      * @param bool   $searchable True to return only the searchable columns
-     * @param string $connection If false returns for each column the entire
-     * configuration, if true returns only the connection parameter for the
-     * search
+     * @param string $source     If false returns for each column the entire
+     * configuration, if true returns only the source parameter for the search
      *
      * @return array
      */
-    public function getColumns($searchable = false, $connection = false)
+    public function getColumns($searchable = false, $source = false)
     {
         $columns = [];
 
@@ -78,9 +77,8 @@ class DataTables extends Driver
         if (isset($this->request['columns'])) {
             $clientColumns = $this->request['columns'];
         }
-        $serverColumns = $this->columnsByIndex;
 
-        foreach ($serverColumns as $index => $serverColumn) {
+        foreach ($this->columns as $index => $serverColumn) {
             if ($clientColumns !== null) {
                 $column = array_merge(
                     (array) $serverColumn,
@@ -90,9 +88,9 @@ class DataTables extends Driver
                 $column = $serverColumn;
             }
 
-            $filterConnection = $this->getColumnFilterConnection($column);
+            $filterConnection = $this->getColumnSourceFilter($column);
             if (!$searchable || $filterConnection !== null) {
-                if ($connection) {
+                if ($source) {
                     $columns[] = $filterConnection;
                 } else {
                     $columns[] = $column;
@@ -117,9 +115,9 @@ class DataTables extends Driver
         foreach ($columns as $index => $column) {
             $term = $this->getColumnTerm($column);
             if ($term !== '') {
-                $connection = $this->getColumnFilterConnection($column);
-                if (!is_array($connection)) {
-                    $connection = [$connection];
+                $sourceFilter = $this->getColumnSourceFilter($column);
+                if (!is_array($sourceFilter)) {
+                    $sourceFilter = [$sourceFilter];
                 }
 
                 if (isset($column['filterType'])
@@ -141,11 +139,11 @@ class DataTables extends Driver
                     }
 
                     $filteredColumns[] = [
-                        [$connection, $col, 'date-range']
+                        [$sourceFilter, $col, 'date-range']
                     ];
                 } else {
                     $filteredColumns[] = [
-                        [$connection, $term, 'text']
+                        [$sourceFilter, $term, 'text']
                     ];
                 }
             }
@@ -189,41 +187,12 @@ class DataTables extends Driver
 
         $ordersClient = $this->request['order'];
         foreach ($ordersClient as $order) {
-            $columnName = $this->columnsByIndex[$order['column']]->connection;
-            $dir        = $order['dir'];
-
             $orders[] = [
-                $columnName,
-                $dir,
+                $order['column'],
+                $order['dir'],
             ];
         }
         return $orders;
-    }
-
-    /**
-     * Formate the data received from the connection
-     *
-     * @param array $data The data received from the connection
-     *
-     * @return array
-     */
-    protected function formateData(array $data)
-    {
-        $formatedData = [];
-
-        foreach ($data as $row) {
-            $formatedRow = [];
-            foreach ($this->columnsByIndex as $index => $column) {
-                if (isset($row[$column->name])) {
-                    $formatedRow[$column->name] = $row[$column->name];
-                } else {
-                    $formatedRow[$column->name] = $row[$column->connection];
-                }
-            }
-            $formatedData[] = $formatedRow;
-        }
-
-        return $formatedData;
     }
 
     /**
@@ -237,10 +206,10 @@ class DataTables extends Driver
      *
      * @return array
      */
-    public function getResponse(array $data, $count, $filteredCount)
+    public function getResponse(array $data, $count = null, $filteredCount = null)
     {
         return [
-            'data' => $this->formateData($data),
+            'data' => $data,
             'recordsTotal' => $count,
             'recordsFiltered' => $filteredCount,
         ];
@@ -256,8 +225,7 @@ class DataTables extends Driver
     public function getJsColsConfig()
     {
         $cols = [];
-        $columns = $this->columnsByIndex;
-        foreach ($columns as $ii => $col) {
+        foreach ($this->columns as $ii => $col) {
             $dCol = [
                 'orderable'     => (bool) $col->sort,
                 'searchable'    => (bool) $col->filter,
@@ -343,6 +311,7 @@ class DataTables extends Driver
      * The jquery dataTables configuration array
      *
      * @return array
+     * @link http://datatables.net/reference/option/
      */
     public function getJsConfig()
     {
@@ -362,6 +331,35 @@ class DataTables extends Driver
             'dom'        => $this->config->dom,
             'language'   => $this->getJsLanguageConfig(),
         ];
+
+        return $config;
+    }
+
+    /**
+     * The Yadc pluggin configuration array
+     *
+     * @return array
+     * @link https://github.com/vedmack/yadcf
+     */
+    public function getYadcfConfig()
+    {
+        $config = [];
+
+        foreach ($this->columns as $index => $column) {
+            if (!$column->filter) {
+                continue;
+            }
+
+            $filterType = 'text';
+            if (isset($column->filterType)) {
+                $filterType = $column->filterType;
+            }
+
+            $config[] = [
+                'column_number' => $index,
+                'filter_type' => $filterType
+            ];
+        }
 
         return $config;
     }

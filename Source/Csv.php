@@ -1,7 +1,8 @@
 <?php
-namespace Solire\Trieur\Connection;
+namespace Solire\Trieur\Source;
 
-use Solire\Trieur\Connection;
+use Solire\Trieur\Source;
+use \Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 use Exception;
 
@@ -11,8 +12,10 @@ use Exception;
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Csv extends Connection
+class Csv extends Source
 {
+    protected $handle = null;
+
     protected $count = 0;
 
     protected $filteredCount = 0;
@@ -24,14 +27,14 @@ class Csv extends Connection
     /**
      * Constructeur
      *
-     * @param string $connection Chemin du fichier csv
-     * @param Conf   $conf       Configuration for the csv parse (length,
+     * @param string  $connection Chemin du fichier csv
+     * @param Conf    $conf       Configuration for the csv parse (length,
      * delimiter, enclosure)
-     * @param Conf   $columns    Configuration des colonnes
+     * @param Columns $columns    Configuration des colonnes
      *
      * @throws Exception Si le fichier source n'existe pas ou n'est pas lisible
      */
-    public function __construct($connection, Conf $conf, Conf $columns)
+    public function __construct($connection, Conf $conf, Columns $columns)
     {
         if (!file_exists($connection)) {
             throw new Exception('No csv file founed : "' . $connection . '"');
@@ -52,6 +55,43 @@ class Csv extends Connection
         }
 
         parent::__construct($connection, $conf, $columns);
+
+        $this->handle();
+    }
+
+    /**
+     * Opens the csv file
+     *
+     * @return void
+     */
+    protected function handle()
+    {
+        $this->handle = fopen($this->connection, 'r');
+    }
+
+    /**
+     * Fetches a line from csv file
+     *
+     * @return array
+     */
+    protected function fetch()
+    {
+        return fgetcsv(
+            $this->handle,
+            $this->conf->length,
+            $this->conf->delimiter,
+            $this->conf->enclosure
+        );
+    }
+
+    /**
+     * Closes the handle to the csv file
+     *
+     * @return void
+     */
+    protected function close()
+    {
+        fclose($this->handle);
     }
 
     /**
@@ -99,6 +139,8 @@ class Csv extends Connection
      */
     protected function addToEligible($newRow)
     {
+        $newRow = $this->formateRow($newRow);
+
         $newOffset = count($this->data);
         foreach ($this->data as $offset => $row) {
             if ($this->lowerThan($newRow, $row)) {
@@ -139,14 +181,17 @@ class Csv extends Connection
      */
     protected function lowerThan($row1, $row2)
     {
-        if (empty($this->order)) {
+        if (empty($this->orders)) {
             return false;
         }
 
-        foreach ($this->order as $order) {
-            list($col, $dir) = $order;
+        foreach ($this->orders as $order) {
+            list($column, $dir) = $order;
 
-            $test = strnatcasecmp($row1[$col], $row2[$col]);
+            $test = strnatcasecmp(
+                $row1[$column->name],
+                $row2[$column->name]
+            );
 
             if ($test == 0) {
                 continue;
@@ -171,7 +216,7 @@ class Csv extends Connection
     {
         $currentMd5 = md5(serialize([
             $this->searches,
-            $this->order,
+            $this->orders,
             $this->offset,
             $this->length,
         ]));
@@ -181,22 +226,19 @@ class Csv extends Connection
         }
 
         $this->md5 = $currentMd5;
+        $this->count = 0;
+        $this->filteredCount = 0;
 
         $this->data = [];
-        $handle = fopen($this->connection, 'r');
-        while ($row = fgetcsv(
-                $handle,
-                $this->conf->length,
-                $this->conf->delimiter,
-                $this->conf->enclosure
-            )
-        ) {
+        while ($row = $this->fetch()) {
             if ($this->search($row)) {
                 $this->addToEligible($row);
                 $this->filteredCount++;
             }
             $this->count++;
         }
+
+        $this->close();
 
         $this->data = array_slice(
             $this->data,
@@ -263,10 +305,25 @@ class Csv extends Connection
                     }
                 }
             }
-        } else {
-            return true;
         }
 
         return false;
+    }
+
+    /**
+     * Formates the row
+     *
+     * @param array $row The row
+     *
+     * @return array
+     */
+    protected function formateRow(array $row)
+    {
+        $formatedRow = [];
+        foreach ($this->columns as $column) {
+            $formatedRow[$column->name] =
+                $row[$this->columns->getColumnSource($column)];
+        }
+        return $formatedRow;
     }
 }

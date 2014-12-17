@@ -6,6 +6,9 @@ use Solire\Trieur\Trieur;
 
 class Config
 {
+    public static $jsConfig = null;
+    public static $jsYadcfConfig = null;
+
     public static function run()
     {
         $configPath = 'config/client.yml';
@@ -14,12 +17,14 @@ class Config
 
         $trieur = new Trieur($conf);
 
-        return $trieur->getDriver()->getJsConfig();
+        self::$jsConfig = $trieur->getDriver()->getJsConfig();
+        self::$jsYadcfConfig = $trieur->getDriver()->getYadcfConfig();
     }
 }
 
 $jsConfig = Config::run();
 header('Content-type: application/json');
 echo json_encode([
-    'config' => $jsConfig,
+    'config' => Config::$jsConfig,
+    'yadcfConfig' => Config::$jsYadcfConfig,
 ]);

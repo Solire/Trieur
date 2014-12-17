@@ -16,7 +16,7 @@ driver:
     defaultSort:
     - [0, asc]
 
-connection:
+source:
   name: doctrine
   conf:
     select:
@@ -56,33 +56,33 @@ columns:
     label: Société
     filter: 1
     sort: 1
-    connection: c.societe
+    source: c.societe
   email:
     label: Email
-    filter: true
-    sort: true
-    connection: c.email
+    filter: 1
+    sort: 1
+    source: c.email
   tel:
     label: Téléphone
-    filter: true
-    sort: true
-    connection: a.tel1
+    filter: 1
+    sort: 1
+    source: a.tel1
   nom:
     label: Nom
-    filter: true
-    sort: true
-    connection: c.nom
+    filter: 1
+    sort: 1
+    source: c.nom
   prenom:
     label: Prénom
-    filter: true
-    sort: true
-    connection: c.prenom
+    filter: 1
+    sort: 1
+    source: c.prenom
   offre:
     label: Offre
-    filter: false
-    sort: true
-    connection: offre
+    filter: 0
+    sort: 1
+    source: offre
   adresse:
     label: Adresse
-    filter: false
-    sort: false
+    filter: 0
+    sort: 0

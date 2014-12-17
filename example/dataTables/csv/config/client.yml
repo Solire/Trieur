@@ -16,7 +16,7 @@ driver:
     defaultSort:
     - [0, ASC]
 
-connection:
+source:
   name: csv
   conf:
     test: test
@@ -35,34 +35,34 @@ columns:
     label: Société
     filter: 1
     sort: 1
-    connection: 0
+    source: 0
   email:
     label: Email
-    filter: true
-    sort: true
-    connection: 4
+    filter: 1
+    sort: 1
+    source: 4
   tel:
     label: Téléphone
-    filter: true
-    sort: true
-    connection: 5
+    filter: 1
+    sort: 1
+    source: 5
   nom:
     label: Nom
-    filter: true
-    sort: true
-    connection: 2
+    filter: 1
+    sort: 1
+    source: 2
   prenom:
     label: Prénom
-    filter: true
-    sort: true
-    connection: 3
+    filter: 1
+    sort: 1
+    source: 3
   offre:
     label: Offre
-    filter: false
-    sort: true
-    connection: 6
+    filter: 0
+    sort: 1
+    source: 6
   adresse:
     label: Adresse
-    filter: false
-    sort: false
-    connection: 7
+    filter: 0
+    sort: 0
+    source: 7
