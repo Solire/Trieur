@@ -66,21 +66,6 @@ class Csv extends Driver
     }
 
     /**
-     * Get the column list (all or only the column that can be searched)
-     *
-     * @param bool   $searchable True to return only the searchable columns
-     * @param string $source     If false returns for each column the entire
-     * configuration, if true returns only the source parameter for the
-     * search
-     *
-     * @return array
-     */
-    public function getColumns($searchable = false, $source = false)
-    {
-        return [];
-    }
-
-    /**
      * Return the filter term
      *
      * @return string

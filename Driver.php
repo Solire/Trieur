@@ -20,7 +20,7 @@ abstract class Driver
     protected $config;
 
     /**
-     * The configuration
+     * The columns configuration
      *
      * @var Columns
      */
@@ -77,18 +77,6 @@ abstract class Driver
      * @return mixed
      */
     abstract public function order();
-
-    /**
-     * Get the column list (all or only the column that can be searched)
-     *
-     * @param bool   $searchable True to return only the searchable columns
-     * @param string $connection If false returns for each column the entire
-     * configuration, if true returns only the connection parameter for the
-     * search
-     *
-     * @return array
-     */
-    abstract public function getColumns($searchable = false, $connection = false);
 
     /**
      * Return the filter term

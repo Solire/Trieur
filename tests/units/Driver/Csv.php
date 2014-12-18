@@ -27,8 +27,6 @@ class Csv extends Atoum
         $this
             ->if($c = new TestClass($config, $columns))
             ->and($c->setRequest([]))
-            ->array($c->getColumns())
-                ->isEqualTo([])
             ->array($c->order())
                 ->isEqualTo([])
             ->array($c->getFilterTermByColumns())

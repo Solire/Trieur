@@ -67,14 +67,17 @@ class Columns implements \IteratorAggregate
     /**
      * Get a column attribut
      *
-     * @param string|Conf $index Column's index, name or the column object itself
-     * @param array       $keys  Array of keys of the column configuration, the first founed
+     * @param string|Conf $index        Column's index, name or the column object itself
+     * @param array       $keys         Array of keys of the column configuration, the first founed
      * will be returned
+     * @param string      $defaultValue If no keys where founed, then it returns
+     * this value
      *
      * @return mixed
-     * @throws Exception If none of the keys where founed
+     * @throws Exception If none of the keys where founed, and no defaultValue
+     * specified
      */
-    public function getColumnAttribut($index, array $keys)
+    public function getColumnAttribut($index, array $keys, $defaultValue = null)
     {
         if (is_object($index)) {
             $column = $index;
@@ -88,10 +91,14 @@ class Columns implements \IteratorAggregate
             }
         }
 
-        throw new Exception(
-            'None of these indexes found "' . implode(',', $keys) . '" in the '
-            . 'columns list'
-        );
+        if ($defaultValue === null) {
+            throw new Exception(
+                'None of these indexes found "' . implode(',', $keys) . '" in the '
+                . 'columns list'
+            );
+        }
+
+        return $defaultValue;
     }
 
     /**
@@ -101,7 +108,7 @@ class Columns implements \IteratorAggregate
      * @param string      $key   Key of the column configuration, the first founed
      * will be returned
      *
-     * @return type
+     * @return mixed
      */
     public function getColumnSource($index, $key = null)
     {
@@ -116,11 +123,23 @@ class Columns implements \IteratorAggregate
     }
 
     /**
+     * Return the column source sort parameter
+     *
+     * @param string|Conf $index Column's index, name or the column object itself
+     *
+     * @return mixed
+     */
+    public function getColumnSourceSort($index)
+    {
+        return $this->getColumnSource($index, 'sourceSort');
+    }
+
+    /**
      * Return the column source filter parameter
      *
      * @param string|Conf $index Column's index, name or the column object itself
      *
-     * @return type
+     * @return mixed
      */
     public function getColumnSourceFilter($index)
     {
@@ -128,15 +147,15 @@ class Columns implements \IteratorAggregate
     }
 
     /**
-     * Return the column source sort parameter
+     * Return the column filter_type
      *
      * @param string|Conf $index Column's index, name or the column object itself
      *
-     * @return type
+     * @return string
      */
-    public function getColumnSourceSort($index)
+    public function getColumnSourceFilterType($index)
     {
-        return $this->getColumnSource($index, 'sourceSort');
+        return $this->getColumnAttribut($index, ['sourceFilterType'], 'text');
     }
 
     /**
