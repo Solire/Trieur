@@ -2,10 +2,10 @@ var oTable = null;
 $(function(){
   $.getJSON('config.json', function(response){
     var
-      table = $('#demo'),
-      dataTableConfig = response.config
+      table = $('#demo')
     ;
 
-    Dtable = table.DataTable(dataTableConfig);
+    Dtable = table.DataTable(response.config);
+    yadcf.init(Dtable, response.yadcfConfig);
   });
 });

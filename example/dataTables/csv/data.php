@@ -11,14 +11,14 @@ class Data
         $array = Yaml::parse($configPath);
         $conf = arrayToConf($array);
 
-        $configDbPath = 'config/connection.ini';
-        $configDb = parse_ini_file($configDbPath);
-        $configDb['driverOptions'] = [
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
-        ];
-        $doctrineConnection = \Doctrine\DBAL\DriverManager::getConnection($configDb);
+//        $configDbPath = 'config/connection.ini';
+//        $configDb = parse_ini_file($configDbPath);
+//        $configDb['driverOptions'] = [
+//            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
+//        ];
+//        $doctrineConnection = \Doctrine\DBAL\DriverManager::getConnection($configDb);
 
-        $trieur = new \Solire\Trieur\Trieur($conf, $doctrineConnection);
+        $trieur = new \Solire\Trieur\Trieur($conf, 'data/clients.csv');
         $trieur->setRequest($_POST);
 
         $response = $trieur->getResponse();
@@ -28,5 +28,6 @@ class Data
 }
 
 $response = Data::run();
+//print_r($response);
 header('Content-type: application/json');
 echo json_encode($response);

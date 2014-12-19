@@ -1,7 +1,8 @@
 <?php
-namespace Solire\Trieur\Connection;
+namespace Solire\Trieur\Source;
 
-use Solire\Trieur\Connection;
+use Solire\Trieur\Source;
+use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 use Doctrine\DBAL\Connection as DoctrineConnection;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -12,7 +13,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Doctrine extends Connection
+class Doctrine extends Source
 {
     /**
      * The connection
@@ -33,10 +34,14 @@ class Doctrine extends Connection
      *
      * @param DoctrineConnection $connection The connection
      * @param Conf               $conf       The configuration
+     * @param Columns            $columns    The columns configuration
      */
-    public function __construct($connection, Conf $conf)
-    {
-        parent::__construct($connection, $conf);
+    public function __construct(
+        Conf $conf,
+        Columns $columns,
+        DoctrineConnection $connection
+    ) {
+         parent::__construct($conf, $columns, $connection);
 
         $this->buildQuery();
     }
@@ -168,11 +173,20 @@ class Doctrine extends Connection
             $queryBuilder->setMaxResults($this->length);
         }
 
-        if ($this->order !== null) {
-            foreach ($this->order as $order) {
-                list($col, $dir) = $order;
-                $queryBuilder->addOrderBy($col, $dir);
+        if ($this->orders !== null) {
+            foreach ($this->orders as $order) {
+
+                list($column, $dir) = $order;
+
+                $queryBuilder->addOrderBy(
+                    $this->columns->getColumnSourceSort($column),
+                    $dir
+                );
             }
+        }
+
+        if (isset($this->conf->group)) {
+            $queryBuilder->groupBy($this->conf->group);
         }
 
         return $queryBuilder;
@@ -237,9 +251,11 @@ class Doctrine extends Connection
      */
     public function getData()
     {
-        return $this->getDataQuery()
+        $data = $this->getDataQuery()
             ->execute()
             ->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $data;
     }
 
     /**
@@ -254,6 +270,7 @@ class Doctrine extends Connection
         $orderBy = [];
 
         foreach ($this->searches as $searches) {
+            $where = [];
             foreach ($searches as $search) {
                 $type = 'text';
                 if (count($search) == 3) {
@@ -263,28 +280,37 @@ class Doctrine extends Connection
                 }
 
                 if ($type == 'text') {
-                    foreach ((array) $terms as $term) {
-                        list($where, $order) = $this->search($term, $columns);
-                        $orderBy[] = $order;
+                    if (is_array($terms)) {
+                        $term = implode(' ', $terms);
+                    } else {
+                        $term = $terms;
                     }
 
-                    $queryBuilder->andWhere($where);
+                    list($cond, $order) = $this->search($term, $columns);
+
+                    $orderBy[] = $order;
+                    $where[] = $cond;
                 }
 
                 if ($type == 'date-range') {
                     list($from, $to) = $terms;
                     foreach ($columns as $column) {
+                        $conds = [];
+
                         if ($from) {
-                            $where = $column . ' >= ' . $this->connection->quote($from);
-                            $queryBuilder->andWhere($where);
+                            $conds[] = $column . ' >= ' . $this->connection->quote($from);
                         }
                         if ($to) {
-                            $where = $column . ' <= ' . $this->connection->quote($to);
+                            $conds[] = $column . ' <= ' . $this->connection->quote($to);
                             $queryBuilder->andWhere($where);
                         }
+
+                        $where[] = implode(' AND ', $conds);
                     }
                 }
             }
+
+            $queryBuilder->andWhere(implode(' OR ', $where));
         }
 
         if (!empty($orderBy)) {

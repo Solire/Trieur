@@ -1,6 +1,7 @@
 <?php
 namespace Solire\Trieur;
 
+use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 
 /**
@@ -9,7 +10,7 @@ use Solire\Conf\Conf;
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-abstract class Connection
+abstract class Source
 {
     /**
      * The configuration
@@ -19,11 +20,18 @@ abstract class Connection
     protected $conf = null;
 
     /**
+     * The columns configuration
+     *
+     * @var Columns
+     */
+    protected $columns = null;
+
+    /**
      * The connection
      *
      * @var mixed
      */
-    protected $connection;
+    protected $connection = null;
 
     /**
      * An array of arrays where the first element is an array of columns or
@@ -39,7 +47,7 @@ abstract class Connection
      *
      * @var array
      */
-    protected $order = [];
+    protected $orders = [];
 
     /**
      * Offset of the query
@@ -58,19 +66,36 @@ abstract class Connection
     /**
      * Constructor
      *
-     * @param mixed $connection The connection
-     * @param Conf  $conf       The configuration
+     * @param mixed   $connection The connection
+     * @param Conf    $conf       The configuration
+     * @param Columns $columns    The columns configuration
      */
     public function __construct(
-        $connection,
-        Conf $conf
+        Conf $conf,
+        Columns $columns,
+        $connection = null
     ) {
-        $this->connection = $connection;
         $this->conf       = $conf;
+        $this->columns    = $columns;
+        $this->connection = $connection;
     }
 
     /**
-     * Sets the search
+     * Set the searches
+     *
+     * @param array $searches An array of arrays where the first element is an array of columns or
+     * expressions and the second element is an array of terms to look for
+     *
+     * @return void
+     */
+    public function setSearches($searches)
+    {
+        $this->searches = [];
+        $this->addSearches($searches);
+    }
+
+    /**
+     * Add multiple searches
      *
      * @param array $searches An array of arrays where the first element is an array of columns or
      * expressions and the second element is an array of terms to look for
@@ -123,14 +148,18 @@ abstract class Connection
     /**
      * Sets the order
      *
-     * @param array $order An array of two elements array where first element
+     * @param array $orders An array of two elements array where first element
      * is a column or expression and second element is a string 'ASC' or 'DESC'
      *
      * @return void
      */
-    public function setOrder($order)
+    public function setOrders($orders)
     {
-        $this->order = $order;
+        $this->orders = [];
+        foreach ($orders as $order) {
+            list($column, $dir) = $order;
+            $this->addOrder($column, $dir);
+        }
     }
 
     /**
@@ -143,7 +172,10 @@ abstract class Connection
      */
     public function addOrder($column, $direction = 'ASC')
     {
-        $this->order[] = [$column, $direction];
+        if (!is_object($column)) {
+            $column = $this->columns->get($column);
+        }
+        $this->orders[] = [$column, $direction];
     }
 
     /**

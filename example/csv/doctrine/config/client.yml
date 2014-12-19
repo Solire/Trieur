@@ -3,18 +3,9 @@
 
 # Js Config
 driver:
-  name: dataTables
+  name: csv
   conf:
-    itemName: client
-    itemsName: clients
-    # masculin ou féminin
-    # "e"|""
-    itemGenre:
-    requestUrl: http://localhost/trieur/example/dataTables/doctrine/data.json
-    requestMethod: POST
-    dom: <"H"TClfr>t<"F"ip>
-    defaultSort:
-    - [0, asc]
+    test: test
 
 source:
   name: doctrine

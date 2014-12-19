@@ -1,6 +1,7 @@
 <?php
 namespace Solire\Trieur;
 
+use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 
 /**
@@ -12,25 +13,18 @@ use Solire\Conf\Conf;
 abstract class Driver
 {
     /**
-     * List of columns with name index
-     *
-     * @var array
-     */
-    protected $columnsByName = [];
-
-    /**
-     * List of columns with numeric index
-     *
-     * @var array
-     */
-    protected $columnsByIndex = [];
-
-    /**
      * The configuration
      *
      * @var Config
      */
     protected $config;
+
+    /**
+     * The columns configuration
+     *
+     * @var Columns
+     */
+    protected $columns;
 
     /**
      * The request
@@ -45,10 +39,10 @@ abstract class Driver
      * @param Conf $config  The driver configuration
      * @param Conf $columns The columns configuration
      */
-    public function __construct(Conf $config, Conf $columns)
+    public function __construct(Conf $config, Columns $columns)
     {
         $this->config = $config;
-        $this->setColumns($columns);
+        $this->columns = $columns;
     }
 
     /**
@@ -64,56 +58,25 @@ abstract class Driver
     }
 
     /**
-     * Set the columns
-     *
-     * @param Conf $columns The columns list
-     *
-     * @return void
-     */
-    protected function setColumns(Conf $columns)
-    {
-        $index = 0;
-        foreach ($columns as $name => $column) {
-            $column->name = $name;
-            $this->columnsByIndex[$index] = $column;
-            $this->columnsByName[$name] = $column;
-
-            $index++;
-        }
-    }
-
-    /**
      * Return the offset
      *
      * @return int
      */
-    abstract public function offset();
+    abstract public function getOffset();
 
     /**
      * Return the number of lines
      *
      * @return int
      */
-    abstract public function length();
+    abstract public function getLength();
 
     /**
      * Return the order
      *
      * @return mixed
      */
-    abstract public function order();
-
-    /**
-     * Get the column list (all or only the column that can be searched)
-     *
-     * @param bool   $searchable True to return only the searchable columns
-     * @param string $connection If false returns for each column the entire
-     * configuration, if true returns only the connection parameter for the
-     * search
-     *
-     * @return array
-     */
-    abstract public function getColumns($searchable = false, $connection = false);
+    abstract public function getOrder();
 
     /**
      * Return the filter term
@@ -140,5 +103,5 @@ abstract class Driver
      *
      * @return array
      */
-    abstract public function getResponse(array $data, $count, $filteredCount);
+    abstract public function getResponse(array $data, $count = null, $filteredCount = null);
 }
