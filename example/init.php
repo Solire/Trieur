@@ -20,8 +20,9 @@ $run = new Run;
 $handler = new PrettyPageHandler;
 $run->pushHandler($handler);
 
-$handler = new JsonResponseHandler;
-$run->pushHandler($handler);
+$jsonHandler = new JsonResponseHandler;
+$jsonHandler->onlyForAjaxRequests(true);
+$run->pushHandler($jsonHandler);
 
 $run->register();
 

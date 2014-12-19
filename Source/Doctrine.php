@@ -1,7 +1,8 @@
 <?php
-namespace Solire\Trieur\Connection;
+namespace Solire\Trieur\Source;
 
-use Solire\Trieur\Connection;
+use Solire\Trieur\Source;
+use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 use Doctrine\DBAL\Connection as DoctrineConnection;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -12,7 +13,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
  * @author  Thomas <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Doctrine extends Connection
+class Doctrine extends Source
 {
     /**
      * The connection
@@ -33,14 +34,14 @@ class Doctrine extends Connection
      *
      * @param DoctrineConnection $connection The connection
      * @param Conf               $conf       The configuration
-     * @param Conf               $columns    The columns configuration
+     * @param Columns            $columns    The columns configuration
      */
     public function __construct(
-        DoctrineConnection $connection,
         Conf $conf,
-        Conf $columns
+        Columns $columns,
+        DoctrineConnection $connection
     ) {
-        parent::__construct($connection, $conf, $columns);
+         parent::__construct($conf, $columns, $connection);
 
         $this->buildQuery();
     }
@@ -172,11 +173,20 @@ class Doctrine extends Connection
             $queryBuilder->setMaxResults($this->length);
         }
 
-        if ($this->order !== null) {
-            foreach ($this->order as $order) {
-                list($col, $dir) = $order;
-                $queryBuilder->addOrderBy($col, $dir);
+        if ($this->orders !== null) {
+            foreach ($this->orders as $order) {
+
+                list($column, $dir) = $order;
+
+                $queryBuilder->addOrderBy(
+                    $this->columns->getColumnSourceSort($column),
+                    $dir
+                );
             }
+        }
+
+        if (isset($this->conf->group)) {
+            $queryBuilder->groupBy($this->conf->group);
         }
 
         return $queryBuilder;
@@ -241,9 +251,11 @@ class Doctrine extends Connection
      */
     public function getData()
     {
-        return $this->getDataQuery()
+        $data = $this->getDataQuery()
             ->execute()
             ->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $data;
     }
 
     /**

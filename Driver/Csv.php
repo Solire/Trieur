@@ -2,6 +2,7 @@
 namespace Solire\Trieur\Driver;
 
 use Solire\Trieur\Driver;
+use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 
 /**
@@ -15,11 +16,11 @@ class Csv extends Driver
     /**
      * Constructeur
      *
-     * @param Conf $config  The configuration to build the csv (maximum length,
+     * @param Conf    $config  The configuration to build the csv (maximum length,
      * delimiter and the enclosure)
-     * @param Conf $columns The columns configuration
+     * @param Columns $columns The columns configuration
      */
-    public function __construct(Conf $config, Conf $columns)
+    public function __construct(Conf $config, Columns $columns)
     {
         if (!isset($config->length)) {
             $config->length = 0;
@@ -39,7 +40,7 @@ class Csv extends Driver
      *
      * @return int
      */
-    public function offset()
+    public function getOffset()
     {
         return null;
     }
@@ -49,7 +50,7 @@ class Csv extends Driver
      *
      * @return int
      */
-    public function length()
+    public function getLength()
     {
         return null;
     }
@@ -59,22 +60,7 @@ class Csv extends Driver
      *
      * @return mixed
      */
-    public function order()
-    {
-        return [];
-    }
-
-    /**
-     * Get the column list (all or only the column that can be searched)
-     *
-     * @param bool   $searchable True to return only the searchable columns
-     * @param string $connection If false returns for each column the entire
-     * configuration, if true returns only the connection parameter for the
-     * search
-     *
-     * @return array
-     */
-    public function getColumns($searchable = false, $connection = false)
+    public function getOrder()
     {
         return [];
     }
@@ -110,9 +96,10 @@ class Csv extends Driver
      *
      * @return array
      */
-    public function getResponse(array $data, $count, $filteredCount)
+    public function getResponse(array $data, $count = null, $filteredCount = null)
     {
-        $filename = 'tmp/clients.csv';
+        $filename = sys_get_temp_dir() . DIRECTORY_SEPARATOR
+                  . uniqid('php-solire-trieur', true);
         $handle = fopen($filename, 'w');
 
         if (!$handle) {

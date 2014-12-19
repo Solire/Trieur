@@ -36,74 +36,6 @@ class DataTables extends Driver
     }
 
     /**
-     * Check if a column is searchable, if it is then returns the column
-     * expression
-     *
-     * @param array $column The column configuration
-     *
-     * @return string
-     */
-    protected function getColumnFilterConnection($column)
-    {
-        if ($column['searchable']
-            && $column['filter']
-        ) {
-            if (isset($column['filterConnection'])) {
-                return $column['filterConnection'];
-            }
-
-            if (isset($column['connection'])) {
-                return $column['connection'];
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the column list (all or only the column that can be searched)
-     *
-     * @param bool   $searchable True to return only the searchable columns
-     * @param string $connection If false returns for each column the entire
-     * configuration, if true returns only the connection parameter for the
-     * search
-     *
-     * @return array
-     */
-    public function getColumns($searchable = false, $connection = false)
-    {
-        $columns = [];
-
-        $clientColumns = null;
-        if (isset($this->request['columns'])) {
-            $clientColumns = $this->request['columns'];
-        }
-        $serverColumns = $this->columnsByIndex;
-
-        foreach ($serverColumns as $index => $serverColumn) {
-            if ($clientColumns !== null) {
-                $column = array_merge(
-                    (array) $serverColumn,
-                    $clientColumns[$index]
-                );
-            } else {
-                $column = $serverColumn;
-            }
-
-            $filterConnection = $this->getColumnFilterConnection($column);
-            if (!$searchable || $filterConnection !== null) {
-                if ($connection) {
-                    $columns[] = $filterConnection;
-                } else {
-                    $columns[] = $column;
-                }
-            }
-        }
-
-        return $columns;
-    }
-
-    /**
      * Return the filter terms for each columns
      *
      * @return array
@@ -111,44 +43,63 @@ class DataTables extends Driver
     public function getFilterTermByColumns()
     {
         $filteredColumns = [];
+        $allSourceFilter = [];
 
-        $columns = $this->getColumns(true);
+        if (empty($this->request)) {
+            return $filteredColumns;
+        }
 
-        foreach ($columns as $index => $column) {
-            $term = $this->getColumnTerm($column);
-            if ($term !== '') {
-                $connection = $this->getColumnFilterConnection($column);
-                if (!is_array($connection)) {
-                    $connection = [$connection];
-                }
-
-                if (isset($column['filterType'])
-                    && $column['filterType'] == 'date-range'
-                ) {
-                    $terms = explode('~', $term);
-
-                    $col = [
-                        '',
-                        '',
-                    ];
-
-                    if (!empty($terms[0])) {
-                        $col[0] = $terms[0];
-                    }
-
-                    if (!empty($terms[1])) {
-                        $col[1] = $terms[1];
-                    }
-
-                    $filteredColumns[] = [
-                        [$connection, $col, 'date-range']
-                    ];
-                } else {
-                    $filteredColumns[] = [
-                        [$connection, $term, 'text']
-                    ];
-                }
+        foreach ($this->columns as $index => $column) {
+            $clientColumn = $this->request['columns'][$index];
+            if (!$clientColumn['searchable']
+                || !$column->filter
+            ) {
+                continue;
             }
+
+            $sourceFilter = $this->columns->getColumnSourceFilter($column);
+            if (!is_array($sourceFilter)) {
+                $sourceFilter = [$sourceFilter];
+            }
+            $allSourceFilter = array_merge($allSourceFilter, $sourceFilter);
+
+            $term = $this->getColumnTerm($clientColumn);
+            if ($term === '') {
+                continue;
+            }
+
+            $filterType = $this->columns->getColumnSourceFilterType($column);
+
+            if ($filterType == 'range_date') {
+                $terms = explode($this->conf->delimiter, $term);
+
+                $col = [
+                    '',
+                    '',
+                ];
+
+                if (!empty($terms[0])) {
+                    $col[0] = $terms[0];
+                }
+
+                if (!empty($terms[1])) {
+                    $col[1] = $terms[1];
+                }
+
+                $filteredColumns[] = [
+                    [$sourceFilter, $col, 'range_date']
+                ];
+            } else {
+                $filteredColumns[] = [
+                    [$sourceFilter, $term, 'text']
+                ];
+            }
+        }
+
+        if ($this->getFilterTerm() !== '') {
+            $filteredColumns[] = [
+                [$allSourceFilter, $this->getFilterTerm(), 'text']
+            ];
         }
 
         return $filteredColumns;
@@ -159,7 +110,7 @@ class DataTables extends Driver
      *
      * @return int
      */
-    public function length()
+    public function getLength()
     {
         return $this->request['length'];
     }
@@ -169,7 +120,7 @@ class DataTables extends Driver
      *
      * @return int
      */
-    public function offset()
+    public function getOffset()
     {
         return $this->request['start'];
     }
@@ -179,7 +130,7 @@ class DataTables extends Driver
      *
      * @return array
      */
-    public function order()
+    public function getOrder()
     {
         $orders = [];
 
@@ -189,41 +140,12 @@ class DataTables extends Driver
 
         $ordersClient = $this->request['order'];
         foreach ($ordersClient as $order) {
-            $columnName = $this->columnsByIndex[$order['column']]->connection;
-            $dir        = $order['dir'];
-
             $orders[] = [
-                $columnName,
-                $dir,
+                $order['column'],
+                $order['dir'],
             ];
         }
         return $orders;
-    }
-
-    /**
-     * Formate the data received from the connection
-     *
-     * @param array $data The data received from the connection
-     *
-     * @return array
-     */
-    protected function formateData(array $data)
-    {
-        $formatedData = [];
-
-        foreach ($data as $row) {
-            $formatedRow = [];
-            foreach ($this->columnsByIndex as $index => $column) {
-                if (isset($row[$column->name])) {
-                    $formatedRow[$column->name] = $row[$column->name];
-                } else {
-                    $formatedRow[$column->name] = $row[$column->connection];
-                }
-            }
-            $formatedData[] = $formatedRow;
-        }
-
-        return $formatedData;
     }
 
     /**
@@ -237,10 +159,10 @@ class DataTables extends Driver
      *
      * @return array
      */
-    public function getResponse(array $data, $count, $filteredCount)
+    public function getResponse(array $data, $count = null, $filteredCount = null)
     {
         return [
-            'data' => $this->formateData($data),
+            'data' => $data,
             'recordsTotal' => $count,
             'recordsFiltered' => $filteredCount,
         ];
@@ -256,14 +178,13 @@ class DataTables extends Driver
     public function getJsColsConfig()
     {
         $cols = [];
-        $columns = $this->columnsByIndex;
-        foreach ($columns as $ii => $col) {
+        foreach ($this->columns as $ii => $col) {
             $dCol = [
                 'orderable'     => (bool) $col->sort,
                 'searchable'    => (bool) $col->filter,
                 'data'          => $col->name,
                 'name'          => $col->name,
-                'title'         => $col->label,
+                'title'         => $this->columns->getColumnAttribut($col, ['label', 'name']),
             ];
 
             if (isset($col->width)) {
@@ -343,6 +264,7 @@ class DataTables extends Driver
      * The jquery dataTables configuration array
      *
      * @return array
+     * @link http://datatables.net/reference/option/
      */
     public function getJsConfig()
     {
@@ -362,6 +284,30 @@ class DataTables extends Driver
             'dom'        => $this->config->dom,
             'language'   => $this->getJsLanguageConfig(),
         ];
+
+        return $config;
+    }
+
+    /**
+     * The Yadc pluggin configuration array
+     *
+     * @return array
+     * @link https://github.com/vedmack/yadcf
+     */
+    public function getYadcfConfig()
+    {
+        $config = [];
+
+        foreach ($this->columns as $index => $column) {
+            if (!$column->filter) {
+                continue;
+            }
+
+            $config[] = [
+                'column_number' => $index,
+                'filter_type' => $this->columns->getColumnSourceFilterType($column),
+            ];
+        }
 
         return $config;
     }

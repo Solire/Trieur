@@ -2,6 +2,7 @@
 namespace Solire\Trieur;
 
 use Solire\Conf\Conf;
+use Exception;
 
 /**
  * Trieur
@@ -14,9 +15,9 @@ class Trieur extends \Pimple\Container
     /**
      * Columns list
      *
-     * @var array
+     * @var Columns
      */
-    protected $columns = [];
+    protected $columns = null;
 
     /**
      * Configuration
@@ -33,11 +34,11 @@ class Trieur extends \Pimple\Container
     protected $driver = null;
 
     /**
-     * Connection to the database
+     * Source to the database
      *
-     * @var Connection
+     * @var Source
      */
-    protected $connection = null;
+    protected $source = null;
 
     /**
      * List of supported drivers and their mappings to the driver classes.
@@ -50,59 +51,79 @@ class Trieur extends \Pimple\Container
     ];
 
     /**
-     * List of supported connection class and their mappings to the connection
+     * List of supported source class and their mappings to the source
      * wrapper classes.
      *
      * @var type
      */
-    private static $connectionMap = [
-        'doctrine' => '\Solire\Trieur\Connection\Doctrine',
-        'csv' => '\Solire\Trieur\Connection\Csv',
+    private static $sourceMap = [
+        'doctrine' => '\Solire\Trieur\Source\Doctrine',
+        'csv' => '\Solire\Trieur\Source\Csv',
     ];
 
     /**
      * Constructor
      *
-     * @param Conf  $conf            The configuration
-     * @param mixed $connectionModel The database connection object
+     * @param Conf  $conf   The configuration
+     * @param mixed $source The database source object
      */
-    public function __construct(Conf $conf, $connectionModel = null)
+    public function __construct(Conf $conf, $sourceModel = null)
     {
-        $this->init($conf, $connectionModel);
+        $this->init($conf, $sourceModel);
         $this->run();
     }
 
     /**
      * Initialise the container, and prepare the instanciation of the driver
-     * and connection class
+     * and source class
      *
-     * @param Conf  $conf            The configuration
-     * @param mixed $connectionModel The database connection object
+     * @param Conf  $conf        The configuration
+     * @param mixed $sourceModel The data source object
      *
      * @return void
      */
-    private function init(Conf $conf, $connectionModel = null)
+    private function init(Conf $conf, $sourceModel = null)
     {
         $this->conf = $conf;
+        $this->initColumns();
         $this->initDriver();
 
-        if ($connectionModel !== null) {
-            $this['connectionModel'] = $connectionModel;
-            $this->initConnection();
+        if ($sourceModel !== null) {
+            $this['sourceModel'] = $sourceModel;
+            $this->initSource();
         }
     }
 
     /**
-     * Instanciate the driver and connection class
+     * Instanciate the driver and source class
      *
      * @return void
      */
     private function run()
     {
+        $this->setColumns($this['columns']);
         $this->setDriver($this['driver']);
-        if (isset($this['connection'])) {
-            $this->setConnection($this['connection']);
+        if (isset($this['source'])) {
+            $this->setSource($this['source']);
         }
+    }
+
+    /**
+     * Build Colmumns configuration object
+     *
+     * @return void
+     */
+    protected function initColumns()
+    {
+        if (!isset($this->conf->columns)) {
+            $this->conf->columns = new Conf;
+        }
+
+        $this['columns'] = function ($c) {
+            return new Columns(
+                $c->conf->columns
+            );
+        };
     }
 
     /**
@@ -113,7 +134,18 @@ class Trieur extends \Pimple\Container
     protected function findDriverClass()
     {
         if (isset($this->conf->driver->class)) {
-            $this->conf->driver->class = $this->conf->driver->class;
+            if (!class_exists($this->conf->driver->class)) {
+                throw new Exception(
+                    'class "' . $this->conf->driver->class . '" does not exist'
+                );
+            }
+
+            if (!is_subclass_of($this->conf->driver->class, '\Solire\Trieur\Driver')) {
+                throw new Exception(
+                    'class "' . $this->conf->driver->class . '" does not extend '
+                    . 'abstract class "\Solire\Trieur\Driver"'
+                );
+            }
         } elseif (isset($this->conf->driver->name)
             && isset(self::$driverMap[$this->conf->driver->name])
         ) {
@@ -121,7 +153,7 @@ class Trieur extends \Pimple\Container
                 $this->conf->driver->name
             ];
         } else {
-            throw new \Exception(
+            throw new Exception(
                 'No class for driver class founed or given'
             );
         }
@@ -135,54 +167,89 @@ class Trieur extends \Pimple\Container
     protected function initDriver()
     {
         $this->findDriverClass();
+
+        if (!isset($this->conf->driver->conf)) {
+            $this->conf->driver->conf = new Conf;
+        }
+
         $this['driver'] = function ($c) {
             $className = $c->conf->driver->class;
             return new $className(
                 $c->conf->driver->conf,
-                $c->conf->columns
+                $this['columns']
             );
         };
     }
 
     /**
-     * Find the connection class
+     * Find the source class
      *
      * @return void
      * @throws \Exception If no wrapper class found
      */
-    protected function findConnectionClass()
+    protected function findSourceClass()
     {
-        if (isset($this->conf->connection->class)) {
-            $this->conf->connection->class = $this->conf->driver->class;
-        } elseif (isset($this->conf->connection->name)
-            && isset(self::$connectionMap[$this->conf->connection->name])
+        if (isset($this->conf->source->class)) {
+            if (!class_exists($this->conf->source->class)) {
+                throw new Exception(
+                    'class "' . $this->conf->source->class . '" does not exist'
+                );
+            }
+
+            if (!is_subclass_of($this->conf->source->class, '\Solire\Trieur\Source')) {
+                throw new Exception(
+                    'class "' . $this->conf->source->class . '" does not extend '
+                    . 'abstract class "\Solire\Trieur\Source"'
+                );
+            }
+        } elseif (isset($this->conf->source->name)
+            && isset(self::$sourceMap[$this->conf->source->name])
         ) {
-            $this->conf->connection->class = self::$connectionMap[
-                $this->conf->connection->name
+            $this->conf->source->class = self::$sourceMap[
+                $this->conf->source->name
             ];
         } else {
-            throw new \Exception(
-                'No wrapper class for connection class founed'
+            throw new Exception(
+                'No wrapper class for source class founed'
             );
         }
     }
 
     /**
-     * Build the connection wrapper class
+     * Build the source wrapper class
      *
      * @return void
      */
-    protected function initConnection()
+    protected function initSource()
     {
-        $this->findConnectionClass();
-        $this['connection'] = function ($c) {
-            $className = $c->conf->connection->class;
+        $this->findSourceClass();
+
+        if (!isset($this->conf->source->conf)) {
+            $this->conf->source->conf = new Conf;
+        }
+
+        $this['source'] = function ($c) {
+            $className = $c->conf->source->class;
             return new $className(
-                $c['connectionModel'],
-                $c->conf->connection->conf,
-                $c->conf->columns
+                $c->conf->source->conf,
+                $this['columns'],
+                $c['sourceModel']
             );
         };
+    }
+
+    /**
+     * Sets the columns configuration
+     *
+     * @param Columns $columns The columns configuration
+     *
+     * @return self
+     */
+    public function setColumns(Columns $columns)
+    {
+        $this->columns = $columns;
+
+        return $this;
     }
 
     /**
@@ -200,15 +267,15 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Sets the connection wrapper
+     * Sets the source wrapper
      *
-     * @param Connection $connection The data connection
+     * @param Source $source The data source
      *
      * @return self
      */
-    public function setConnection(Connection $connection)
+    public function setSource(Source $source)
     {
-        $this->connection = $connection;
+        $this->source = $source;
 
         return $this;
     }
@@ -224,13 +291,13 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Get the connection wrapper object
+     * Get the source wrapper object
      *
-     * @return Connection
+     * @return Source
      */
-    public function getConnection()
+    public function getSource()
     {
-        return $this->connection;
+        return $this->source;
     }
 
     /**
@@ -256,26 +323,18 @@ class Trieur extends \Pimple\Container
     {
         $searches = $this->driver->getFilterTermByColumns();
         if (!empty($searches)) {
-            $this->connection->addSearches($searches);
+            $this->source->addSearches($searches);
         }
 
-        $term = $this->driver->getFilterTerm();
-        if ($term) {
-            $columns = $this->driver->getColumns(true, true);
-            $this->connection->addSearch([
-                [$columns, $term]
-            ]);
-        }
+        $this->source->setLength($this->driver->getLength());
+        $this->source->setOffset($this->driver->getOffset());
 
-        $this->connection->setLength($this->driver->length());
-        $this->connection->setOffset($this->driver->offset());
-
-        $this->connection->setOrder($this->driver->order());
+        $this->source->setOrders($this->driver->getOrder());
 
         return $this->driver->getResponse(
-            $this->connection->getData(),
-            $this->connection->getCount(),
-            $this->connection->getFilteredCount()
+            $this->source->getData(),
+            $this->source->getCount(),
+            $this->source->getFilteredCount()
         );
     }
 }
