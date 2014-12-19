@@ -92,6 +92,7 @@ class Trieur extends Atoum
                 ]
             ],
             'source' => [
+                'name' => 'aaa',
                 'conf' => [
                     'select' => 'a',
                     'from' => [
@@ -105,7 +106,7 @@ class Trieur extends Atoum
         $doctrineConnection = $this->getConnection();
         $this
             ->exception(function()use($conf){
-                new TestClass($conf);
+                new TestClass($conf, true);
             })
             ->hasMessage('No wrapper class for source class founed')
         ;
@@ -239,7 +240,7 @@ class Trieur extends Atoum
         ]);
         $this
             ->exception(function()use($conf){
-                new TestClass($conf);
+                new TestClass($conf, true);
             })
             ->hasMessage('class "\PDO" does not extend abstract class "\Solire\Trieur\Source"')
         ;
@@ -267,7 +268,7 @@ class Trieur extends Atoum
         ]);
         $this
             ->exception(function()use($conf){
-                new TestClass($conf);
+                new TestClass($conf, true);
             })
             ->hasMessage('class "\PDOHOHOH" does not exist')
         ;

@@ -88,13 +88,8 @@ class Trieur extends \Pimple\Container
         $this->initColumns();
         $this->initDriver();
 
-        if (isset($this->conf->source)) {
-            if ($sourceModel !== null) {
-                $this['sourceModel'] = $sourceModel;
-            } else {
-                $this['sourceModel'] = null;
-            }
-
+        if ($sourceModel !== null) {
+            $this['sourceModel'] = $sourceModel;
             $this->initSource();
         }
     }

@@ -96,9 +96,11 @@ class DataTables extends Driver
             }
         }
 
-        $filteredColumns[] = [
-            [$allSourceFilter, $this->getFilterTerm(), 'text']
-        ];
+        if ($this->getFilterTerm() !== '') {
+            $filteredColumns[] = [
+                [$allSourceFilter, $this->getFilterTerm(), 'text']
+            ];
+        }
 
         return $filteredColumns;
     }
