@@ -40,7 +40,7 @@ class Csv extends Driver
      *
      * @return int
      */
-    public function offset()
+    public function getOffset()
     {
         return null;
     }
@@ -50,7 +50,7 @@ class Csv extends Driver
      *
      * @return int
      */
-    public function length()
+    public function getLength()
     {
         return null;
     }
@@ -60,7 +60,7 @@ class Csv extends Driver
      *
      * @return mixed
      */
-    public function order()
+    public function getOrder()
     {
         return [];
     }

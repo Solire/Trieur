@@ -31,7 +31,7 @@ abstract class Source
      *
      * @var mixed
      */
-    protected $connection;
+    protected $connection = null;
 
     /**
      * An array of arrays where the first element is an array of columns or
@@ -71,13 +71,13 @@ abstract class Source
      * @param Columns $columns    The columns configuration
      */
     public function __construct(
-        $connection,
         Conf $conf,
-        Columns $columns
+        Columns $columns,
+        $connection = null
     ) {
-        $this->connection = $connection;
         $this->conf       = $conf;
         $this->columns    = $columns;
+        $this->connection = $connection;
     }
 
     /**

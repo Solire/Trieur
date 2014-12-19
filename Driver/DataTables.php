@@ -43,6 +43,7 @@ class DataTables extends Driver
     public function getFilterTermByColumns()
     {
         $filteredColumns = [];
+        $allSourceFilter = [];
 
         if (empty($this->request)) {
             return $filteredColumns;
@@ -56,14 +57,15 @@ class DataTables extends Driver
                 continue;
             }
 
-            $term = $this->getColumnTerm($clientColumn);
-            if ($term === '') {
-                continue;
-            }
-
             $sourceFilter = $this->columns->getColumnSourceFilter($column);
             if (!is_array($sourceFilter)) {
                 $sourceFilter = [$sourceFilter];
+            }
+            $allSourceFilter = array_merge($allSourceFilter, $sourceFilter);
+
+            $term = $this->getColumnTerm($clientColumn);
+            if ($term === '') {
+                continue;
             }
 
             $filterType = $this->columns->getColumnSourceFilterType($column);
@@ -94,6 +96,10 @@ class DataTables extends Driver
             }
         }
 
+        $filteredColumns[] = [
+            [$allSourceFilter, $this->getFilterTerm(), 'text']
+        ];
+
         return $filteredColumns;
     }
 
@@ -102,7 +108,7 @@ class DataTables extends Driver
      *
      * @return int
      */
-    public function length()
+    public function getLength()
     {
         return $this->request['length'];
     }
@@ -112,7 +118,7 @@ class DataTables extends Driver
      *
      * @return int
      */
-    public function offset()
+    public function getOffset()
     {
         return $this->request['start'];
     }
@@ -122,7 +128,7 @@ class DataTables extends Driver
      *
      * @return array
      */
-    public function order()
+    public function getOrder()
     {
         $orders = [];
 

@@ -46,7 +46,7 @@ class Doctrine extends Atoum
         $columns = new Columns(new Conf);
 
         $this
-            ->if($c = new TestClass($connection, $conf, $columns))
+            ->if($c = new TestClass($conf, $columns, $connection))
                 ->object($c)
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
@@ -99,7 +99,7 @@ class Doctrine extends Atoum
         $columns = new Columns(new Conf);
 
         $this
-            ->if($c = new TestClass($connection, $conf, $columns))
+            ->if($c = new TestClass($conf, $columns, $connection))
                 ->object($c)
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
@@ -156,7 +156,7 @@ class Doctrine extends Atoum
         ]));
 
         $this
-            ->if($c = new TestClass($connection, $conf, $columns))
+            ->if($c = new TestClass($conf, $columns, $connection))
             ->and($c->addOrder('a', 'ASC'))
 
             ->and($qB = $c->getQuery())

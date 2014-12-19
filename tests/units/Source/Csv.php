@@ -54,9 +54,9 @@ class Csv extends Atoum
         $this
             ->exception(function()use($conf, $columns){
                 new TestClass(
-                    TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notfouned.csv',
                     $conf,
-                    $columns
+                    $columns,
+                    TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notfouned.csv'
                 );
             })
                 ->isInstanceOf('Exception')
@@ -77,9 +77,9 @@ class Csv extends Atoum
         $this
             ->exception(function()use($conf, $columns){
                 new TestClass(
-                    TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv',
                     $conf,
-                    $columns
+                    $columns,
+                    TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv'
                 );
             })
                 ->isInstanceOf('Exception')
@@ -108,9 +108,9 @@ class Csv extends Atoum
 
         $this
             ->if($c = new TestClass(
-                    TEST_TMP_DIR . DIRECTORY_SEPARATOR . $this->fileName,
                     $conf,
-                    $columns
+                    $columns,
+                    TEST_TMP_DIR . DIRECTORY_SEPARATOR . $this->fileName
                 )
             )
             ->integer($c->getCount())

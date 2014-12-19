@@ -62,21 +62,21 @@ abstract class Driver
      *
      * @return int
      */
-    abstract public function offset();
+    abstract public function getOffset();
 
     /**
      * Return the number of lines
      *
      * @return int
      */
-    abstract public function length();
+    abstract public function getLength();
 
     /**
      * Return the order
      *
      * @return mixed
      */
-    abstract public function order();
+    abstract public function getOrder();
 
     /**
      * Return the filter term

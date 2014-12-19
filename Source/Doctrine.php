@@ -37,11 +37,11 @@ class Doctrine extends Source
      * @param Columns            $columns    The columns configuration
      */
     public function __construct(
-        DoctrineConnection $connection,
         Conf $conf,
-        Columns $columns
+        Columns $columns,
+        DoctrineConnection $connection
     ) {
-        parent::__construct($connection, $conf, $columns);
+         parent::__construct($conf, $columns, $connection);
 
         $this->buildQuery();
     }

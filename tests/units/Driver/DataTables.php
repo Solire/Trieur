@@ -102,7 +102,7 @@ class DataTables extends Atoum
                     'value' => 'u'
                 ]
             ]))
-            ->array($c->order())
+            ->array($c->getOrder())
                 ->isEqualTo([
                     [
                         0, 'ASC'
@@ -118,11 +118,21 @@ class DataTables extends Atoum
                             'a',
                             'text'
                         ]
+                    ],
+                    [
+                        [
+                            [
+                                'nom',
+                                'prenom',
+                            ],
+                            'u',
+                            'text'
+                        ]
                     ]
                 ])
-            ->integer($c->offset())
+            ->integer($c->getOffset())
                 ->isEqualTo(0)
-            ->variable($c->length())
+            ->variable($c->getLength())
                 ->isEqualTo(10)
             ->string($c->getFilterTerm())
                 ->isEqualTo('u')

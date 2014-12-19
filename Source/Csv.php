@@ -34,29 +34,30 @@ class Csv extends Source
      *
      * @throws Exception Si le fichier source n'existe pas ou n'est pas lisible
      */
-    public function __construct($connection, Conf $conf, Columns $columns)
-    {
-        if (!file_exists($connection)) {
+    public function __construct(
+        Conf $conf,
+        Columns $columns,
+        $connection
+    ) {
+        parent::__construct($conf, $columns, $connection);
+
+        if (!file_exists($this->connection)) {
             throw new Exception('No csv file founed : "' . $connection . '"');
         }
 
-        if (!is_readable($connection)) {
+        if (!is_readable($this->connection)) {
             throw new Exception('Csv file not readable : "' . realpath($connection) . '"');
         }
 
-        if (!isset($conf->length)) {
-            $conf->length = 0;
+        if (!isset($this->conf->length)) {
+            $this->conf->length = 0;
         }
-        if (!isset($conf->delimiter)) {
-            $conf->delimiter = ',';
+        if (!isset($this->conf->delimiter)) {
+            $this->conf->delimiter = ',';
         }
-        if (!isset($conf->enclosure)) {
-            $conf->enclosure = '"';
+        if (!isset($this->conf->enclosure)) {
+            $this->conf->enclosure = '"';
         }
-
-        parent::__construct($connection, $conf, $columns);
-
-        $this->handle();
     }
 
     /**
@@ -228,6 +229,7 @@ class Csv extends Source
         $this->md5 = $currentMd5;
         $this->count = 0;
         $this->filteredCount = 0;
+        $this->handle();
 
         $this->data = [];
         while ($row = $this->fetch()) {

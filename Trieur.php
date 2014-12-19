@@ -2,6 +2,7 @@
 namespace Solire\Trieur;
 
 use Solire\Conf\Conf;
+use Exception;
 
 /**
  * Trieur
@@ -66,9 +67,9 @@ class Trieur extends \Pimple\Container
      * @param Conf  $conf   The configuration
      * @param mixed $source The database source object
      */
-    public function __construct(Conf $conf, $source = null)
+    public function __construct(Conf $conf, $sourceModel = null)
     {
-        $this->init($conf, $source);
+        $this->init($conf, $sourceModel);
         $this->run();
     }
 
@@ -87,8 +88,13 @@ class Trieur extends \Pimple\Container
         $this->initColumns();
         $this->initDriver();
 
-        if ($sourceModel !== null) {
-            $this['sourceModel'] = $sourceModel;
+        if (isset($this->conf->source)) {
+            if ($sourceModel !== null) {
+                $this['sourceModel'] = $sourceModel;
+            } else {
+                $this['sourceModel'] = null;
+            }
+
             $this->initSource();
         }
     }
@@ -114,6 +120,10 @@ class Trieur extends \Pimple\Container
      */
     protected function initColumns()
     {
+        if (!isset($this->conf->columns)) {
+            $this->conf->columns = new Conf;
+        }
+
         $this['columns'] = function ($c) {
             return new Columns(
                 $c->conf->columns
@@ -129,7 +139,18 @@ class Trieur extends \Pimple\Container
     protected function findDriverClass()
     {
         if (isset($this->conf->driver->class)) {
-            $this->conf->driver->class = $this->conf->driver->class;
+            if (!class_exists($this->conf->driver->class)) {
+                throw new Exception(
+                    'class "' . $this->conf->driver->class . '" does not exist'
+                );
+            }
+
+            if (!is_subclass_of($this->conf->driver->class, '\Solire\Trieur\Driver')) {
+                throw new Exception(
+                    'class "' . $this->conf->driver->class . '" does not extend '
+                    . 'abstract class "\Solire\Trieur\Driver"'
+                );
+            }
         } elseif (isset($this->conf->driver->name)
             && isset(self::$driverMap[$this->conf->driver->name])
         ) {
@@ -137,7 +158,7 @@ class Trieur extends \Pimple\Container
                 $this->conf->driver->name
             ];
         } else {
-            throw new \Exception(
+            throw new Exception(
                 'No class for driver class founed or given'
             );
         }
@@ -151,6 +172,11 @@ class Trieur extends \Pimple\Container
     protected function initDriver()
     {
         $this->findDriverClass();
+
+        if (!isset($this->conf->driver->conf)) {
+            $this->conf->driver->conf = new Conf;
+        }
+
         $this['driver'] = function ($c) {
             $className = $c->conf->driver->class;
             return new $className(
@@ -169,7 +195,18 @@ class Trieur extends \Pimple\Container
     protected function findSourceClass()
     {
         if (isset($this->conf->source->class)) {
-            $this->conf->source->class = $this->conf->driver->class;
+            if (!class_exists($this->conf->source->class)) {
+                throw new Exception(
+                    'class "' . $this->conf->source->class . '" does not exist'
+                );
+            }
+
+            if (!is_subclass_of($this->conf->source->class, '\Solire\Trieur\Source')) {
+                throw new Exception(
+                    'class "' . $this->conf->source->class . '" does not extend '
+                    . 'abstract class "\Solire\Trieur\Source"'
+                );
+            }
         } elseif (isset($this->conf->source->name)
             && isset(self::$sourceMap[$this->conf->source->name])
         ) {
@@ -177,7 +214,7 @@ class Trieur extends \Pimple\Container
                 $this->conf->source->name
             ];
         } else {
-            throw new \Exception(
+            throw new Exception(
                 'No wrapper class for source class founed'
             );
         }
@@ -191,12 +228,17 @@ class Trieur extends \Pimple\Container
     protected function initSource()
     {
         $this->findSourceClass();
+
+        if (!isset($this->conf->source->conf)) {
+            $this->conf->source->conf = new Conf;
+        }
+
         $this['source'] = function ($c) {
             $className = $c->conf->source->class;
             return new $className(
-                $c['sourceModel'],
                 $c->conf->source->conf,
-                $this['columns']
+                $this['columns'],
+                $c['sourceModel']
             );
         };
     }
@@ -289,18 +331,10 @@ class Trieur extends \Pimple\Container
             $this->source->addSearches($searches);
         }
 
-        $term = $this->driver->getFilterTerm();
-        if ($term) {
-            $columns = $this->driver->getColumns(true, true);
-            $this->source->addSearch([
-                [$columns, $term]
-            ]);
-        }
+        $this->source->setLength($this->driver->getLength());
+        $this->source->setOffset($this->driver->getOffset());
 
-        $this->source->setLength($this->driver->length());
-        $this->source->setOffset($this->driver->offset());
-
-        $this->source->setOrders($this->driver->order());
+        $this->source->setOrders($this->driver->getOrder());
 
         return $this->driver->getResponse(
             $this->source->getData(),
