@@ -1,8 +1,0 @@
-{
-  "name": "Trieur DataTables example",
-  "dependencies": {
-    "datatables": "1.10.*",
-    "bootstrap": "3.*",
-    "yadcf": "0.*"
-  }
-}
