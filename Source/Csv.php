@@ -2,7 +2,7 @@
 namespace Solire\Trieur\Source;
 
 use Solire\Trieur\Source;
-use \Solire\Trieur\Columns;
+use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 use Exception;
 
@@ -14,14 +14,39 @@ use Exception;
  */
 class Csv extends Source
 {
+    /**
+     * The csv file handle
+     *
+     * @var resource
+     */
     protected $handle = null;
 
+    /**
+     * Number lines in the csv file
+     *
+     * @var int
+     */
     protected $count = 0;
 
+    /**
+     * Number lines matching the request in the csv file
+     *
+     * @var int
+     */
     protected $filteredCount = 0;
 
+    /**
+     * Lines of the csv file matching the request
+     *
+     * @var array
+     */
     protected $data = [];
 
+    /**
+     * State of the request (to ensure we don't parse the file multiple times)
+     *
+     * @var string
+     */
     protected $md5 = null;
 
     /**
@@ -323,8 +348,7 @@ class Csv extends Source
     {
         $formatedRow = [];
         foreach ($this->columns as $column) {
-            $formatedRow[$column->name] =
-                $row[$this->columns->getColumnSource($column)];
+            $formatedRow[$column->name] = $row[$this->columns->getColumnSource($column)];
         }
         return $formatedRow;
     }

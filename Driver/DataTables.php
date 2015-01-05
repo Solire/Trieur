@@ -59,7 +59,7 @@ class DataTables extends Driver
 
             $sourceFilter = $this->columns->getColumnSourceFilter($column);
             if (!is_array($sourceFilter)) {
-                $sourceFilter = [$sourceFilter];
+                $sourceFilter = (array) $sourceFilter;
             }
             $allSourceFilter = array_merge($allSourceFilter, $sourceFilter);
 
@@ -264,7 +264,7 @@ class DataTables extends Driver
      * The jquery dataTables configuration array
      *
      * @return array
-     * @link http://datatables.net/reference/option/
+     * @link http://datatables.net/reference/option/ official documentation
      */
     public function getJsConfig()
     {
