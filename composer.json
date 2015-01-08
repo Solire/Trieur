@@ -21,7 +21,7 @@
     "siwayll/phpcs-norme-dpsi": "3.*",
     "filp/whoops": "1.0.*"
   },
-  "suggests": {
+  "suggest": {
     "symfony/yaml": "version 2.5.* to read yaml config file (used in examples)",
     "doctrine/dbal": "version 2.4.* if using a data source is a database"
   },
