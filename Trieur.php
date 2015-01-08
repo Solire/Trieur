@@ -393,6 +393,17 @@ class Trieur extends \Pimple\Container
 
         if (isset($column->view)) {
             ob_start();
+
+            if (!file_exists($column->view)
+                || !is_readable($column->view)
+            ) {
+                $message = sprintf(
+                    'The view file "%s" does not exist or is not readable',
+                    $column->view
+                );
+                throw new Exception($message);
+            }
+
             include $column->view;
             return ob_get_clean();
         }
