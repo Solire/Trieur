@@ -268,8 +268,6 @@ class DataTables extends Driver
      */
     public function getJsConfig()
     {
-        $defaultSort = $this->config->defaultSort;
-
         $config = [
             'processing' => true,
             'serverSide' => true,
@@ -278,39 +276,27 @@ class DataTables extends Driver
                 'type' => $this->config->requestMethod,
             ],
             'columns'    => $this->getJsColsConfig(),
-            'autoWidth'  => true,
-            'ordering'   => $defaultSort,
-            'dom'        => $this->config->dom,
             'language'   => $this->getJsLanguageConfig(),
         ];
 
-        return $config;
-    }
-
-    /**
-     * The Yadc pluggin configuration array
-     *
-     * @return array
-     * @link https://github.com/vedmack/yadcf
-     */
-    public function getYadcfConfig()
-    {
-        $config = [];
-
-        foreach ($this->columns as $index => $column) {
-            if (!$column->filter) {
-                continue;
-            }
-
-            $config[] = [
-                'column_number' => $index,
-                'filter_type' => $this->columns->getColumnFilterType($column),
-            ];
+        if (isset($this->config->autoWidth)) {
+            $config['autoWidth'] = $this->config->autoWidth;
+        }
+        if (isset($this->config->defaultSort)) {
+            $config['ordering'] = $this->config->defaultSort;
+        }
+        if (isset($this->config->dom)) {
+            $config['dom'] = $this->config->dom;
         }
 
         return $config;
     }
 
+    /**
+     * The jquery dataTables light columnfilter configuration array
+     *
+     * @return array
+     */
     public function getColumnFilterConfig()
     {
         $config = [];
