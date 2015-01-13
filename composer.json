@@ -12,16 +12,17 @@
   ],
   "require": {
     "php": ">=5.6.0",
-    "doctrine/dbal": "2.4.*",
-    "solire/conf": "2.1.*",
-    "solire/form": "1.0.*",
-    "symfony/yaml": "2.5.*",
+    "solire/conf": "dev-master",
     "pimple/pimple": "3.0.*"
   },
   "require-dev": {
     "m6web/coke": "1.2",
     "siwayll/phpcs-norme-dpsi": "3.*",
     "filp/whoops": "1.0.*"
+  },
+  "suggest": {
+    "symfony/yaml": "version 2.5.* to read yaml config file (used in examples)",
+    "doctrine/dbal": "version 2.4.* if using a data source is a database"
   },
   "autoload": {
     "psr-4": {
