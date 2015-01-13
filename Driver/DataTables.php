@@ -68,10 +68,10 @@ class DataTables extends Driver
                 continue;
             }
 
-            $filterType = $this->columns->getColumnSourceFilterType($column);
+            $filterType = $this->columns->getColumnFilterType($column);
 
-            if ($filterType == 'range_date') {
-                $terms = explode($this->conf->delimiter, $term);
+            if ($filterType == 'dateRange') {
+                $terms = explode($this->config->separator, $term);
 
                 $col = [
                     '',
@@ -87,7 +87,7 @@ class DataTables extends Driver
                 }
 
                 $filteredColumns[] = [
-                    [$sourceFilter, $col, 'range_date']
+                    [$sourceFilter, $col, 'dateRange']
                 ];
             } else {
                 $filteredColumns[] = [
@@ -280,7 +280,6 @@ class DataTables extends Driver
             'columns'    => $this->getJsColsConfig(),
             'autoWidth'  => true,
             'ordering'   => $defaultSort,
-            'jQueryUI'   => true,
             'dom'        => $this->config->dom,
             'language'   => $this->getJsLanguageConfig(),
         ];
@@ -305,8 +304,31 @@ class DataTables extends Driver
 
             $config[] = [
                 'column_number' => $index,
-                'filter_type' => $this->columns->getColumnSourceFilterType($column),
+                'filter_type' => $this->columns->getColumnFilterType($column),
             ];
+        }
+
+        return $config;
+    }
+
+    public function getColumnFilterConfig()
+    {
+        $config = [];
+
+        foreach ($this->columns as $index => $column) {
+            if (!$column->filter) {
+                continue;
+            }
+
+            $columnConfig = [
+                'type' => 'text',
+            ];
+
+            if (isset($column->filterType)) {
+                $columnConfig['type'] = $column->filterType;
+            }
+
+            $config[$index] = $columnConfig;
         }
 
         return $config;

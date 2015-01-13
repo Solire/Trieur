@@ -25,6 +25,8 @@ class Data
 
         $response = $trieur->getResponse();
 
+        $response['debug'] = $trieur->getSource()->getDataQuery()->getSQL();
+
         return $response;
     }
 }

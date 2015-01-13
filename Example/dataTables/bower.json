@@ -3,6 +3,7 @@
   "dependencies": {
     "datatables": "1.10.*",
     "bootstrap": "3.*",
-    "yadcf": "0.*"
+    "datatables-light-columnfilter": "0.*",
+    "bootstrap-datepicker": "1.3.*"
   }
 }

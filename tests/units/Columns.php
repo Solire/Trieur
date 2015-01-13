@@ -41,7 +41,7 @@ class Columns extends Atoum
             'source' => 'source.03',
             'sourceSort' => 'sourceSort.03',
             'sourceFilter' => 'sourceFilter.03',
-            'sourceFilterType' => 'select',
+            'filterType' => 'select',
         ]);
 
         $conf = arrayToConf([
@@ -92,7 +92,7 @@ class Columns extends Atoum
 
             ->string($columns->getColumnSourceSort($col03))
                 ->isEqualTo('sourceSort.03')
-            ->string($columns->getColumnSourceFilterType('offset03'))
+            ->string($columns->getColumnFilterType('offset03'))
                 ->isEqualTo('select')
         ;
 

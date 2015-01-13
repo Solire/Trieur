@@ -12,6 +12,7 @@ driver:
     itemGenre:
     requestUrl: data.json
     requestMethod: POST
+    separator: "~"
     dom: <"H"TClfr>t<"F"ip>
     defaultSort:
     - [0, asc]
@@ -48,9 +49,12 @@ source:
 columns:
 #  columnName:
 #    label: columnLabel
-#    filter: 1|0
 #    sort: 1|0
+#    filter: 1|0
+#    filterType: text, dateRange...
 #    source: source expression (for example a column)
+#    sourceFilter: source expression (for example a column)
+#    sourceSort: source expression (for example a column)
 #    ...
 
   societe:
@@ -90,8 +94,11 @@ columns:
     callback: strip_tags
   time_inscription:
     label: Date
-    filter: false
-    sort: false
+    filter: true
+    filterType: dateRange
+    sort: true
+    sourceFilter: DATE(c.time_inscription)
+    sourceSort: c.time_inscription
     callback:
       name: Solire\Trieur\Example\Format::sqlTo
       cell: 0

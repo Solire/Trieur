@@ -1,11 +1,13 @@
 var oTable = null;
 $(function(){
+  $.fn.datepicker.defaults.language = 'fr';
+  $.fn.datepicker.defaults.autoclose = true;
+  $.fn.datepicker.defaults.clearBtn = true;
+
   $.getJSON('config.json', function(response){
-    var
-      table = $('#demo')
-    ;
+    var table = $('#demo');
 
     Dtable = table.DataTable(response.config);
-    yadcf.init(Dtable, response.yadcfConfig);
+    new $.fn.dataTable.ColumnFilter(Dtable, response.columnFilterConfig);
   });
 });
