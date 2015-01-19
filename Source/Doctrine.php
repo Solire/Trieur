@@ -292,7 +292,7 @@ class Doctrine extends Source
                     $where[] = $cond;
                 }
 
-                if ($type == 'date-range') {
+                if ($type == 'dateRange') {
                     list($from, $to) = $terms;
                     foreach ($columns as $column) {
                         $conds = [];
@@ -305,12 +305,16 @@ class Doctrine extends Source
                             $queryBuilder->andWhere($where);
                         }
 
-                        $where[] = implode(' AND ', $conds);
+                        if (!empty($conds)) {
+                            $where[] = implode(' AND ', $conds);
+                        }
                     }
                 }
             }
 
-            $queryBuilder->andWhere(implode(' OR ', $where));
+            if (!empty($where)) {
+                $queryBuilder->andWhere(implode(' OR ', $where));
+            }
         }
 
         if (!empty($orderBy)) {

@@ -10,8 +10,9 @@ driver:
     # masculin ou féminin
     # "e"|""
     itemGenre:
-    requestUrl: http://localhost/trieur/example/dataTables/doctrine/data.json
+    requestUrl: data.json
     requestMethod: POST
+    separator: "~"
     dom: <"H"TClfr>t<"F"ip>
     defaultSort:
     - [0, asc]
@@ -25,6 +26,7 @@ source:
       - c.nom
       - c.prenom
       - c.email
+      - c.time_inscription
       - a.tel1 tel
       - IF(c.ns > 0, "Oui", "Non") AS offre
       - CONCAT(a.adresse1, "<br>", IF(a.adresse2 IS NULL, "", a.adresse2), "<br>", a.cp, " ", a.ville, "<br>", a.pays) AS adresse
@@ -47,9 +49,12 @@ source:
 columns:
 #  columnName:
 #    label: columnLabel
-#    filter: 1|0
 #    sort: 1|0
-#    connection: connection expression (for example a column)
+#    filter: 1|0
+#    filterType: text, dateRange...
+#    source: source expression (for example a column)
+#    sourceFilter: source expression (for example a column)
+#    sourceSort: source expression (for example a column)
 #    ...
 
   societe:
@@ -86,3 +91,16 @@ columns:
     label: Adresse
     filter: 0
     sort: 0
+    callback: strip_tags
+  time_inscription:
+    label: Date
+    filter: true
+    filterType: dateRange
+    sort: true
+    sourceFilter: DATE(c.time_inscription)
+    sourceSort: c.time_inscription
+    callback:
+      name: Solire\Trieur\Example\Format::sqlTo
+      cell: 0
+      arguments:
+        - d/m/Y H:i:s

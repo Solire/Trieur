@@ -64,8 +64,8 @@ class Trieur extends \Pimple\Container
     /**
      * Constructor
      *
-     * @param Conf  $conf   The configuration
-     * @param mixed $source The database source object
+     * @param Conf  $conf        The configuration
+     * @param mixed $sourceModel The database source object
      */
     public function __construct(Conf $conf, $sourceModel = null)
     {
@@ -332,9 +332,128 @@ class Trieur extends \Pimple\Container
         $this->source->setOrders($this->driver->getOrder());
 
         return $this->driver->getResponse(
-            $this->source->getData(),
+            $this->formate($this->source->getData()),
             $this->source->getCount(),
             $this->source->getFilteredCount()
+        );
+    }
+
+    /**
+     * Formate a source data
+     *
+     * @param array $data The source data
+     *
+     * @return array
+     */
+    protected function formate($data)
+    {
+        $dataFormated = array();
+        foreach ($data as $row) {
+            $rowFormated = $this->formateRow($row);
+            if ($rowFormated) {
+                $dataFormated[] = $rowFormated;
+            }
+        }
+
+        return $dataFormated;
+    }
+
+    /**
+     * Formate a source row
+     *
+     * @param array $row The source row
+     *
+     * @return type
+     */
+    protected function formateRow($row)
+    {
+        $rowFormated = array();
+        foreach ($this->columns as $column) {
+            if (isset($column->hide) && $column->hide) {
+                continue;
+            }
+
+            $cellFormated = $this->formateCell($row, $column);
+            $rowFormated[$column->name] = $cellFormated;
+        }
+        return $rowFormated;
+    }
+
+    /**
+     * Formate a source cell
+     *
+     * @param array $row    The row
+     * @param Conf  $column The cell's column
+     *
+     * @return string
+     */
+    protected function formateCell($row, Conf $column)
+    {
+        $formateCell = $row[$column->name];
+
+        if (isset($column->view)) {
+            ob_start();
+
+            if (!file_exists($column->view)
+                || !is_readable($column->view)
+            ) {
+                $message = sprintf(
+                    'The view file "%s" does not exist or is not readable',
+                    $column->view
+                );
+                throw new Exception($message);
+            }
+
+            include $column->view;
+            return ob_get_clean();
+        }
+
+        if (isset($column->callback)) {
+            $function = $column->callback;
+
+            if (is_string($function)) {
+                return call_user_func($function, $formateCell);
+            }
+
+            $arguments = [];
+            if (isset($function->arguments)) {
+                $arguments = (array) $function->arguments;
+            }
+
+            if (isset($function->cell)) {
+                self::insertToArray($arguments, $formateCell, $function->cell);
+            }
+
+            if (isset($function->row)) {
+                self::insertToArray($arguments, $row, $function->row);
+            }
+
+            return call_user_func_array($function->name, $arguments);
+        }
+
+        return $formateCell;
+    }
+
+    /**
+     * Inserts a row in an array in a given offset (numeric offset only)
+     *
+     * @param array $array  The array
+     * @param mixed $row    The row to insert
+     * @param int   $offset The offset
+     *
+     * @return void
+     */
+    protected static function insertToArray(&$array, $row, $offset)
+    {
+        if ($offset >= count($array)) {
+            $array[$offset] = $row;
+            return;
+        }
+
+        $array = array_merge(
+            array_slice($array, 0, $offset),
+            [$row],
+            array_slice($array, $offset)
         );
     }
 }

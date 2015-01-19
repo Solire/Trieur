@@ -14,7 +14,6 @@ class DataTables extends Atoum
         $config = arrayToConf([
             'requestUrl' => 'url.url',
             'requestMethod' => 'get',
-            'delimiter' => '-yadcf_delim-',
             'dom' => 'abcd',
             'itemName' => 'personne',
             'itemsName' => 'personnes',
@@ -188,7 +187,6 @@ class DataTables extends Atoum
                     'columns'    => $jsColsConfig,
                     'autoWidth'  => true,
                     'ordering'   => [],
-                    'jQueryUI'   => true,
                     'dom'        => 'abcd',
                     'language'   => [
                         'emptyTable' => 'Aucun personne'
