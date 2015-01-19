@@ -38,9 +38,12 @@ source:
 columns:
 #  columnName:
 #    label: columnLabel
-#    filter: 1|0
 #    sort: 1|0
-#    connection: connection expression (for example a column)
+#    filter: 1|0
+#    filterType: text, dateRange...
+#    source: source expression (for example a column)
+#    sourceFilter: source expression (for example a column)
+#    sourceSort: source expression (for example a column)
 #    ...
 
   societe:

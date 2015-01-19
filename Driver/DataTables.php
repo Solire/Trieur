@@ -59,7 +59,7 @@ class DataTables extends Driver
 
             $sourceFilter = $this->columns->getColumnSourceFilter($column);
             if (!is_array($sourceFilter)) {
-                $sourceFilter = [$sourceFilter];
+                $sourceFilter = (array) $sourceFilter;
             }
             $allSourceFilter = array_merge($allSourceFilter, $sourceFilter);
 
@@ -68,10 +68,10 @@ class DataTables extends Driver
                 continue;
             }
 
-            $filterType = $this->columns->getColumnSourceFilterType($column);
+            $filterType = $this->columns->getColumnFilterType($column);
 
-            if ($filterType == 'range_date') {
-                $terms = explode($this->conf->delimiter, $term);
+            if ($filterType == 'dateRange') {
+                $terms = explode($this->config->separator, $term);
 
                 $col = [
                     '',
@@ -87,7 +87,7 @@ class DataTables extends Driver
                 }
 
                 $filteredColumns[] = [
-                    [$sourceFilter, $col, 'range_date']
+                    [$sourceFilter, $col, 'dateRange']
                 ];
             } else {
                 $filteredColumns[] = [
@@ -264,12 +264,10 @@ class DataTables extends Driver
      * The jquery dataTables configuration array
      *
      * @return array
-     * @link http://datatables.net/reference/option/
+     * @link http://datatables.net/reference/option/ official documentation
      */
     public function getJsConfig()
     {
-        $defaultSort = $this->config->defaultSort;
-
         $config = [
             'processing' => true,
             'serverSide' => true,
@@ -278,23 +276,28 @@ class DataTables extends Driver
                 'type' => $this->config->requestMethod,
             ],
             'columns'    => $this->getJsColsConfig(),
-            'autoWidth'  => true,
-            'ordering'   => $defaultSort,
-            'jQueryUI'   => true,
-            'dom'        => $this->config->dom,
             'language'   => $this->getJsLanguageConfig(),
         ];
+
+        if (isset($this->config->autoWidth)) {
+            $config['autoWidth'] = $this->config->autoWidth;
+        }
+        if (isset($this->config->defaultSort)) {
+            $config['ordering'] = $this->config->defaultSort;
+        }
+        if (isset($this->config->dom)) {
+            $config['dom'] = $this->config->dom;
+        }
 
         return $config;
     }
 
     /**
-     * The Yadc pluggin configuration array
+     * The jquery dataTables light columnfilter configuration array
      *
      * @return array
-     * @link https://github.com/vedmack/yadcf
      */
-    public function getYadcfConfig()
+    public function getColumnFilterConfig()
     {
         $config = [];
 
@@ -303,10 +306,15 @@ class DataTables extends Driver
                 continue;
             }
 
-            $config[] = [
-                'column_number' => $index,
-                'filter_type' => $this->columns->getColumnSourceFilterType($column),
+            $columnConfig = [
+                'type' => 'text',
             ];
+
+            if (isset($column->filterType)) {
+                $columnConfig['type'] = $column->filterType;
+            }
+
+            $config[$index] = $columnConfig;
         }
 
         return $config;

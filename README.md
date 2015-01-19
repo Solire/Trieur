@@ -22,9 +22,8 @@ use Doctrine\DBAL\DriverManager;
 
 // Defining the trieur configuration
 $trieurConf = new Conf;
-$trieurConf->set('csv', 'driver', 'name')
-    ...
-    ->set('doctrine', 'source', 'name')
+$trieurConf
+    ->set('csv', 'driver', 'name')
     ...
     ->set('doctrine', 'source', 'name')
     ...

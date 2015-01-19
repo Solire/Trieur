@@ -31,12 +31,12 @@ class Trieur extends Atoum
     {
         $handle = fopen($this->csvPath(), 'w');
         $data = [
-            ['1', 'a', '3', 'thomas'],
-            ['2', 'z', '2', 'thomas'],
-            ['3', 'z', '2', 'jérôme'],
-            ['4', 't', '5', 'julie'],
-            ['5', 't', '5', 'abel'],
-            ['6', 'c', '5', 'julie'],
+            ['1', 'a', '3', 'thomas', '2014-02-06'],
+            ['2', 'z', '2', 'thomas', '2014-02-08'],
+            ['3', 'z', '2', 'jérôme', '2014-02-16'],
+            ['4', 't', '5', 'julie', '2014-02-22'],
+            ['5', 't', '5', 'abel', '2014-02-01'],
+            ['6', 'c', '5', 'julie', '2014-02-11'],
         ];
         foreach ($data as $row) {
             fputcsv($handle, $row);
@@ -319,21 +319,127 @@ class Trieur extends Atoum
                 'name' => 'csv',
             ],
             'columns' => [
-                '0' => [],
-                '1' => [],
-                '2' => [],
+                '0' => [
+                    'view' => 'notexisting.php',
+                ],
+            ],
+        ]);
+        $this
+            ->if($trieur = new TestClass($conf, $this->csvPath()))
+            ->exception(function()use($trieur){
+                $trieur->getResponse();
+            })
+                ->hasMessage('The view file "notexisting.php" does not exist or is not readable')
+        ;
+
+        $conf = arrayToConf([
+            'driver' => [
+                'name' => 'csv',
+            ],
+            'source' => [
+                'name' => 'csv',
+            ],
+            'columns' => [
+                '4' => [
+                    'callback' => 'Solire\Trieur\Example\Format::sqlTo',
+                ],
             ],
         ]);
         $this
             ->if($trieur = new TestClass($conf, $this->csvPath()))
             ->string($trieur->getResponse())
                 ->isEqualTo(
-                    '1,a,3' . "\n" .
-                    '2,z,2' . "\n" .
-                    '3,z,2' . "\n" .
-                    '4,t,5' . "\n" .
-                    '5,t,5' . "\n" .
-                    '6,c,5' . "\n"
+                    '06/02/2014' . "\n" .
+                    '08/02/2014' . "\n" .
+                    '16/02/2014' . "\n" .
+                    '22/02/2014' . "\n" .
+                    '01/02/2014' . "\n" .
+                    '11/02/2014' . "\n"
+                )
+        ;
+
+        $conf = arrayToConf([
+            'driver' => [
+                'name' => 'csv',
+            ],
+            'source' => [
+                'name' => 'csv',
+            ],
+            'columns' => [
+                '0' => [
+                    'callback' => [
+                        'name' => '\Solire\Trieur\Example\Format::serialize',
+                        'row' => 0,
+                        'cell' => 1,
+                    ],
+                ],
+            ],
+        ]);
+        $this
+            ->if($trieur = new TestClass($conf, $this->csvPath()))
+            ->string($trieur->getResponse())
+                ->isEqualTo(
+                    '"a:1:{i:0;s:1:""1"";}|1"' . "\n" .
+                    '"a:1:{i:0;s:1:""2"";}|2"' . "\n" .
+                    '"a:1:{i:0;s:1:""3"";}|3"' . "\n" .
+                    '"a:1:{i:0;s:1:""4"";}|4"' . "\n" .
+                    '"a:1:{i:0;s:1:""5"";}|5"' . "\n" .
+                    '"a:1:{i:0;s:1:""6"";}|6"' . "\n"
+                )
+        ;
+
+        $conf = arrayToConf([
+            'driver' => [
+                'name' => 'csv',
+            ],
+            'source' => [
+                'name' => 'csv',
+            ],
+            'columns' => [
+                '0' => [],
+                '1' => [],
+                '2' => [],
+                '3' => [
+                    'hide' => true,
+                ],
+                '4' => [
+                    'callback' => [
+                        'name' => 'Solire\Trieur\Example\Format::sqlTo',
+                        'cell' => 0,
+                        'arguments' => [
+                            'd/m/Y',
+                        ],
+                    ],
+                ],
+                '5' => [
+                    'source' => 0,
+                    'view' => 'view.php',
+                ],
+            ],
+        ]);
+        $this
+            ->if($trieur = new TestClass($conf, $this->csvPath()))
+            ->string($trieur->getResponse())
+                ->isEqualTo(
+                    '1,a,3,06/02/2014,<b>1|a|3|thomas|2014-02-06|1</b>' . "\n" .
+                    '2,z,2,08/02/2014,<b>2|z|2|thomas|2014-02-08|2</b>' . "\n" .
+                    '3,z,2,16/02/2014,<b>3|z|2|jérôme|2014-02-16|3</b>' . "\n" .
+                    '4,t,5,22/02/2014,<b>4|t|5|julie|2014-02-22|4</b>' . "\n" .
+                    '5,t,5,01/02/2014,<b>5|t|5|abel|2014-02-01|5</b>' . "\n" .
+                    '6,c,5,11/02/2014,<b>6|c|5|julie|2014-02-11|6</b>' . "\n"
+                )
+        ;
+
+        $this
+            ->if($trieur = new TestClass($conf, $this->csvPath()))
+            ->string($trieur->getResponse())
+                ->isEqualTo(
+                    '1,a,3,06/02/2014,<b>1|a|3|thomas|2014-02-06|1</b>' . "\n" .
+                    '2,z,2,08/02/2014,<b>2|z|2|thomas|2014-02-08|2</b>' . "\n" .
+                    '3,z,2,16/02/2014,<b>3|z|2|jérôme|2014-02-16|3</b>' . "\n" .
+                    '4,t,5,22/02/2014,<b>4|t|5|julie|2014-02-22|4</b>' . "\n" .
+                    '5,t,5,01/02/2014,<b>5|t|5|abel|2014-02-01|5</b>' . "\n" .
+                    '6,c,5,11/02/2014,<b>6|c|5|julie|2014-02-11|6</b>' . "\n"
                 )
         ;
 
