@@ -2,6 +2,7 @@
 namespace Solire\Trieur\Source;
 
 use Solire\Trieur\Source;
+use Solire\Trieur\SourceSearch;
 use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 use Exception;
@@ -152,7 +153,7 @@ class Csv extends Source
     public function getData()
     {
         $this->parse();
-
+        $this->formate();
         return $this->data;
     }
 
@@ -165,7 +166,7 @@ class Csv extends Source
      */
     protected function addToEligible($newRow)
     {
-        $newRow = $this->formateRow($newRow);
+//        $newRow = $this->formateRow($newRow);
 
         $newOffset = count($this->data);
         foreach ($this->data as $offset => $row) {
@@ -214,6 +215,8 @@ class Csv extends Source
         foreach ($this->orders as $order) {
             list($column, $dir) = $order;
 
+//            var_dump($column);
+
             $test = strnatcasecmp(
                 $row1[$column->name],
                 $row2[$column->name]
@@ -257,9 +260,9 @@ class Csv extends Source
         $this->handle();
 
         $this->data = [];
-        while ($row = $this->fetch()) {
-            if ($this->search($row)) {
-                $this->addToEligible($row);
+        while ($this->row = $this->fetch()) {
+            if ($this->search()) {
+                $this->addToEligible($this->row);
                 $this->filteredCount++;
             }
             $this->count++;
@@ -281,23 +284,30 @@ class Csv extends Source
      *
      * @return boolean
      */
-    protected function search($row)
+//    protected function search($row)
+//    {
+//        if (empty($this->searches)) {
+//            return true;
+//        }
+
+//        foreach ($this->searches as $searches) {
+//            $founed = $this->processSearch($row, $search);
+//            foreach ($searches as $search) {
+//                $founed = $this->processSearch($row, $search);
+//            }
+//
+//            if ($founed === false) {
+//                return false;
+//            }
+//        }
+//
+//        return true;
+//    }
+
+    protected function processSearch(SourceSearch $filter)
     {
-        if (empty($this->searches)) {
-            return true;
-        }
-
-        foreach ($this->searches as $searches) {
-            foreach ($searches as $search) {
-                $founed = $this->processSearch($row, $search);
-            }
-
-            if ($founed === false) {
-                return false;
-            }
-        }
-
-        return true;
+        $filter->setRow($this->row);
+        return $filter->filter();
     }
 
     /**
@@ -308,33 +318,47 @@ class Csv extends Source
      *
      * @return bool
      */
-    protected function processSearch($row, $search)
+//    protected function processSearch($row, $search)
+//    {
+//        $type = 'text';
+//        if (count($search) == 3) {
+//            list($columns, $terms, $type) = $search;
+//        } else {
+//            list($columns, $terms) = $search;
+//        }
+//
+//        if ($type == 'text') {
+//            if (is_array($terms)) {
+//                $term = implode(' ', $terms);
+//            } else {
+//                $term = $terms;
+//            }
+//
+//            $words = preg_split('`\s+`', $term);
+//            foreach ($words as $word) {
+//                foreach ($columns as $column) {
+//                    if (stripos($row[$column], $word) !== false) {
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return false;
+//    }
+
+    /**
+     * Formates the row
+     *
+     * @param array $row The row
+     *
+     * @return array
+     */
+    protected function formate()
     {
-        $type = 'text';
-        if (count($search) == 3) {
-            list($columns, $terms, $type) = $search;
-        } else {
-            list($columns, $terms) = $search;
+        foreach ($this->data as &$row) {
+            $row = $this->formateRow($row);
         }
-
-        if ($type == 'text') {
-            if (is_array($terms)) {
-                $term = implode(' ', $terms);
-            } else {
-                $term = $terms;
-            }
-
-            $words = preg_split('`\s+`', $term);
-            foreach ($words as $word) {
-                foreach ($columns as $column) {
-                    if (stripos($row[$column], $word) !== false) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
     }
 
     /**

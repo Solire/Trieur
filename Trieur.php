@@ -321,7 +321,7 @@ class Trieur extends \Pimple\Container
      */
     public function getResponse()
     {
-        $searches = $this->driver->getFilterTermByColumns();
+        $searches = $this->driver->getFilters();
         if (!empty($searches)) {
             $this->source->addSearches($searches);
         }
@@ -389,7 +389,7 @@ class Trieur extends \Pimple\Container
      */
     protected function formateCell($row, Conf $column)
     {
-        $formateCell = $row[$column->name];
+        $cell = $row[$column->name];
 
         if (isset($column->view)) {
             ob_start();
@@ -412,7 +412,7 @@ class Trieur extends \Pimple\Container
             $function = $column->callback;
 
             if (is_string($function)) {
-                return call_user_func($function, $formateCell);
+                return call_user_func($function, $cell);
             }
 
             $arguments = [];
@@ -421,7 +421,7 @@ class Trieur extends \Pimple\Container
             }
 
             if (isset($function->cell)) {
-                self::insertToArray($arguments, $formateCell, $function->cell);
+                self::insertToArray($arguments, $cell, $function->cell);
             }
 
             if (isset($function->row)) {
@@ -431,7 +431,7 @@ class Trieur extends \Pimple\Container
             return call_user_func_array($function->name, $arguments);
         }
 
-        return $formateCell;
+        return $cell;
     }
 
     /**

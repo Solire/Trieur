@@ -115,7 +115,7 @@ class Csv extends Atoum
             )
             ->integer($c->getCount())
             ->isEqualTo(6)
-            ->array($c->getData())
+            ->phpArray($c->getData())
             ->isEqualTo([
                 ['1', 'a', '3', 'thomas'],
                 ['2', 'z', '2', 'thomas'],
@@ -128,7 +128,7 @@ class Csv extends Atoum
             ->and($c->setOrders([
                 ['1', 'asc']
             ]))
-            ->array($c->getData())
+            ->phpArray($c->getData())
             ->isEqualTo([
                 ['1', 'a', '3', 'thomas'],
                 ['6', 'c', '5', 'julie'],
@@ -139,7 +139,7 @@ class Csv extends Atoum
             ])
 
             ->and($c->addOrder('3', 'asc'))
-            ->array($c->getData())
+            ->phpArray($c->getData())
             ->isEqualTo([
                 ['1', 'a', '3', 'thomas'],
                 ['6', 'c', '5', 'julie'],
@@ -153,7 +153,7 @@ class Csv extends Atoum
                 ['1', 'desc'],
                 ['3', 'desc'],
             ]))
-            ->array($c->getData())
+            ->phpArray($c->getData())
             ->isEqualTo([
                 ['2', 'z', '2', 'thomas'],
                 ['3', 'z', '2', 'jérôme'],
@@ -165,7 +165,7 @@ class Csv extends Atoum
 
             ->and($c->setOffset(2))
             ->and($c->setLength(3))
-            ->array($c->getData())
+            ->phpArray($c->getData())
             ->isEqualTo([
                 ['4', 't', '5', 'julie'],
                 ['5', 't', '5', 'abel'],
@@ -176,14 +176,13 @@ class Csv extends Atoum
             ->and(
                 $c->setSearches([
                     [
-                        [
-                            [3],
-                            ['a'],
-                        ],
+                        [3],
+                        ['a'],
+                        'Contain'
                     ],
                 ])
             )
-            ->array($c->getData())
+            ->phpArray($c->getData())
             ->isEqualTo([
                 ['2', 'z', '2', 'thomas'],
                 ['5', 't', '5', 'abel'],
@@ -191,13 +190,13 @@ class Csv extends Atoum
             ])
 
             ->and(
-                $c->addSearch([[
+                $c->addSearch([
                     [3],
                     'th',
-                    'text'
-                ]])
+                    'Contain'
+                ])
             )
-            ->array($c->getData())
+            ->phpArray($c->getData())
             ->isEqualTo([
                 ['2', 'z', '2', 'thomas'],
                 ['1', 'a', '3', 'thomas'],

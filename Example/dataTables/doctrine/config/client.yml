@@ -51,6 +51,7 @@ columns:
 #    label: columnLabel
 #    sort: 1|0
 #    filter: 1|0
+#    filterType: Contain
 #    filterType: text, dateRange...
 #    source: source expression (for example a column)
 #    sourceFilter: source expression (for example a column)
@@ -59,43 +60,74 @@ columns:
 
   societe:
     label: Société
+
     filter: 1
+    driverFilterType: text
+    sourceFilterType: Contain
+
     sort: 1
-    source: c.societe
+    source: societe
+    sourceFilter: c.societe
+    sourceSort: c.societe
   email:
     label: Email
+
     filter: 1
+    driverFilterType: text
+    sourceFilterType: Contain
+
     sort: 1
-    source: c.email
+    source: email
+    sourceFilter: c.email
+    sourceSort: c.email
   tel:
     label: Téléphone
+
     filter: 1
+    driverFilterType: text
+    sourceFilterType: Contain
+
     sort: 1
     source: a.tel1
   nom:
     label: Nom
+
     filter: 1
+    driverFilterType: text
+    sourceFilterType: Contain
+
     sort: 1
     source: c.nom
   prenom:
     label: Prénom
+
     filter: 1
+    driverFilterType: text
+    sourceFilterType: Contain
+
     sort: 1
     source: c.prenom
   offre:
     label: Offre
+
     filter: 0
+
     sort: 1
     source: offre
   adresse:
     label: Adresse
+
     filter: 0
+
     sort: 0
     callback: strip_tags
   time_inscription:
     label: Date
+
     filter: true
-    filterType: dateRange
+    driverFilterType: dateRange
+    sourceFilterType: DateRange
+
     sort: true
     sourceFilter: DATE(c.time_inscription)
     sourceSort: c.time_inscription

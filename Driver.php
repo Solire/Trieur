@@ -79,18 +79,11 @@ abstract class Driver
     abstract public function getOrder();
 
     /**
-     * Return the filter term
+     * Return the filters
      *
-     * @return string
+     * @return mixed
      */
-    abstract public function getFilterTerm();
-
-    /**
-     * Return the filter terms for each columns
-     *
-     * @return array
-     */
-    abstract public function getFilterTermByColumns();
+    abstract public function getFilters();
 
     /**
      * Returns the response

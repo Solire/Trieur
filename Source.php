@@ -3,6 +3,7 @@ namespace Solire\Trieur;
 
 use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
+use Exception;
 
 /**
  * Data connection abstract class
@@ -83,12 +84,13 @@ abstract class Source
     /**
      * Set the searches
      *
-     * @param array $searches An array of arrays where the first element is an array of columns or
-     * expressions and the second element is an array of terms to look for
+     * @param array $searches An array of arrays where the first element is an
+     * array of columns or expressions and the second element is an array of
+     * terms to look for
      *
      * @return void
      */
-    public function setSearches($searches)
+    final public function setSearches($searches)
     {
         $this->searches = [];
         $this->addSearches($searches);
@@ -97,12 +99,13 @@ abstract class Source
     /**
      * Add multiple searches
      *
-     * @param array $searches An array of arrays where the first element is an array of columns or
-     * expressions and the second element is an array of terms to look for
+     * @param array $searches An array of arrays where the first element is an
+     * array of columns or expressions and the second element is an array of
+     * terms to look for
      *
      * @return void
      */
-    public function addSearches($searches)
+    final public function addSearches($searches)
     {
         $this->searches = array_merge($this->searches, $searches);
     }
@@ -116,7 +119,7 @@ abstract class Source
      *
      * @return void
      */
-    public function addSearch($search)
+    final public function addSearch($search)
     {
         $this->searches[] = $search;
     }
@@ -128,7 +131,7 @@ abstract class Source
      *
      * @return void
      */
-    public function setOffset($offset)
+    final public function setOffset($offset)
     {
         $this->offset = $offset;
     }
@@ -140,7 +143,7 @@ abstract class Source
      *
      * @return void
      */
-    public function setLength($length)
+    final public function setLength($length)
     {
         $this->length = $length;
     }
@@ -153,7 +156,7 @@ abstract class Source
      *
      * @return void
      */
-    public function setOrders($orders)
+    final public function setOrders($orders)
     {
         $this->orders = [];
         foreach ($orders as $order) {
@@ -170,13 +173,62 @@ abstract class Source
      *
      * @return void
      */
-    public function addOrder($column, $direction = 'ASC')
+    final public function addOrder($column, $direction = 'ASC')
     {
         if (!is_object($column)) {
             $column = $this->columns->get($column);
         }
         $this->orders[] = [$column, $direction];
     }
+
+    final public function search()
+    {
+        foreach ($this->searches as $search)
+        {
+            list($columns, $term, $searchType) = $search;
+
+            if (empty($columns)) {
+                return true;
+            }
+
+            $search = $this->instantiateSearch($columns, $term, $searchType);
+            $status = $this->processSearch($search);
+
+            if (!$status) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function instantiateSearch($columns, $term, $searchType)
+    {
+        $className = $this->getSearchClassName($searchType);
+
+        return new $className($columns, $term);
+
+    }
+
+    private function getSearchClassName($searchType)
+    {
+        $className = $searchType;
+        if (class_exists($className)) {
+            return $className;
+        }
+
+        $r = new \ReflectionClass($this);
+        $className = $r->getName() . '\\' . $searchType;
+        if (class_exists($className)) {
+            return $className;
+        }
+
+        throw new Exception(
+            sprintf('No search class found for type [%s]', $searchType)
+        );
+    }
+
+    abstract protected function processSearch(SourceSearch $filter);
 
     /**
      * Return the total of available lines

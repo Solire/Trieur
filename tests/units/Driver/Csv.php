@@ -29,13 +29,13 @@ class Csv extends Atoum
             ->and($c->setRequest([]))
             ->array($c->getOrder())
                 ->isEqualTo([])
-            ->array($c->getFilterTermByColumns())
+            ->array($c->getFilters())
                 ->isEqualTo([])
             ->variable($c->getOffset())
                 ->isNull()
             ->variable($c->getLength())
                 ->isNull()
-            ->string($c->getFilterTerm())
+            ->phpArray($c->getFilters())
                 ->isEmpty()
             ->string($c->getResponse([
                 [

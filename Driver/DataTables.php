@@ -40,7 +40,7 @@ class DataTables extends Driver
      *
      * @return array
      */
-    public function getFilterTermByColumns()
+    public function getFilters()
     {
         $filteredColumns = [];
         $allSourceFilter = [];
@@ -57,49 +57,38 @@ class DataTables extends Driver
                 continue;
             }
 
+            $filterType = $this->columns->getColumnAttribut($column, [
+                'sourceFilterType',
+                'filterType',
+            ], 'Contain');
+
             $sourceFilter = $this->columns->getColumnSourceFilter($column);
             if (!is_array($sourceFilter)) {
-                $sourceFilter = (array) $sourceFilter;
+                $sourceFilter = [$sourceFilter];
             }
-            $allSourceFilter = array_merge($allSourceFilter, $sourceFilter);
+
+            if ($filterType == 'Contain') {
+                $allSourceFilter = array_merge($allSourceFilter, $sourceFilter);
+            }
 
             $term = $this->getColumnTerm($clientColumn);
             if ($term === '') {
                 continue;
             }
 
-            $filterType = $this->columns->getColumnFilterType($column);
-
-            if ($filterType == 'dateRange') {
+            if (isset($this->config->separator)
+                && !empty($this->config->separator)
+            ) {
                 $terms = explode($this->config->separator, $term);
-
-                $col = [
-                    '',
-                    '',
-                ];
-
-                if (!empty($terms[0])) {
-                    $col[0] = $terms[0];
-                }
-
-                if (!empty($terms[1])) {
-                    $col[1] = $terms[1];
-                }
-
-                $filteredColumns[] = [
-                    [$sourceFilter, $col, 'dateRange']
-                ];
             } else {
-                $filteredColumns[] = [
-                    [$sourceFilter, $term, 'text']
-                ];
+                $terms = [$term];
             }
+
+            $filteredColumns[] = [$sourceFilter, $terms, $filterType];
         }
 
         if ($this->getFilterTerm() !== '') {
-            $filteredColumns[] = [
-                [$allSourceFilter, $this->getFilterTerm(), 'text']
-            ];
+            $filteredColumns[] = [$allSourceFilter, $this->getFilterTerm(), 'Contain'];
         }
 
         return $filteredColumns;
@@ -180,11 +169,11 @@ class DataTables extends Driver
         $cols = [];
         foreach ($this->columns as $ii => $col) {
             $dCol = [
-                'orderable'     => (bool) $col->sort,
-                'searchable'    => (bool) $col->filter,
-                'data'          => $col->name,
-                'name'          => $col->name,
-                'title'         => $this->columns->getColumnAttribut($col, ['label', 'name']),
+                'orderable' => (bool) $col->sort,
+                'searchable' => (bool) $col->filter,
+                'data' => $col->name,
+                'name' => $col->name,
+                'title' => $this->columns->getColumnAttribut($col, ['label', 'name']),
             ];
 
             if (isset($col->width)) {
@@ -306,13 +295,11 @@ class DataTables extends Driver
                 continue;
             }
 
-            $columnConfig = [
-                'type' => 'text',
-            ];
-
-            if (isset($column->filterType)) {
-                $columnConfig['type'] = $column->filterType;
-            }
+            $columnConfig = [];
+            $columnConfig['type'] = $this->columns->getColumnAttribut($column, [
+                'driverFilterType',
+                'filterType',
+            ], 'text');
 
             $config[$index] = $columnConfig;
         }

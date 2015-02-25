@@ -155,7 +155,7 @@ class Columns implements \IteratorAggregate
      */
     public function getColumnFilterType($index)
     {
-        return $this->getColumnAttribut($index, ['filterType'], 'text');
+        return $this->getColumnAttribut($index, ['filterType'], 'Contain');
     }
 
     /**
