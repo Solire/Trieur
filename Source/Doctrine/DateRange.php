@@ -1,8 +1,6 @@
 <?php
 namespace Solire\Trieur\Source\Doctrine;
 
-use Doctrine\DBAL\Query\QueryBuilder;
-
 class DateRange extends Search
 {
     /**
@@ -25,13 +23,6 @@ class DateRange extends Search
      * @var string
      */
     protected $to;
-
-    /**
-     * QueryBuilder
-     *
-     * @var QueryBuilder
-     */
-    protected $queryBuilder;
 
     const MASK = '#^\d{4}\-\d{2}\-\d{2}$#';
 

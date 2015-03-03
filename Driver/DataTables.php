@@ -57,12 +57,9 @@ class DataTables extends Driver
                 continue;
             }
 
-            $filterType = $this->columns->getColumnAttribut($column, [
-                'sourceFilterType',
-                'filterType',
-            ], 'Contain');
+            $filterType = $column->sourceFilterType;
 
-            $sourceFilter = $this->columns->getColumnSourceFilter($column);
+            $sourceFilter = $column->sourceFilter;
             if (!is_array($sourceFilter)) {
                 $sourceFilter = [$sourceFilter];
             }
@@ -167,21 +164,21 @@ class DataTables extends Driver
     public function getJsColsConfig()
     {
         $cols = [];
-        foreach ($this->columns as $ii => $col) {
+        foreach ($this->columns as $ii => $column) {
             $dCol = [
-                'orderable' => (bool) $col->sort,
-                'searchable' => (bool) $col->filter,
-                'data' => $col->name,
-                'name' => $col->name,
-                'title' => $this->columns->getColumnAttribut($col, ['label', 'name']),
+                'orderable' => (bool) $column->sort,
+                'searchable' => (bool) $column->filter,
+                'data' => $column->name,
+                'name' => $column->name,
+                'title' => $column->label,
             ];
 
-            if (isset($col->width)) {
-                $dCol['width'] = $col->width;
+            if (isset($column->width)) {
+                $dCol['width'] = $column->width;
             }
 
-            if (isset($col->class)) {
-                $dCol['className'] = $col->class;
+            if (isset($column->class)) {
+                $dCol['className'] = $column->class;
             }
 
             $cols[] = $dCol;
@@ -296,10 +293,7 @@ class DataTables extends Driver
             }
 
             $columnConfig = [];
-            $columnConfig['type'] = $this->columns->getColumnAttribut($column, [
-                'driverFilterType',
-                'filterType',
-            ], 'text');
+            $columnConfig['type'] = $column->driverFilterType;
 
             $config[$index] = $columnConfig;
         }

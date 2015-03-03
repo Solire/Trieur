@@ -2,7 +2,6 @@
 namespace Solire\Trieur;
 
 use Solire\Conf\Conf;
-use Exception;
 
 /**
  * Columns configuration
@@ -12,6 +11,46 @@ use Exception;
  */
 class Columns implements \IteratorAggregate
 {
+    protected static $fields = [
+        'label' => [
+            'fields' => [
+                'name',
+            ],
+        ],
+        'source' => [
+            'fields' => [
+                'name',
+            ],
+        ],
+        'sourceName' => [
+            'fields' => [
+                'name',
+            ],
+        ],
+        'sourceSort' => [
+            'fields' => [
+                'source',
+            ],
+        ],
+        'sourceFilter' => [
+            'fields' => [
+                'source',
+            ],
+        ],
+        'driverFilterType' => [
+            'fields' => [
+                'filterType',
+            ],
+            'default' => 'text',
+        ],
+        'sourceFilterType' => [
+            'fields' => [
+                'filterType',
+            ],
+            'default' => 'Contain',
+        ],
+    ];
+
     /**
      * List of columns with name index
      *
@@ -35,11 +74,35 @@ class Columns implements \IteratorAggregate
     {
         $index = 0;
         foreach ($columns as $name => $column) {
-            $column->name = $name;
+            $this->buildColumnConf($name, $column);
             $this->columnsByIndex[$index] = $column;
             $this->columnsByName[$name] = $column;
 
             $index++;
+        }
+    }
+
+    protected function buildColumnConf($name, Conf $column)
+    {
+        $column->name = $name;
+
+        foreach (self::$fields as $fieldName => $defaults) {
+            if ($column->has($fieldName)) {
+                continue;
+            }
+
+            foreach ($defaults['fields'] as $field) {
+                if ($column->has($field)) {
+                    $column->set($column->get($field), $fieldName);
+                    break;
+                }
+            }
+
+            if ($column->has($fieldName)) {
+                continue;
+            }
+
+            $column->set($defaults['default'], $fieldName);
         }
     }
 
@@ -62,100 +125,6 @@ class Columns implements \IteratorAggregate
         }
 
         throw new Exception('Undefined index "' . $index . '" in the columns list');
-    }
-
-    /**
-     * Get a column attribut
-     *
-     * @param string|Conf $index        Column's index, name or the column object itself
-     * @param array       $keys         Array of keys of the column configuration, the first founed
-     * will be returned
-     * @param string      $defaultValue If no keys where founed, then it returns
-     * this value
-     *
-     * @return mixed
-     * @throws Exception If none of the keys where founed, and no defaultValue
-     * specified
-     */
-    public function getColumnAttribut($index, array $keys, $defaultValue = null)
-    {
-        if (is_object($index)) {
-            $column = $index;
-        } else {
-            $column = $this->get($index);
-        }
-
-        foreach ($keys as $key) {
-            if (isset($column->$key)) {
-                return $column->$key;
-            }
-        }
-
-        if ($defaultValue === null) {
-            throw new Exception(
-                'None of these indexes found "' . implode(',', $keys) . '" in the '
-                . 'columns list'
-            );
-        }
-
-        return $defaultValue;
-    }
-
-    /**
-     * Return the column source parameter
-     *
-     * @param string|Conf $index Column's index, name or the column object itself
-     * @param string      $key   Key of the column configuration, the first founed
-     * will be returned
-     *
-     * @return mixed
-     */
-    public function getColumnSource($index, $key = null)
-    {
-        $keys = [
-            'source',
-            'name',
-        ];
-        if ($key !== null) {
-            array_unshift($keys, $key);
-        }
-        return $this->getColumnAttribut($index, $keys);
-    }
-
-    /**
-     * Return the column source sort parameter
-     *
-     * @param string|Conf $index Column's index, name or the column object itself
-     *
-     * @return mixed
-     */
-    public function getColumnSourceSort($index)
-    {
-        return $this->getColumnSource($index, 'sourceSort');
-    }
-
-    /**
-     * Return the column source filter parameter
-     *
-     * @param string|Conf $index Column's index, name or the column object itself
-     *
-     * @return mixed
-     */
-    public function getColumnSourceFilter($index)
-    {
-        return $this->getColumnSource($index, 'sourceFilter');
-    }
-
-    /**
-     * Return the column filter_type
-     *
-     * @param string|Conf $index Column's index, name or the column object itself
-     *
-     * @return string
-     */
-    public function getColumnFilterType($index)
-    {
-        return $this->getColumnAttribut($index, ['filterType'], 'Contain');
     }
 
     /**

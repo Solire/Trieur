@@ -3,6 +3,7 @@ namespace Solire\Trieur\Source;
 
 use Solire\Trieur\Source;
 use Solire\Trieur\Columns;
+use Solire\Trieur\Exception;
 use Solire\Conf\Conf;
 use Solire\Trieur\SourceSearch;
 use Doctrine\DBAL\Connection as DoctrineConnection;
@@ -49,7 +50,7 @@ class Doctrine extends Source
         Columns $columns,
         DoctrineConnection $connection
     ) {
-         parent::__construct($conf, $columns, $connection);
+        parent::__construct($conf, $columns, $connection);
 
         $this->buildQuery();
     }
@@ -198,7 +199,7 @@ class Doctrine extends Source
                 list($column, $dir) = $order;
 
                 $this->currentQueryBuilder->addOrderBy(
-                    $this->columns->getColumnSourceSort($column),
+                    $column->sourceSort,
                     $dir
                 );
             }

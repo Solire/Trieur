@@ -2,7 +2,6 @@
 namespace Solire\Trieur;
 
 use Solire\Conf\Conf;
-use Exception;
 
 /**
  * Trieur
@@ -348,6 +347,7 @@ class Trieur extends \Pimple\Container
     protected function formate($data)
     {
         $dataFormated = array();
+
         foreach ($data as $row) {
             $rowFormated = $this->formateRow($row);
             if ($rowFormated) {
@@ -376,20 +376,21 @@ class Trieur extends \Pimple\Container
             $cellFormated = $this->formateCell($row, $column);
             $rowFormated[$column->name] = $cellFormated;
         }
+
         return $rowFormated;
     }
 
     /**
      * Formate a source cell
      *
-     * @param array $row    The row
+     * @param array $row    The source row
      * @param Conf  $column The cell's column
      *
      * @return string
      */
     protected function formateCell($row, Conf $column)
     {
-        $cell = $row[$column->name];
+        $cell = $row[$column->sourceName];
 
         if (isset($column->view)) {
             ob_start();

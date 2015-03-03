@@ -8,12 +8,16 @@ class Contain extends Search
         /*
          * Variable qui contient la chaine de recherche
          */
-        $stringSearch = trim($this->terms);
+        if (is_array($this->terms)) {
+            $stringSearch = implode(' ', $this->terms);
+        } else {
+            $stringSearch = $this->terms;
+        }
 
         /*
          * On divise en mots (séparé par des espace)
          */
-        $words = preg_split('`\s+`', $stringSearch);
+        $words = preg_split('`\s+`', $stringSearch, -1, PREG_SPLIT_NO_EMPTY);
 
         if (count($words) > 1) {
             array_unshift($words, $stringSearch);

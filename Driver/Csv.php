@@ -3,6 +3,7 @@ namespace Solire\Trieur\Driver;
 
 use Solire\Trieur\Driver;
 use Solire\Trieur\Columns;
+use Solire\Trieur\Exception;
 use Solire\Conf\Conf;
 
 /**

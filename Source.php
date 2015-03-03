@@ -3,7 +3,6 @@ namespace Solire\Trieur;
 
 use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
-use Exception;
 
 /**
  * Data connection abstract class
@@ -181,27 +180,43 @@ abstract class Source
         $this->orders[] = [$column, $direction];
     }
 
+    /**
+     * Adds the différent search filter
+     *
+     * @return boolean
+     */
     final public function search()
     {
+        $itsAMatch = true;
+
         foreach ($this->searches as $search)
         {
             list($columns, $term, $searchType) = $search;
 
             if (empty($columns)) {
-                return true;
+                continue;
             }
 
             $search = $this->instantiateSearch($columns, $term, $searchType);
             $status = $this->processSearch($search);
 
             if (!$status) {
-                return false;
+                $itsAMatch = false;
             }
         }
 
-        return true;
+        return $itsAMatch;
     }
 
+    /**
+     * Instantiate an object to do the search
+     *
+     * @param array  $columns    Array of columns
+     * @param mixed  $term       The term(s) we're looking for
+     * @param string $searchType The search type
+     *
+     * @return SourceSearch
+     */
     private function instantiateSearch($columns, $term, $searchType)
     {
         $className = $this->getSearchClassName($searchType);
@@ -210,6 +225,14 @@ abstract class Source
 
     }
 
+    /**
+     * Returns the name of the search class
+     *
+     * @param string $searchType The search type (Contain, DateRange etc.)
+     *
+     * @return string
+     * @throws Exception
+     */
     private function getSearchClassName($searchType)
     {
         $className = $searchType;
@@ -228,6 +251,13 @@ abstract class Source
         );
     }
 
+    /**
+     * Do the search and returns true if it's a success, false otherwise
+     *
+     * @param SourceSearch $filter The search object
+     *
+     * @return bool
+     */
     abstract protected function processSearch(SourceSearch $filter);
 
     /**
