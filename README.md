@@ -1,6 +1,10 @@
 README
 ======
 
+[![Latest Stable Version](https://poser.pugx.org/solire/trieur/v/stable.png)](https://packagist.org/packages/solire/trieur) 
+[![Total Downloads](https://poser.pugx.org/solire/trieur/downloads.png)](https://packagist.org/packages/solire/trieur)
+
+
 ## TRIEUR
 Trieur is a php library to sort, filter data with differents
 * data source (database, csv file...) managed by the <a href="https://github.com/Solire/Trieur/tree/master/Source">Source classes</a>
