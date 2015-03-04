@@ -83,12 +83,13 @@ abstract class Source
     /**
      * Set the searches
      *
-     * @param array $searches An array of arrays where the first element is an array of columns or
-     * expressions and the second element is an array of terms to look for
+     * @param array $searches An array of arrays where the first element is an
+     * array of columns or expressions and the second element is an array of
+     * terms to look for
      *
      * @return void
      */
-    public function setSearches($searches)
+    final public function setSearches($searches)
     {
         $this->searches = [];
         $this->addSearches($searches);
@@ -97,12 +98,13 @@ abstract class Source
     /**
      * Add multiple searches
      *
-     * @param array $searches An array of arrays where the first element is an array of columns or
-     * expressions and the second element is an array of terms to look for
+     * @param array $searches An array of arrays where the first element is an
+     * array of columns or expressions and the second element is an array of
+     * terms to look for
      *
      * @return void
      */
-    public function addSearches($searches)
+    final public function addSearches($searches)
     {
         $this->searches = array_merge($this->searches, $searches);
     }
@@ -116,7 +118,7 @@ abstract class Source
      *
      * @return void
      */
-    public function addSearch($search)
+    final public function addSearch($search)
     {
         $this->searches[] = $search;
     }
@@ -128,7 +130,7 @@ abstract class Source
      *
      * @return void
      */
-    public function setOffset($offset)
+    final public function setOffset($offset)
     {
         $this->offset = $offset;
     }
@@ -140,7 +142,7 @@ abstract class Source
      *
      * @return void
      */
-    public function setLength($length)
+    final public function setLength($length)
     {
         $this->length = $length;
     }
@@ -153,7 +155,7 @@ abstract class Source
      *
      * @return void
      */
-    public function setOrders($orders)
+    final public function setOrders($orders)
     {
         $this->orders = [];
         foreach ($orders as $order) {
@@ -170,13 +172,93 @@ abstract class Source
      *
      * @return void
      */
-    public function addOrder($column, $direction = 'ASC')
+    final public function addOrder($column, $direction = 'ASC')
     {
         if (!is_object($column)) {
             $column = $this->columns->get($column);
         }
         $this->orders[] = [$column, $direction];
     }
+
+    /**
+     * Adds the différent search filter
+     *
+     * @return boolean
+     */
+    final public function search()
+    {
+        $itsAMatch = true;
+
+        foreach ($this->searches as $search)
+        {
+            list($columns, $term, $searchType) = $search;
+
+            if (empty($columns)) {
+                continue;
+            }
+
+            $search = $this->instantiateSearch($columns, $term, $searchType);
+            $status = $this->processSearch($search);
+
+            if (!$status) {
+                $itsAMatch = false;
+            }
+        }
+
+        return $itsAMatch;
+    }
+
+    /**
+     * Instantiate an object to do the search
+     *
+     * @param array  $columns    Array of columns
+     * @param mixed  $term       The term(s) we're looking for
+     * @param string $searchType The search type
+     *
+     * @return SourceSearch
+     */
+    private function instantiateSearch($columns, $term, $searchType)
+    {
+        $className = $this->getSearchClassName($searchType);
+
+        return new $className($columns, $term);
+
+    }
+
+    /**
+     * Returns the name of the search class
+     *
+     * @param string $searchType The search type (Contain, DateRange etc.)
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function getSearchClassName($searchType)
+    {
+        $className = $searchType;
+        if (class_exists($className)) {
+            return $className;
+        }
+
+        $r = new \ReflectionClass($this);
+        $className = $r->getName() . '\\' . $searchType;
+        if (class_exists($className)) {
+            return $className;
+        }
+
+        throw new Exception(
+            sprintf('No search class found for type [%s]', $searchType)
+        );
+    }
+
+    /**
+     * Do the search and returns true if it's a success, false otherwise
+     *
+     * @param SourceSearch $filter The search object
+     *
+     * @return bool
+     */
+    abstract protected function processSearch(SourceSearch $filter);
 
     /**
      * Return the total of available lines

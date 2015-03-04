@@ -2,7 +2,6 @@
 namespace Solire\Trieur;
 
 use Solire\Conf\Conf;
-use Exception;
 
 /**
  * Trieur
@@ -321,7 +320,7 @@ class Trieur extends \Pimple\Container
      */
     public function getResponse()
     {
-        $searches = $this->driver->getFilterTermByColumns();
+        $searches = $this->driver->getFilters();
         if (!empty($searches)) {
             $this->source->addSearches($searches);
         }
@@ -348,6 +347,7 @@ class Trieur extends \Pimple\Container
     protected function formate($data)
     {
         $dataFormated = array();
+
         foreach ($data as $row) {
             $rowFormated = $this->formateRow($row);
             if ($rowFormated) {
@@ -376,20 +376,21 @@ class Trieur extends \Pimple\Container
             $cellFormated = $this->formateCell($row, $column);
             $rowFormated[$column->name] = $cellFormated;
         }
+
         return $rowFormated;
     }
 
     /**
      * Formate a source cell
      *
-     * @param array $row    The row
+     * @param array $row    The source row
      * @param Conf  $column The cell's column
      *
      * @return string
      */
     protected function formateCell($row, Conf $column)
     {
-        $formateCell = $row[$column->name];
+        $cell = $row[$column->sourceName];
 
         if (isset($column->view)) {
             ob_start();
@@ -412,7 +413,7 @@ class Trieur extends \Pimple\Container
             $function = $column->callback;
 
             if (is_string($function)) {
-                return call_user_func($function, $formateCell);
+                return call_user_func($function, $cell);
             }
 
             $arguments = [];
@@ -421,7 +422,7 @@ class Trieur extends \Pimple\Container
             }
 
             if (isset($function->cell)) {
-                self::insertToArray($arguments, $formateCell, $function->cell);
+                self::insertToArray($arguments, $cell, $function->cell);
             }
 
             if (isset($function->row)) {
@@ -431,7 +432,7 @@ class Trieur extends \Pimple\Container
             return call_user_func_array($function->name, $arguments);
         }
 
-        return $formateCell;
+        return $cell;
     }
 
     /**

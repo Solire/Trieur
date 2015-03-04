@@ -7,7 +7,7 @@ use Solire\Trieur\Trieur;
 class Config
 {
     public static $jsConfig = null;
-    public static $jsYadcfConfig = null;
+    public static $jsColumnFilterConfig = null;
 
     public static function run()
     {
@@ -18,7 +18,7 @@ class Config
         $trieur = new Trieur($conf);
 
         self::$jsConfig = $trieur->getDriver()->getJsConfig();
-        self::$jsYadcfConfig = $trieur->getDriver()->getYadcfConfig();
+        self::$jsColumnFilterConfig = $trieur->getDriver()->getColumnFilterConfig();
     }
 }
 
@@ -26,5 +26,5 @@ $jsConfig = Config::run();
 header('Content-type: application/json');
 echo json_encode([
     'config' => Config::$jsConfig,
-    'yadcfConfig' => Config::$jsYadcfConfig,
+    'columnFilterConfig' => Config::$jsColumnFilterConfig,
 ]);

@@ -3,6 +3,7 @@ namespace Solire\Trieur\Driver;
 
 use Solire\Trieur\Driver;
 use Solire\Trieur\Columns;
+use Solire\Trieur\Exception;
 use Solire\Conf\Conf;
 
 /**
@@ -65,22 +66,7 @@ class Csv extends Driver
         return [];
     }
 
-    /**
-     * Return the filter term
-     *
-     * @return string
-     */
-    public function getFilterTerm()
-    {
-        return '';
-    }
-
-    /**
-     * Return the filter terms for each columns
-     *
-     * @return array
-     */
-    public function getFilterTermByColumns()
+    public function getFilters()
     {
         return [];
     }
