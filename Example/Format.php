@@ -4,7 +4,7 @@ namespace Solire\Trieur\Example;
 /**
  * Format class tool example
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 class Format

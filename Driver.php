@@ -7,7 +7,7 @@ use Solire\Conf\Conf;
 /**
  * Datatables driver
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 abstract class Driver

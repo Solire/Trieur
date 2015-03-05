@@ -10,7 +10,7 @@ use Solire\Conf\Conf;
 /**
  * Doctrine connection wrapper
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 class Csv extends Source

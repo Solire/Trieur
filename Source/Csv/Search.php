@@ -4,9 +4,10 @@ namespace Solire\Trieur\Source\Csv;
 use Solire\Trieur\SourceSearch;
 
 /**
- * Description of Search
+ * Csv abstract search class
  *
- * @author thansen
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
  */
 abstract class Search extends SourceSearch
 {
@@ -18,9 +19,9 @@ abstract class Search extends SourceSearch
     protected $row;
 
     /**
-     * Sets the query builder
+     * Sets the row
      *
-     * @param QueryBuilder $queryBuilder The querybuilder
+     * @param array $row The row
      *
      * @return void
      */

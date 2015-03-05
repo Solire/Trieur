@@ -7,7 +7,7 @@ use Solire\Conf\Conf;
 /**
  * Data connection abstract class
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 abstract class Source
@@ -66,9 +66,9 @@ abstract class Source
     /**
      * Constructor
      *
-     * @param mixed   $connection The connection
      * @param Conf    $conf       The configuration
      * @param Columns $columns    The columns configuration
+     * @param mixed   $connection The connection
      */
     public function __construct(
         Conf $conf,
@@ -189,8 +189,7 @@ abstract class Source
     {
         $itsAMatch = true;
 
-        foreach ($this->searches as $search)
-        {
+        foreach ($this->searches as $search) {
             list($columns, $term, $searchType) = $search;
 
             if (empty($columns)) {

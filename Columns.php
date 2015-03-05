@@ -6,7 +6,7 @@ use Solire\Conf\Conf;
 /**
  * Columns configuration
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 class Columns implements \IteratorAggregate
@@ -82,6 +82,14 @@ class Columns implements \IteratorAggregate
         }
     }
 
+    /**
+     * Build / complete the configuration of a column
+     *
+     * @param type $name   The name of the column
+     * @param Conf $column The column configuration
+     *
+     * @return void
+     */
     protected function buildColumnConf($name, Conf $column)
     {
         $column->name = $name;

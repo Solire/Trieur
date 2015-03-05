@@ -9,7 +9,7 @@ use Solire\Conf\Conf;
 /**
  * Datatables driver
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 class Csv extends Driver
@@ -66,6 +66,11 @@ class Csv extends Driver
         return [];
     }
 
+    /**
+     * Return the filters
+     *
+     * @return mixed
+     */
     public function getFilters()
     {
         return [];

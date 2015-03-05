@@ -12,7 +12,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 /**
  * Doctrine connection wrapper
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 class Doctrine extends Source
@@ -41,9 +41,9 @@ class Doctrine extends Source
     /**
      * Constructor
      *
-     * @param DoctrineConnection $connection The connection
      * @param Conf               $conf       The configuration
      * @param Columns            $columns    The columns configuration
+     * @param DoctrineConnection $connection The connection
      */
     public function __construct(
         Conf $conf,
@@ -164,11 +164,11 @@ class Doctrine extends Source
     }
 
     /**
+     * Process the search
      *
+     * @param Doctrine\Search $filter The filter class
      *
-     * @param Doctrine\Search $filter
-     *
-     *
+     * @return void
      */
     protected function processSearch(SourceSearch $filter)
     {

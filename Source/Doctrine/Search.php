@@ -5,9 +5,10 @@ use Solire\Trieur\SourceSearch;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
- * Description of Search
+ * Doctrine abstract search class
  *
- * @author thansen
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
  */
 abstract class Search extends SourceSearch
 {
