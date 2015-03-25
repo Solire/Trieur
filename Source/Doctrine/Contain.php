@@ -1,8 +1,19 @@
 <?php
 namespace Solire\Trieur\Source\Doctrine;
 
+/**
+ * Doctrine search class for Contain filter
+ *
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
+ */
 class Contain extends Search
 {
+    /**
+     * Filter
+     *
+     * @return void
+     */
     public function filter()
     {
         /*
