@@ -35,7 +35,7 @@ class Contain extends Search
         }
 
         $conds = [];
-        $orderBy     = [];
+        $orderBy = [];
         foreach ($words as $word) {
             foreach ($this->columns as $key => $value) {
                 if (is_numeric($value)) {
