@@ -31,6 +31,9 @@ abstract class SourceSearch
      */
     public function __construct($columns, $terms)
     {
+        if (!is_array($columns)) {
+            $columns = [$columns];
+        }
         $this->columns = $columns;
         $this->terms = $terms;
     }

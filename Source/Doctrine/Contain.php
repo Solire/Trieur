@@ -38,18 +38,16 @@ class Contain extends Search
         $orderBy = [];
         foreach ($words as $word) {
             foreach ($this->columns as $key => $value) {
-                if (is_numeric($value)) {
-                    $pond    = $value;
-                    $colName = $key;
-                } else {
-                    $pond    = 1;
-                    $colName = $value;
-                }
+                /**
+                 * @todo add a ponderation array to the constructor
+                 */
+                $pond    = 1;
+                $colName = $value;
 
                 $cond = $colName . ' LIKE '
                       . $this->queryBuilder->getConnection()->quote('%' . $word . '%');
                 $conds[] = $cond;
-                $orderBy[]      = 'IF(' . $cond . ', ' . mb_strlen($word) * $pond . ', 0)';
+                $orderBy[] = 'IF(' . $cond . ', ' . mb_strlen($word) * $pond . ', 0)';
             }
         }
 
