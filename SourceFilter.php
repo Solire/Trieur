@@ -2,12 +2,12 @@
 namespace Solire\Trieur;
 
 /**
- * Description of SourceSearch
+ * Description of SourceFilter
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-abstract class SourceSearch
+abstract class SourceFilter
 {
     /**
      * Columns where to look

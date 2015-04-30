@@ -174,7 +174,7 @@ class Csv extends Atoum
 
             ->and($c->setOffset(0))
             ->and(
-                $c->setSearches([
+                $c->setFilters([
                     [
                         [3],
                         ['a'],
@@ -190,7 +190,7 @@ class Csv extends Atoum
             ])
 
             ->and(
-                $c->addSearch([
+                $c->addFilter([
                     [3],
                     'th',
                     'Contain'

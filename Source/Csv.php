@@ -2,7 +2,7 @@
 namespace Solire\Trieur\Source;
 
 use Solire\Trieur\Source;
-use Solire\Trieur\SourceSearch;
+use Solire\Trieur\SourceFilter;
 use Solire\Trieur\Columns;
 use Solire\Trieur\Exception;
 use Solire\Conf\Conf;
@@ -134,7 +134,7 @@ class Csv extends Source
     }
 
     /**
-     * Return the total of available lines filtered by the current search
+     * Return the total of available lines filtered by the current filters
      *
      * @return int Total number
      */
@@ -146,7 +146,7 @@ class Csv extends Source
     }
 
     /**
-     * Returns the data filtered by the current search
+     * Returns the data filtered by the current filters
      *
      * @return mixed
      */
@@ -239,7 +239,7 @@ class Csv extends Source
     protected function parse()
     {
         $currentMd5 = md5(serialize([
-            $this->searches,
+            $this->filters,
             $this->orders,
             $this->offset,
             $this->length,
@@ -256,7 +256,7 @@ class Csv extends Source
 
         $this->data = [];
         while ($this->row = $this->fetch()) {
-            if ($this->search()) {
+            if ($this->filter()) {
                 $this->addToEligible($this->row);
                 $this->filteredCount++;
             }
@@ -272,7 +272,7 @@ class Csv extends Source
         );
     }
 
-    protected function processSearch(SourceSearch $filter)
+    protected function processFilter(SourceFilter $filter)
     {
         $filter->setRow($this->row);
         return $filter->filter();

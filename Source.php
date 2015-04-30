@@ -39,7 +39,7 @@ abstract class Source
      *
      * @var array
      */
-    protected $searches = [];
+    protected $filters = [];
 
     /**
      * An associative array where keys are a sql column or expression and values
@@ -81,46 +81,46 @@ abstract class Source
     }
 
     /**
-     * Set the searches
+     * Set the filters
      *
-     * @param array $searches An array of arrays where the first element is an
+     * @param array $filters An array of arrays where the first element is an
      * array of columns or expressions and the second element is an array of
      * terms to look for
      *
      * @return void
      */
-    final public function setSearches($searches)
+    final public function setFilters($filters)
     {
-        $this->searches = [];
-        $this->addSearches($searches);
+        $this->filters = [];
+        $this->addFilters($filters);
     }
 
     /**
-     * Add multiple searches
+     * Add multiple filters
      *
-     * @param array $searches An array of arrays where the first element is an
+     * @param array $filters An array of arrays where the first element is an
      * array of columns or expressions and the second element is an array of
      * terms to look for
      *
      * @return void
      */
-    final public function addSearches($searches)
+    final public function addFilters($filters)
     {
-        $this->searches = array_merge($this->searches, $searches);
+        $this->filters = array_merge($this->filters, $filters);
     }
 
     /**
-     * Add the search
+     * Add a filter
      *
-     * @param array $search An array where the first element is an array of
+     * @param array $filter An array where the first element is an array of
      * columns or expressions and the second element is an array of terms to
      * look for
      *
      * @return void
      */
-    final public function addSearch($search)
+    final public function addFilter($filter)
     {
-        $this->searches[] = $search;
+        $this->filters[] = $filter;
     }
 
     /**
@@ -148,7 +148,7 @@ abstract class Source
     }
 
     /**
-     * Sets the order
+     * Sets orders
      *
      * @param array $orders An array of two elements array where first element
      * is a column or expression and second element is a string 'ASC' or 'DESC'
@@ -158,6 +158,19 @@ abstract class Source
     final public function setOrders($orders)
     {
         $this->orders = [];
+        $this->addOrders($orders);
+    }
+
+    /**
+     * Add orders
+     *
+     * @param array $orders An array of two elements array where first element
+     * is a column or expression and second element is a string 'ASC' or 'DESC'
+     *
+     * @return void
+     */
+    final public function addOrders($orders)
+    {
         foreach ($orders as $order) {
             list($column, $dir) = $order;
             $this->addOrder($column, $dir);
@@ -167,8 +180,8 @@ abstract class Source
     /**
      * Add an order
      *
-     * @param string $column    A column
-     * @param string $direction A direction string 'ASC' or 'DESC'
+     * @param string|Column $column    A column
+     * @param string        $direction A direction string 'ASC' or 'DESC'
      *
      * @return void
      */
@@ -177,27 +190,31 @@ abstract class Source
         if (!is_object($column)) {
             $column = $this->columns->get($column);
         }
-        $this->orders[] = [$column, $direction];
+
+        $this->orders[] = [
+            $column,
+            $direction
+        ];
     }
 
     /**
-     * Adds the différent search filter
+     * Adds the different filters
      *
      * @return boolean
      */
-    final public function search()
+    final public function filter()
     {
         $itsAMatch = true;
 
-        foreach ($this->searches as $search) {
-            list($columns, $term, $searchType) = $search;
+        foreach ($this->filters as $filter) {
+            list($columns, $term, $filterType) = $filter;
 
             if (empty($columns)) {
                 continue;
             }
 
-            $search = $this->instantiateSearch($columns, $term, $searchType);
-            $status = $this->processSearch($search);
+            $filter = $this->instantiateFilter($columns, $term, $filterType);
+            $status = $this->processFilter($filter);
 
             if (!$status) {
                 $itsAMatch = false;
@@ -208,56 +225,56 @@ abstract class Source
     }
 
     /**
-     * Instantiate an object to do the search
+     * Instantiate an object to process the filter
      *
      * @param array  $columns    Array of columns
      * @param mixed  $term       The term(s) we're looking for
-     * @param string $searchType The search type
+     * @param string $filterType The filter type
      *
-     * @return SourceSearch
+     * @return SourceFilter
      */
-    private function instantiateSearch($columns, $term, $searchType)
+    private function instantiateFilter($columns, $term, $filterType)
     {
-        $className = $this->getSearchClassName($searchType);
+        $className = $this->getFilterClassName($filterType);
 
         return new $className($columns, $term);
 
     }
 
     /**
-     * Returns the name of the search class
+     * Returns the name of the filter class
      *
-     * @param string $searchType The search type (Contain, DateRange etc.)
+     * @param string $filterType The filter type (Contain, DateRange etc.)
      *
      * @return string
      * @throws Exception
      */
-    private function getSearchClassName($searchType)
+    private function getFilterClassName($filterType)
     {
-        $className = $searchType;
+        $className = $filterType;
         if (class_exists($className)) {
             return $className;
         }
 
         $r = new \ReflectionClass($this);
-        $className = $r->getName() . '\\' . $searchType;
+        $className = $r->getName() . '\\' . $filterType;
         if (class_exists($className)) {
             return $className;
         }
 
         throw new Exception(
-            sprintf('No search class found for type [%s]', $searchType)
+            sprintf('No filter class found for type [%s]', $filterType)
         );
     }
 
     /**
-     * Do the search and returns true if it's a success, false otherwise
+     * Do the filter and returns true if it's a success, false otherwise
      *
-     * @param SourceSearch $filter The search object
+     * @param SourceFilter $filter The filter object
      *
      * @return bool
      */
-    abstract protected function processSearch(SourceSearch $filter);
+    abstract protected function processFilter(SourceFilter $filter);
 
     /**
      * Return the total of available lines
@@ -267,14 +284,14 @@ abstract class Source
     abstract public function getCount();
 
     /**
-     * Return the total of available lines filtered by the current search
+     * Return the total of available lines filtered by the current filters
      *
      * @return int Total number
      */
     abstract public function getFilteredCount();
 
     /**
-     * Returns the data filtered by the current search
+     * Returns the data filtered by the current filters
      *
      * @return mixed
      */

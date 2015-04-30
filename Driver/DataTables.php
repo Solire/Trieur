@@ -23,7 +23,7 @@ class DataTables extends Driver
     }
 
     /**
-     * Determines if a column is searchable and has a search, if so return the
+     * Determines if a column is filterable and has a filter, if so return the
      * corresponding term
      *
      * @param Conf $column The column's configuration
@@ -137,10 +137,10 @@ class DataTables extends Driver
     /**
      * Returns the response
      *
-     * @param array $data          The data filtered by the current search,
-     * offset and length
+     * @param array $data          The data filtered by the current filters,
+     * offset and length, sorted by the currents orders
      * @param int   $count         The total of available lines filtered by the
-     * current search
+     * current filters
      * @param int   $filteredCount The total of available lines
      *
      * @return array

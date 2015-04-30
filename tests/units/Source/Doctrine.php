@@ -36,6 +36,7 @@ class Doctrine extends Atoum
         $this->mockGenerator->shuntParentClassCalls();
 
         $this->mockGenerator->orphanize('__construct');
+        $pdo = new \mock\PDO;
 
         $this->mockGenerator->orphanize('__construct');
         $this->connection = new \mock\Doctrine\DBAL\Connection;
@@ -45,7 +46,7 @@ class Doctrine extends Atoum
         };
 
         $this->connection->getMockController()->getDatabasePlatform = function() {
-            return new MockDPF;
+            return new MockDatabasePF;
         };
 
         $this->mockGenerator->unshuntParentClassCalls();
@@ -181,7 +182,7 @@ class Doctrine extends Atoum
         $this
             ->if($c = new TestClass($conf, $columns, $connection))
             ->and($c->addOrder('a', 'ASC'))
-            ->and($c->addSearch([
+            ->and($c->addFilter([
                 't.a',
                 'trieur php',
                 'Contain'

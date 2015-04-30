@@ -5,7 +5,7 @@ use Solire\Trieur\Source;
 use Solire\Trieur\Columns;
 use Solire\Trieur\Exception;
 use Solire\Conf\Conf;
-use Solire\Trieur\SourceSearch;
+use Solire\Trieur\SourceFilter;
 use Doctrine\DBAL\Connection as DoctrineConnection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
@@ -111,8 +111,7 @@ class Doctrine extends Source
          * Condition
          */
         if (isset($this->conf->where)) {
-            $wheres = (array) $this->conf->where;
-            foreach ($wheres as $where) {
+            foreach ($this->conf->where as $where) {
                 $this->queryBuilder->andWhere($where);
             }
         }
@@ -158,19 +157,19 @@ class Doctrine extends Source
     {
         $this->currentQueryBuilder = clone $this->queryBuilder;
 
-        if ($this->searches !== null) {
-            $this->search();
+        if ($this->filters !== null) {
+            $this->filter();
         }
     }
 
     /**
-     * Process the search
+     * Process the filter
      *
-     * @param Doctrine\Search $filter The filter class
+     * @param Doctrine\Filter $filter The filter class
      *
      * @return void
      */
-    protected function processSearch(SourceSearch $filter)
+    protected function processFilter(SourceFilter $filter)
     {
         $filter->setQueryBuilder($this->currentQueryBuilder);
         $filter->filter();
@@ -253,7 +252,7 @@ class Doctrine extends Source
     }
 
     /**
-     * Return the total of available lines filtered by the current search
+     * Return the total of available lines filtered by the current filters
      *
      * @return int Total number
      */
@@ -265,7 +264,7 @@ class Doctrine extends Source
     }
 
     /**
-     * Returns the data if there's a current search, filtered by the search
+     * Returns the data filtered by the current filters
      *
      * @return mixed
      */

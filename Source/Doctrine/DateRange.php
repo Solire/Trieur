@@ -2,12 +2,12 @@
 namespace Solire\Trieur\Source\Doctrine;
 
 /**
- * Doctrine search class for DateRange filter
+ * Doctrine filter class for DateRange filter
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class DateRange extends Search
+class DateRange extends Filter
 {
     /**
      * Column containing the date

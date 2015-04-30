@@ -79,10 +79,10 @@ class Csv extends Driver
     /**
      * Return the content formated in csv
      *
-     * @param array $data          The data filtered by the current search,
-     * offset and length
+     * @param array $data          The data filtered by the current filters,
+     * offset and length, sorted by the current orders
      * @param int   $count         The total of available lines filtered by the
-     * current search
+     * current filters
      * @param int   $filteredCount The total of available lines
      *
      * @return array
