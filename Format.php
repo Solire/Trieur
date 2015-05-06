@@ -5,9 +5,10 @@ namespace Solire\Trieur;
 use Solire\Conf\Conf;
 
 /**
- * Description of Format
+ * Format the data coming from the source
  *
- * @author thansen
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
  */
 class Format
 {

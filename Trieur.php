@@ -203,17 +203,23 @@ class Trieur extends \Pimple\Container
                     . 'abstract class "\Solire\Trieur\Source"'
                 );
             }
-        } elseif (isset($this->conf->source->name)
+
+            return;
+        }
+
+        if (isset($this->conf->source->name)
             && isset(self::$sourceMap[$this->conf->source->name])
         ) {
             $this->conf->source->class = self::$sourceMap[
                 $this->conf->source->name
             ];
-        } else {
-            throw new Exception(
-                'No wrapper class for source class founed'
-            );
+
+            return;
         }
+
+        throw new Exception(
+            'No wrapper class for source class founed'
+        );
     }
 
     /**
@@ -330,11 +336,11 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Returns the response
+     * Prepare the fetch
      *
-     * @return array
+     * @return self
      */
-    public function getResponse()
+    public function prepare()
     {
         $filters = $this->driver->getFilters();
         if (!empty($filters)) {
@@ -345,10 +351,30 @@ class Trieur extends \Pimple\Container
         $this->source->setOffset($this->driver->getOffset());
         $this->source->setOrders($this->driver->getOrder());
 
+        return $this;
+    }
+
+    /**
+     * Prepare the fetch
+     *
+     * @return self
+     */
+    public function fetch()
+    {
         return $this->driver->getResponse(
             $this['format']->format($this->source->getData()),
             $this->source->getCount(),
             $this->source->getFilteredCount()
         );
+    }
+
+    /**
+     * Returns the response
+     *
+     * @return array
+     */
+    public function getResponse()
+    {
+        return $this->prepare()->fetch();
     }
 }
