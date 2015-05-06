@@ -37,12 +37,11 @@ class Contain extends Filter
         $conds = [];
         $orderBy = [];
         foreach ($words as $word) {
-            foreach ($this->columns as $key => $value) {
+            foreach ($this->columns as $colName) {
                 /**
                  * @todo add a ponderation array to the constructor
                  */
                 $pond    = 1;
-                $colName = $value;
 
                 $cond = $colName . ' LIKE '
                       . $this->queryBuilder->getConnection()->quote('%' . $word . '%');
