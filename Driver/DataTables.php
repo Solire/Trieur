@@ -269,7 +269,7 @@ class DataTables extends Driver
             $config['autoWidth'] = $this->config->autoWidth;
         }
         if (isset($this->config->defaultSort)) {
-            $config['ordering'] = $this->config->defaultSort;
+            $config['order'] = $this->config->defaultSort;
         }
         if (isset($this->config->dom)) {
             $config['dom'] = $this->config->dom;
@@ -299,5 +299,31 @@ class DataTables extends Driver
         }
 
         return $config;
+    }
+
+    /**
+     * Cast a PHP object to array recursively
+     *
+     * @param object $obj Object to cast
+     *
+     * @return array
+     *
+     * @todo Move to a trait or thing like this
+     */
+    private static function objectToArray($obj)
+    {
+        if (is_object($obj)) {
+            $obj = (array) $obj;
+        }
+        if (is_array($obj)) {
+            $new = [];
+            foreach ($obj as $key => $val) {
+                $new[$key] = self::objectToArray($val);
+            }
+        } else {
+            $new = $obj;
+        }
+
+        return $new;
     }
 }
