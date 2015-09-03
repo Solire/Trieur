@@ -269,7 +269,7 @@ class DataTables extends Driver
             $config['autoWidth'] = $this->config->autoWidth;
         }
         if (isset($this->config->defaultSort)) {
-            $config['order'] = $this->config->defaultSort;
+            $config['order'] = static::objectToArray($this->config->defaultSort);
         }
         if (isset($this->config->dom)) {
             $config['dom'] = $this->config->dom;
