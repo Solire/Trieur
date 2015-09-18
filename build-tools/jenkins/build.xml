@@ -44,7 +44,7 @@
         <exec executable="${basedir}/vendor/bin/atoum" failonerror="false">
             <arg line="-bf ${basedir}/tests/units/.bootstrap.atoum.php" />
             <arg line="-c ${basedir}/build-tools/jenkins/atoum.ci.php" />
-            <arg line="-d ${basedir}/tests/" />
+            <arg line="-d ${basedir}/tests/units/" />
         </exec>
     </target>
 
