@@ -17,8 +17,17 @@
   },
   "require-dev": {
     "m6web/coke": "1.2",
-    "siwayll/phpcs-norme-dpsi": "3.*",
-    "filp/whoops": "1.0.*"
+    "filp/whoops": "1.0.*",
+    "doctrine/dbal": "2.4.*",
+
+    "siwayll/phpcs-norme-dpsi": "~3.2",
+    "atoum/atoum": "~2.2",
+    "phploc/phploc": "~2.1",
+    "pdepend/pdepend": "~2.1",
+    "phpmd/phpmd": "~2.2",
+    "sebastian/phpcpd": "~2.0",
+    "mayflower/php-codebrowser": "~1.1"
+
   },
   "suggest": {
     "symfony/yaml": "version 2.5.* to read yaml config file (used in examples)",
