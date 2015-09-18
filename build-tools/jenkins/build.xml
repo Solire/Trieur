@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTf-8"?>
+
+<project name="solire-trieur" default="build" basedir="../../">
+
+    <!-- intended to be ran before upload to the CI server -->
+    <target name="pre-upload" depends="phpcs, phpmd" />
+
+    <target name="build"
+            depends="prepare,atoum,lint,phploc,pdepend,phpmd-ci,phpcs-ci,phpcpd,phpdoc,phpcb"/>
+
+    <target name="build-parallel"
+            depends="prepare,lint,tools-parallel,phpcb"/>
+
+    <target name="tools-parallel" description="Run tools in parallel">
+        <parallel threadCount="2">
+            <sequential>
+                <antcall target="pdepend"/>
+                <antcall target="phpmd-ci"/>
+            </sequential>
+            <antcall target="phpcpd"/>
+            <antcall target="phpcs-ci"/>
+            <antcall target="phploc"/>
+            <antcall target="phpdoc"/>
+        </parallel>
+    </target>
+
+    <target name="clean" description="Cleanup build artifacts">
+        <delete dir="${basedir}/build/api"/>
+        <delete dir="${basedir}/build/code-browser"/>
+        <delete dir="${basedir}/build/coverage"/>
+        <delete dir="${basedir}/build/logs"/>
+        <delete dir="${basedir}/build/pdepend"/>
+    </target>
+
+    <target name="prepare" depends="clean" description="Prepare for build">
+        <mkdir dir="${basedir}/build/api"/>
+        <mkdir dir="${basedir}/build/code-browser"/>
+        <mkdir dir="${basedir}/build/coverage"/>
+        <mkdir dir="${basedir}/build/logs"/>
+        <mkdir dir="${basedir}/build/pdepend"/>
+    </target>
+
+    <target name="atoum" description="Run unit tests with atoum - html coverage">
+        <exec executable="${basedir}/vendor/bin/atoum" failonerror="false">
+            <arg line="-bf ${basedir}/tests/units/.bootstrap.atoum.php" />
+            <arg line="-c ${basedir}/build-tools/jenkins/atoum.ci.php" />
+            <arg line="-d ${basedir}/tests/" />
+        </exec>
+    </target>
+
+    <target name="lint" description="Perform syntax check of sourcecode files">
+        <apply executable="php" failonerror="true">
+            <arg value="-l" />
+
+            <fileset dir="${basedir}">
+                <include name="**/*.php" />
+                <!-- exclude the Tests directory, repeat line below to exclude more -->
+                <exclude name="tests/**" />
+                <exclude name="vendor/**" />
+                <modified />
+            </fileset>
+
+            <fileset dir="${basedir}/tests">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+        </apply>
+    </target>
+
+    <target name="phploc" description="Measure project size using PHPLOC">
+        <exec executable="${basedir}/vendor/bin/phploc">
+            <arg line="--log-csv ${basedir}/build/logs/phploc.csv
+              --exclude tests --exclude vendor
+              ${basedir}" />
+        </exec>
+    </target>
+
+    <target name="pdepend" description="Calculate software metrics using PHP_Depend">
+        <exec executable="${basedir}/vendor/bin/pdepend">
+            <arg value="--ignore=${basedir}/tests,${basedir}/vendor,${basedir}/docs" />
+            <arg value="--jdepend-xml=${basedir}/build/logs/jdepend.xml" />
+            <arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg" />
+            <arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg" />
+            <arg path="${basedir}" />
+        </exec>
+    </target>
+
+    <target name="phpmd"
+            description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
+        <exec executable="${basedir}/vendor/bin/phpmd">
+            <arg path="${basedir}" />
+            <arg value="text" />
+            <arg value="codesize" />
+            <arg value="--exclude" />
+            <arg value="${basedir}/tests,${basedir}/vendor" />
+        </exec>
+    </target>
+
+    <target name="phpmd-ci" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
+        <exec executable="${basedir}/vendor/bin/phpmd">
+            <arg path="${basedir}" />
+            <arg value="xml" />
+            <arg value="codesize" />
+            <arg value="--reportfile" />
+            <arg value="${basedir}/build/logs/pmd.xml" />
+            <arg value="--exclude" />
+            <arg value="${basedir}/tests" />
+            <arg value="--exclude" />
+            <arg value="${basedir}/vendor" />
+        </exec>
+    </target>
+
+    <target name="phpcs"
+            description="Find coding standard violations with CodeSniffer. Use on command line before committing.">
+        <exec executable="${basedir}/vendor/bin/phpcs">
+            <arg value="--standard=${basedir}/vendor/siwayll/phpcs-norme-dpsi/DPSI" />
+            <arg value="--ignore=${basedir}/tests,${basedir}/vendor" />
+            <arg value="--extensions=php" />
+            <arg path="${basedir}" />
+        </exec>
+    </target>
+
+    <target name="phpcs-ci"
+            description="Find coding standard violations using PHP_CodeSniffer creating a log file for the continuous integration server">
+        <exec executable="${basedir}/vendor/bin/phpcs" output="/dev/null">
+            <arg value="--report=checkstyle" />
+            <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
+            <arg value="--standard=${basedir}/vendor/siwayll/phpcs-norme-dpsi/DPSI" />
+            <arg value="--ignore=${basedir}/tests,${basedir}/vendor" />
+            <arg value="--extensions=php" />
+            <arg path="${basedir}" />
+        </exec>
+    </target>
+
+    <target name="phpcpd" description="Find duplicate code using PHPCPD">
+        <exec executable="${basedir}/vendor/bin/phpcpd">
+            <arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml
+              --exclude tests --exclude vendor
+              ${basedir}" />
+        </exec>
+    </target>
+
+    <target name="phpdoc" description="Generate API documentation using phpDocumentor 2">
+        <exec dir="${basedir}" executable="${basedir}/vendor/bin/phpdoc" failonerror="true">
+            <!-- excluded directories need the / at the end, else phpdoc ignores it -->
+            <arg line="--title='Solire Trieur - API documentation' -d . -t build/api/html -i tests/,vendor/ " />
+        </exec>
+    </target>
+
+
+    <target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
+        <exec executable="${basedir}/vendor/bin/phpcb">
+            <arg value="--log" />
+            <arg path="${basedir}/build/logs" />
+            <arg value="--ignore" />
+            <arg path="${basedir}/tests" />
+            <arg value="--ignore" />
+            <arg path="${basedir}/vendor" />
+            <arg value="--source" />
+            <arg path="${basedir}" />
+            <arg value="--output" />
+            <arg path="${basedir}/build/code-browser" />
+        </exec>
+    </target>
+</project>
