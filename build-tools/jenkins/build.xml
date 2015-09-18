@@ -141,7 +141,7 @@
     </target>
 
     <target name="phpdoc" description="Generate API documentation using phpDocumentor 2">
-        <exec dir="${basedir}" executable="${basedir}/vendor/bin/phpdoc" failonerror="true">
+        <exec dir="${basedir}" executable="phpdoc" failonerror="true">
             <!-- excluded directories need the / at the end, else phpdoc ignores it -->
             <arg line="--title='Solire Trieur - API documentation' -d . -t build/api/html -i tests/,vendor/ " />
         </exec>
