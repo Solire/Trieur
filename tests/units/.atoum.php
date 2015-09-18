@@ -22,10 +22,10 @@ $report->addField(new atoum\report\fields\runner\result\logo());
 
 
 // Please replace in next line "Project Name" by your project name and "/path/to/destination/directory" by your destination directory path for html files.
-if (!is_dir(__DIR__ . '/coverage')) {
-    mkdir(__DIR__ . '/coverage');
+if (!is_dir(__DIR__ . '/../coverage')) {
+    mkdir(__DIR__ . '/../coverage');
 }
-$coverageField = new atoum\report\fields\runner\coverage\html('Solire\Lib', __DIR__ . '/coverage');
+$coverageField = new atoum\report\fields\runner\coverage\html('Solire\Lib', __DIR__ . '/../coverage');
 
 // Please replace in next line http://url/of/web/site by the root url of your code coverage web site.
 //$coverageField->setRootUrl('http://url/of/web/site');

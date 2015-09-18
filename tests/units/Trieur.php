@@ -414,7 +414,7 @@ class Trieur extends Atoum
                 '5' => [
                     'source' => 0,
                     'sourceName' => 0,
-                    'view' => 'view.php',
+                    'view' => '../data/view.php',
                 ],
             ],
         ]);

@@ -31,7 +31,7 @@ class Csv extends Atoum
             fputcsv($handle, $row);
         }
 
-        touch (TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv');
+        touch(TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv');
         chmod(TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv', 0333);
     }
 
@@ -83,7 +83,7 @@ class Csv extends Atoum
                 );
             })
                 ->isInstanceOf('Exception')
-                ->hasMessage('Csv file not readable : "' . TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv' . '"')
+                ->hasMessage('Csv file not readable : "' . realpath(TEST_TMP_DIR) . DIRECTORY_SEPARATOR . 'notreadable.csv' . '"')
         ;
     }
 
