@@ -1,7 +1,7 @@
 <?php
 namespace Solire\Trieur\test\units\Source;
 
-use \atoum as Atoum;
+use atoum as Atoum;
 use Solire\Trieur\Source\Csv as TestClass;
 
 use Solire\Trieur\Columns;

@@ -2,7 +2,7 @@
 
 namespace Solire\Trieur\test\units\Source\Doctrine;
 
-use \atoum as Atoum;
+use atoum as Atoum;
 use Solire\Trieur\Source\Doctrine\Contain as TestClass;
 
 use \Doctrine\DBAL\Connection;

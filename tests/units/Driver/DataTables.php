@@ -1,7 +1,7 @@
 <?php
 namespace Solire\Trieur\test\units\Driver;
 
-use \atoum as Atoum;
+use atoum as Atoum;
 use Solire\Trieur\Driver\DataTables as TestClass;
 
 use Solire\Trieur\Columns;

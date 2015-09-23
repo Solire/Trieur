@@ -1,7 +1,7 @@
 <?php
 namespace Solire\Trieur\test\units;
 
-use \atoum as Atoum;
+use atoum as Atoum;
 use Solire\Trieur\Trieur as TestClass;
 
 use Solire\Conf\Conf;
