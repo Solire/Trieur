@@ -2,12 +2,11 @@
 namespace Solire\Trieur;
 
 use Solire\Conf\Conf;
-use Exception;
 
 /**
  * Trieur
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 class Trieur extends \Pimple\Container
@@ -92,6 +91,8 @@ class Trieur extends \Pimple\Container
             $this['sourceModel'] = $sourceModel;
             $this->initSource();
         }
+
+        $this->initFormat();
     }
 
     /**
@@ -202,17 +203,23 @@ class Trieur extends \Pimple\Container
                     . 'abstract class "\Solire\Trieur\Source"'
                 );
             }
-        } elseif (isset($this->conf->source->name)
+
+            return;
+        }
+
+        if (isset($this->conf->source->name)
             && isset(self::$sourceMap[$this->conf->source->name])
         ) {
             $this->conf->source->class = self::$sourceMap[
                 $this->conf->source->name
             ];
-        } else {
-            throw new Exception(
-                'No wrapper class for source class founed'
-            );
+
+            return;
         }
+
+        throw new Exception(
+            'No wrapper class for source class founed'
+        );
     }
 
     /**
@@ -234,6 +241,20 @@ class Trieur extends \Pimple\Container
                 $c->conf->source->conf,
                 $this['columns'],
                 $c['sourceModel']
+            );
+        };
+    }
+
+    /**
+     * Build the format class
+     *
+     * @return void
+     */
+    protected function initFormat()
+    {
+        $this['format'] = function ($c) {
+            return new Format(
+                $this['columns']
             );
         };
     }
@@ -315,145 +336,45 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Returns the response
+     * Prepare the fetch
      *
-     * @return array
+     * @return self
      */
-    public function getResponse()
+    public function prepare()
     {
-        $searches = $this->driver->getFilterTermByColumns();
-        if (!empty($searches)) {
-            $this->source->addSearches($searches);
+        $filters = $this->driver->getFilters();
+        if (!empty($filters)) {
+            $this->source->addFilters($filters);
         }
 
         $this->source->setLength($this->driver->getLength());
         $this->source->setOffset($this->driver->getOffset());
-
         $this->source->setOrders($this->driver->getOrder());
 
+        return $this;
+    }
+
+    /**
+     * Prepare the fetch
+     *
+     * @return self
+     */
+    public function fetch()
+    {
         return $this->driver->getResponse(
-            $this->formate($this->source->getData()),
+            $this['format']->format($this->source->getData()),
             $this->source->getCount(),
             $this->source->getFilteredCount()
         );
     }
 
     /**
-     * Formate a source data
-     *
-     * @param array $data The source data
+     * Returns the response
      *
      * @return array
      */
-    protected function formate($data)
+    public function getResponse()
     {
-        $dataFormated = array();
-        foreach ($data as $row) {
-            $rowFormated = $this->formateRow($row);
-            if ($rowFormated) {
-                $dataFormated[] = $rowFormated;
-            }
-        }
-
-        return $dataFormated;
-    }
-
-    /**
-     * Formate a source row
-     *
-     * @param array $row The source row
-     *
-     * @return type
-     */
-    protected function formateRow($row)
-    {
-        $rowFormated = array();
-        foreach ($this->columns as $column) {
-            if (isset($column->hide) && $column->hide) {
-                continue;
-            }
-
-            $cellFormated = $this->formateCell($row, $column);
-            $rowFormated[$column->name] = $cellFormated;
-        }
-        return $rowFormated;
-    }
-
-    /**
-     * Formate a source cell
-     *
-     * @param array $row    The row
-     * @param Conf  $column The cell's column
-     *
-     * @return string
-     */
-    protected function formateCell($row, Conf $column)
-    {
-        $formateCell = $row[$column->name];
-
-        if (isset($column->view)) {
-            ob_start();
-
-            if (!file_exists($column->view)
-                || !is_readable($column->view)
-            ) {
-                $message = sprintf(
-                    'The view file "%s" does not exist or is not readable',
-                    $column->view
-                );
-                throw new Exception($message);
-            }
-
-            include $column->view;
-            return ob_get_clean();
-        }
-
-        if (isset($column->callback)) {
-            $function = $column->callback;
-
-            if (is_string($function)) {
-                return call_user_func($function, $formateCell);
-            }
-
-            $arguments = [];
-            if (isset($function->arguments)) {
-                $arguments = (array) $function->arguments;
-            }
-
-            if (isset($function->cell)) {
-                self::insertToArray($arguments, $formateCell, $function->cell);
-            }
-
-            if (isset($function->row)) {
-                self::insertToArray($arguments, $row, $function->row);
-            }
-
-            return call_user_func_array($function->name, $arguments);
-        }
-
-        return $formateCell;
-    }
-
-    /**
-     * Inserts a row in an array in a given offset (numeric offset only)
-     *
-     * @param array $array  The array
-     * @param mixed $row    The row to insert
-     * @param int   $offset The offset
-     *
-     * @return void
-     */
-    protected static function insertToArray(&$array, $row, $offset)
-    {
-        if ($offset >= count($array)) {
-            $array[$offset] = $row;
-            return;
-        }
-
-        $array = array_merge(
-            array_slice($array, 0, $offset),
-            [$row],
-            array_slice($array, $offset)
-        );
+        return $this->prepare()->fetch();
     }
 }

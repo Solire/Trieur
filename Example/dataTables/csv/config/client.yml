@@ -28,10 +28,12 @@ columns:
 #    label: columnLabel
 #    sort: 1|0
 #    filter: 1|0
-#    filterType: text, dateRange...
+#    driverFilterType: text, dateRange...
 #    source: source expression (for example a column)
 #    sourceFilter: source expression (for example a column)
 #    sourceSort: source expression (for example a column)
+#    sourceName: key in the sourceData output (if not defined columnName)
+#    sourceFilterType: Contain
 #    ...
 
   societe:
@@ -39,33 +41,40 @@ columns:
     filter: 1
     sort: 1
     source: 0
+    sourceName: 0
   email:
     label: Email
     filter: 1
     sort: 1
     source: 4
+    sourceName: 4
   tel:
     label: Téléphone
     filter: 1
     sort: 1
     source: 5
+    sourceName: 5
   nom:
     label: Nom
     filter: 1
     sort: 1
     source: 2
+    sourceName: 2
   prenom:
     label: Prénom
     filter: 1
     sort: 1
     source: 3
+    sourceName: 3
   offre:
     label: Offre
     filter: 0
     sort: 1
     source: 6
+    sourceName: 6
   adresse:
     label: Adresse
     filter: 0
     sort: 0
     source: 7
+    sourceName: 7

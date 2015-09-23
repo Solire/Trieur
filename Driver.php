@@ -7,7 +7,7 @@ use Solire\Conf\Conf;
 /**
  * Datatables driver
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 abstract class Driver
@@ -79,26 +79,19 @@ abstract class Driver
     abstract public function getOrder();
 
     /**
-     * Return the filter term
+     * Return the filters
      *
-     * @return string
+     * @return mixed
      */
-    abstract public function getFilterTerm();
-
-    /**
-     * Return the filter terms for each columns
-     *
-     * @return array
-     */
-    abstract public function getFilterTermByColumns();
+    abstract public function getFilters();
 
     /**
      * Returns the response
      *
-     * @param array $data          The data filtered by the current search,
-     * offset and length
+     * @param array $data          The data filtered by the current filters,
+     * offset and length, sorted by the current orders
      * @param int   $count         The total of available lines filtered by the
-     * current search
+     * current filters
      * @param int   $filteredCount The total of available lines
      *
      * @return array

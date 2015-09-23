@@ -1,7 +1,7 @@
 <?php
 namespace Solire\Trieur\test\units\Driver;
 
-use \atoum as Atoum;
+use atoum as Atoum;
 use Solire\Trieur\Driver\DataTables as TestClass;
 
 use Solire\Trieur\Columns;
@@ -107,28 +107,26 @@ class DataTables extends Atoum
                         0, 'ASC'
                     ]
                 ])
-            ->array($c->getFilterTermByColumns())
+            ->array($c->getFilters())
                 ->isEqualTo([
                     [
                         [
-                            [
-                                'prenom'
-                            ],
+                            'prenom',
+                        ],
+                        [
                             'a',
-                            'text'
-                        ]
+                        ],
+                        'Contain'
                     ],
                     [
                         [
-                            [
-                                'nom',
-                                'prenom',
-                            ],
-                            'u',
-                            'text'
-                        ]
+                            'nom',
+                            'prenom',
+                        ],
+                        'u',
+                        'Contain'
                     ]
-                ])
+            ])
             ->integer($c->getOffset())
                 ->isEqualTo(0)
             ->variable($c->getLength())
@@ -163,15 +161,13 @@ class DataTables extends Atoum
                     'recordsTotal' => 2,
                     'recordsFiltered' => 2,
                 ])
-            ->phpArray($c->getYadcfConfig())
+            ->phpArray($c->getColumnFilterConfig())
                 ->isEqualTo([
-                    [
-                        'column_number' => 0,
-                        'filter_type' => 'text'
+                    0 => [
+                        'type' => 'text'
                     ],
-                    [
-                        'column_number' => 1,
-                        'filter_type' => 'text'
+                    1 => [
+                        'type' => 'text'
                     ]
                 ])
             ->phpArray($c->getJsColsConfig())
@@ -185,8 +181,6 @@ class DataTables extends Atoum
                         'type' => 'get',
                     ],
                     'columns'    => $jsColsConfig,
-                    'autoWidth'  => true,
-                    'ordering'   => [],
                     'dom'        => 'abcd',
                     'language'   => [
                         'emptyTable' => 'Aucun personne'

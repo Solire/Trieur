@@ -3,12 +3,13 @@ namespace Solire\Trieur\Driver;
 
 use Solire\Trieur\Driver;
 use Solire\Trieur\Columns;
+use Solire\Trieur\Exception;
 use Solire\Conf\Conf;
 
 /**
  * Datatables driver
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 class Csv extends Driver
@@ -66,21 +67,11 @@ class Csv extends Driver
     }
 
     /**
-     * Return the filter term
+     * Return the filters
      *
-     * @return string
+     * @return mixed
      */
-    public function getFilterTerm()
-    {
-        return '';
-    }
-
-    /**
-     * Return the filter terms for each columns
-     *
-     * @return array
-     */
-    public function getFilterTermByColumns()
+    public function getFilters()
     {
         return [];
     }
@@ -88,10 +79,10 @@ class Csv extends Driver
     /**
      * Return the content formated in csv
      *
-     * @param array $data          The data filtered by the current search,
-     * offset and length
+     * @param array $data          The data filtered by the current filters,
+     * offset and length, sorted by the current orders
      * @param int   $count         The total of available lines filtered by the
-     * current search
+     * current filters
      * @param int   $filteredCount The total of available lines
      *
      * @return array

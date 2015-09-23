@@ -2,14 +2,15 @@
 namespace Solire\Trieur\Source;
 
 use Solire\Trieur\Source;
+use Solire\Trieur\SourceFilter;
 use Solire\Trieur\Columns;
+use Solire\Trieur\Exception;
 use Solire\Conf\Conf;
-use Exception;
 
 /**
  * Doctrine connection wrapper
  *
- * @author  Thomas <thansen@solire.fr>
+ * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
 class Csv extends Source
@@ -133,7 +134,7 @@ class Csv extends Source
     }
 
     /**
-     * Return the total of available lines filtered by the current search
+     * Return the total of available lines filtered by the current filters
      *
      * @return int Total number
      */
@@ -145,14 +146,13 @@ class Csv extends Source
     }
 
     /**
-     * Returns the data filtered by the current search
+     * Returns the data filtered by the current filters
      *
      * @return mixed
      */
     public function getData()
     {
         $this->parse();
-
         return $this->data;
     }
 
@@ -165,8 +165,6 @@ class Csv extends Source
      */
     protected function addToEligible($newRow)
     {
-        $newRow = $this->formateRow($newRow);
-
         $newOffset = count($this->data);
         foreach ($this->data as $offset => $row) {
             if ($this->lowerThan($newRow, $row)) {
@@ -215,8 +213,8 @@ class Csv extends Source
             list($column, $dir) = $order;
 
             $test = strnatcasecmp(
-                $row1[$column->name],
-                $row2[$column->name]
+                $row1[$column->sourceName],
+                $row2[$column->sourceName]
             );
 
             if ($test == 0) {
@@ -241,7 +239,7 @@ class Csv extends Source
     protected function parse()
     {
         $currentMd5 = md5(serialize([
-            $this->searches,
+            $this->filters,
             $this->orders,
             $this->offset,
             $this->length,
@@ -257,9 +255,9 @@ class Csv extends Source
         $this->handle();
 
         $this->data = [];
-        while ($row = $this->fetch()) {
-            if ($this->search($row)) {
-                $this->addToEligible($row);
+        while ($this->row = $this->fetch()) {
+            if ($this->filter()) {
+                $this->addToEligible($this->row);
                 $this->filteredCount++;
             }
             $this->count++;
@@ -274,82 +272,9 @@ class Csv extends Source
         );
     }
 
-    /**
-     * Checks if a row follows the defined searches
-     *
-     * @param type $row The row
-     *
-     * @return boolean
-     */
-    protected function search($row)
+    protected function processFilter(SourceFilter $filter)
     {
-        if (empty($this->searches)) {
-            return true;
-        }
-
-        foreach ($this->searches as $searches) {
-            foreach ($searches as $search) {
-                $founed = $this->processSearch($row, $search);
-            }
-
-            if ($founed === false) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Check if a row follows a search
-     *
-     * @param array $row    The row
-     * @param array $search The search
-     *
-     * @return bool
-     */
-    protected function processSearch($row, $search)
-    {
-        $type = 'text';
-        if (count($search) == 3) {
-            list($columns, $terms, $type) = $search;
-        } else {
-            list($columns, $terms) = $search;
-        }
-
-        if ($type == 'text') {
-            if (is_array($terms)) {
-                $term = implode(' ', $terms);
-            } else {
-                $term = $terms;
-            }
-
-            $words = preg_split('`\s+`', $term);
-            foreach ($words as $word) {
-                foreach ($columns as $column) {
-                    if (stripos($row[$column], $word) !== false) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Formates the row
-     *
-     * @param array $row The row
-     *
-     * @return array
-     */
-    protected function formateRow(array $row)
-    {
-        $formatedRow = [];
-        foreach ($this->columns as $column) {
-            $formatedRow[$column->name] = $row[$this->columns->getColumnSource($column)];
-        }
-        return $formatedRow;
+        $filter->setRow($this->row);
+        return $filter->filter();
     }
 }

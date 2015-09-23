@@ -33,7 +33,7 @@ $cloverReport->addWriter($cloverWriter);
 /*
  * Html coverage
  */
-$html = new \mageekguy\atoum\report\fields\runner\coverage\html('GocrPHP', $basedir . '/build/coverage');
+$html = new \mageekguy\atoum\report\fields\runner\coverage\html('Solire\Trieur', $basedir . '/build/coverage');
 $cli->addField($html);
 
 $runner->addReport($xunit);
