@@ -1,7 +1,7 @@
 <?php
 namespace Solire\Trieur\test\units;
 
-use \atoum as Atoum;
+use atoum as Atoum;
 use Solire\Trieur\Trieur as TestClass;
 
 use Solire\Conf\Conf;
@@ -414,7 +414,7 @@ class Trieur extends Atoum
                 '5' => [
                     'source' => 0,
                     'sourceName' => 0,
-                    'view' => 'view.php',
+                    'view' => '../data/view.php',
                 ],
             ],
         ]);

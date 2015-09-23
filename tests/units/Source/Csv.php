@@ -1,7 +1,7 @@
 <?php
 namespace Solire\Trieur\test\units\Source;
 
-use \atoum as Atoum;
+use atoum as Atoum;
 use Solire\Trieur\Source\Csv as TestClass;
 
 use Solire\Trieur\Columns;
@@ -31,7 +31,7 @@ class Csv extends Atoum
             fputcsv($handle, $row);
         }
 
-        touch (TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv');
+        touch(TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv');
         chmod(TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv', 0333);
     }
 
@@ -83,7 +83,7 @@ class Csv extends Atoum
                 );
             })
                 ->isInstanceOf('Exception')
-                ->hasMessage('Csv file not readable : "' . TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv' . '"')
+                ->hasMessage('Csv file not readable : "' . realpath(TEST_TMP_DIR) . DIRECTORY_SEPARATOR . 'notreadable.csv' . '"')
         ;
     }
 
@@ -174,7 +174,7 @@ class Csv extends Atoum
 
             ->and($c->setOffset(0))
             ->and(
-                $c->setSearches([
+                $c->setFilters([
                     [
                         [3],
                         ['a'],
@@ -190,7 +190,7 @@ class Csv extends Atoum
             ])
 
             ->and(
-                $c->addSearch([
+                $c->addFilter([
                     [3],
                     'th',
                     'Contain'

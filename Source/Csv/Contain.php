@@ -2,12 +2,18 @@
 namespace Solire\Trieur\Source\Csv;
 
 /**
- * Description of Contain
+ * Csv filter class for Contain filter
  *
- * @author thansen
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
  */
-class Contain extends Search
+class Contain extends Filter
 {
+    /**
+     * Filter
+     *
+     * @return boolean
+     */
     public function filter()
     {
         if (is_array($this->terms)) {

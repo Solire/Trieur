@@ -1,8 +1,19 @@
 <?php
 namespace Solire\Trieur\Source\Doctrine;
 
-class Contain extends Search
+/**
+ * Doctrine filter class for Contain filter
+ *
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
+ */
+class Contain extends Filter
 {
+    /**
+     * Filter
+     *
+     * @return void
+     */
     public function filter()
     {
         /*
@@ -24,25 +35,22 @@ class Contain extends Search
         }
 
         $conds = [];
-        $orderBy     = [];
+        $orderBy = [];
         foreach ($words as $word) {
-            foreach ($this->columns as $key => $value) {
-                if (is_numeric($value)) {
-                    $pond    = $value;
-                    $colName = $key;
-                } else {
-                    $pond    = 1;
-                    $colName = $value;
-                }
+            foreach ($this->columns as $colName) {
+                /**
+                 * @todo add a ponderation array to the constructor
+                 */
+                $pond    = 1;
 
                 $cond = $colName . ' LIKE '
                       . $this->queryBuilder->getConnection()->quote('%' . $word . '%');
                 $conds[] = $cond;
-                $orderBy[]      = 'IF(' . $cond . ', ' . mb_strlen($word) * $pond . ', 0)';
+                $orderBy[] = 'IF(' . $cond . ', ' . mb_strlen($word) * $pond . ', 0)';
             }
         }
 
-        $this->queryBuilder->andWhere($cond);
+        $this->queryBuilder->andWhere(implode(' OR ', $conds));
         $this->queryBuilder->addOrderBy(implode(' + ', $orderBy), 'DESC');
     }
 }

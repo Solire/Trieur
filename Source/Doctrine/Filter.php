@@ -1,15 +1,16 @@
 <?php
 namespace Solire\Trieur\Source\Doctrine;
 
-use Solire\Trieur\SourceSearch;
+use Solire\Trieur\SourceFilter;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
- * Description of Search
+ * Doctrine abstract filter class
  *
- * @author thansen
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
  */
-abstract class Search extends SourceSearch
+abstract class Filter extends SourceFilter
 {
     /**
      * QueryBuilder

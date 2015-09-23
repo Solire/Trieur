@@ -1,7 +1,13 @@
 <?php
 namespace Solire\Trieur\Source\Doctrine;
 
-class DateRange extends Search
+/**
+ * Doctrine filter class for DateRange filter
+ *
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
+ */
+class DateRange extends Filter
 {
     /**
      * Column containing the date
@@ -29,8 +35,8 @@ class DateRange extends Search
     /**
      * Constructor
      *
-     * @param string $column Column
-     * @param array  $terms  Terms to search for
+     * @param mixed $columns Column
+     * @param array $terms   Terms to search for
      */
     public function __construct($columns, array $terms)
     {
