@@ -34,6 +34,8 @@ class Contain extends Filter
             array_unshift($words, $stringSearch);
         }
 
+        $words = array_unique($words);
+
         $conds = [];
         $orderBy = [];
         foreach ($words as $word) {

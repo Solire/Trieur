@@ -41,8 +41,8 @@ class Doctrine extends Atoum
         $this->mockGenerator->orphanize('__construct');
         $this->connection = new \mock\Doctrine\DBAL\Connection;
         $this->connection->getMockController()->connect = function() {};
-        $this->connection->getMockController()->quote = function($input, $type) {
-            return '"' . addslashes($type) . '"';
+        $this->connection->getMockController()->quote = function($input) {
+            return '"' . addslashes($input) . '"';
         };
 
         $this->connection->getMockController()->getDatabasePlatform = function() {
@@ -183,7 +183,7 @@ class Doctrine extends Atoum
             ->if($c = new TestClass($conf, $columns, $connection))
             ->and($c->addOrder('a', 'ASC'))
             ->and($c->addFilter([
-                't.a',
+                ['t.a'],
                 'trieur php',
                 'Contain'
             ]))
@@ -196,15 +196,39 @@ class Doctrine extends Atoum
 
             ->and($qB = $c->getDataQuery())
             ->string($qB->getSQL())
-                ->isEqualTo('SELECT a, v FROM tt t INNER JOIN uu u ON u.c = t.v WHERE (a = v) AND (t.a LIKE "" OR t.a LIKE "" OR t.a LIKE "") GROUP BY t.a ORDER BY IF(t.a LIKE "", 10, 0) + IF(t.a LIKE "", 6, 0) + IF(t.a LIKE "", 3, 0) DESC, t.a ASC LIMIT 5 OFFSET 10')
+                ->isEqualTo(
+                    'SELECT a, v '
+                    . 'FROM tt t '
+                    . 'INNER JOIN uu u ON u.c = t.v '
+                    . 'WHERE (a = v) '
+                    . 'AND (t.a LIKE "%trieur php%" OR t.a LIKE "%trieur%" OR t.a LIKE "%php%") '
+                    . 'GROUP BY t.a '
+                    . 'ORDER BY IF(t.a LIKE "%trieur php%", 10, 0) + IF(t.a LIKE "%trieur%", 6, 0) + IF(t.a LIKE "%php%", 3, 0) DESC, '
+                    . 't.a '
+                    . 'ASC '
+                    . 'LIMIT 5 '
+                    . 'OFFSET 10'
+                )
 
             ->and($qB = $c->getCountQuery())
             ->string($qB->getSQL())
-                ->isEqualTo('SELECT COUNT(DISTINCT t.a) FROM tt t INNER JOIN uu u ON u.c = t.v WHERE a = v')
+                ->isEqualTo(
+                    'SELECT COUNT(DISTINCT t.a) '
+                    . 'FROM tt t '
+                    . 'INNER JOIN uu u ON u.c = t.v '
+                    . 'WHERE a = v'
+                )
 
             ->and($qB = $c->getFilteredCountQuery())
             ->string($qB->getSQL())
-                ->isEqualTo('SELECT COUNT(DISTINCT t.a) FROM tt t INNER JOIN uu u ON u.c = t.v WHERE (a = v) AND (t.a LIKE "" OR t.a LIKE "" OR t.a LIKE "") ORDER BY IF(t.a LIKE "", 10, 0) + IF(t.a LIKE "", 6, 0) + IF(t.a LIKE "", 3, 0) DESC')
+                ->isEqualTo(
+                    'SELECT COUNT(DISTINCT t.a) '
+                    . 'FROM tt t '
+                    . 'INNER JOIN uu u '
+                    . 'ON u.c = t.v '
+                    . 'WHERE (a = v) '
+                    . 'AND (t.a LIKE "%trieur php%" OR t.a LIKE "%trieur%" OR t.a LIKE "%php%")'
+                )
         ;
 
     }

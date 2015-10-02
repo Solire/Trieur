@@ -20,7 +20,7 @@ abstract class Filter extends SourceFilter
     protected $queryBuilder;
 
     /**
-     * Sets the query builder
+     * Set the query builder
      *
      * @param QueryBuilder $queryBuilder The querybuilder
      *
@@ -29,5 +29,15 @@ abstract class Filter extends SourceFilter
     public function setQueryBuilder(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
+    }
+
+    /**
+     * Get the query builder
+     *
+     * @return QueryBuilder
+     */
+    public function getQueryBuilder()
+    {
+        return $this->queryBuilder;
     }
 }
