@@ -83,9 +83,10 @@ abstract class Source
     /**
      * Set the filters
      *
-     * @param array $filters An array of arrays where the first element is an
-     * array of columns or expressions and the second element is an array of
-     * terms to look for
+     * @param array $filters An array of filters, a filter being an array where
+     * - the first element is an (array of) columns or expressions
+     * - the second element is an (array of) terms to look for
+     * - the third element is the filter type (example : Contain)
      *
      * @return void
      */
@@ -98,9 +99,10 @@ abstract class Source
     /**
      * Add multiple filters
      *
-     * @param array $filters An array of arrays where the first element is an
-     * array of columns or expressions and the second element is an array of
-     * terms to look for
+     * @param array $filters An array of filters, a filter being an array where
+     * - the first element is an (array of) columns or expressions
+     * - the second element is an (array of) terms to look for
+     * - the third element is the filter type (example : Contain)
      *
      * @return void
      */
@@ -112,9 +114,10 @@ abstract class Source
     /**
      * Add a filter
      *
-     * @param array $filter An array where the first element is an array of
-     * columns or expressions and the second element is an array of terms to
-     * look for
+     * @param array $filter An array where
+     * - the first element is an (array of) columns or expressions
+     * - the second element is an (array of) terms to look for
+     * - the third element is the filter type (example : Contain)
      *
      * @return void
      */

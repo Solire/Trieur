@@ -221,6 +221,7 @@ class Doctrine extends Source
         $this->currentQueryBuilder = clone $this->queryBuilder;
 
         $this->currentQueryBuilder->select('COUNT(DISTINCT ' . $this->getDistinct() . ')');
+        $this->currentQueryBuilder->resetQueryPart('orderBy');
 
         return $this->currentQueryBuilder;
     }
@@ -235,6 +236,7 @@ class Doctrine extends Source
         $this->buildFilteredQuery();
 
         $this->currentQueryBuilder->select('COUNT(DISTINCT ' . $this->getDistinct() . ')');
+        $this->currentQueryBuilder->resetQueryPart('orderBy');
 
         return $this->currentQueryBuilder;
     }
