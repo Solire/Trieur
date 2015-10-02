@@ -27,16 +27,10 @@ class Contain extends Atoum
         $this->mockGenerator->shuntParentClassCalls();
 
         $this->mockGenerator->orphanize('__construct');
-
-        $this->mockGenerator->orphanize('__construct');
         $this->connection = new \mock\Doctrine\DBAL\Connection;
         $this->connection->getMockController()->connect = function() {};
-        $this->connection->getMockController()->quote = function($input, $type) {
-            return '"' . addslashes($type) . '"';
-        };
-
-        $this->connection->getMockController()->getDatabasePlatform = function() {
-            return new MockDPF;
+        $this->connection->getMockController()->quote = function($input) {
+            return '"' . addslashes($input) . '"';
         };
 
         $this->mockGenerator->unshuntParentClassCalls();
@@ -97,6 +91,7 @@ class Contain extends Atoum
         $contain = $this->testConstruct01();
 
         $queryBuilder = new \Doctrine\DBAL\Query\QueryBuilder($this->getConnection());
+        $queryBuilder->select('*')->from('table', 't');
 
         $contain->setQueryBuilder($queryBuilder);
 
@@ -113,6 +108,7 @@ class Contain extends Atoum
         $contain = $this->testConstruct02();
 
         $queryBuilder = new \Doctrine\DBAL\Query\QueryBuilder($this->getConnection());
+        $queryBuilder->select('*')->from('table', 't');
 
         $contain->setQueryBuilder($queryBuilder);
 
@@ -131,5 +127,18 @@ class Contain extends Atoum
         $contain = $this->testSetQueryBuilder02();
 
         $contain->filter();
+
+        $this
+            ->string($contain->getQueryBuilder()->getSQL())
+                ->isEqualTo(
+                    'SELECT * FROM table t WHERE '
+                    . 't.a LIKE "%abc a a a %" '
+                    . 'OR t.a LIKE "%abc%" '
+                    . 'OR t.a LIKE "%a%" '
+                    . 'ORDER BY IF(t.a LIKE "%abc a a a %", 10, 0) + '
+                    . 'IF(t.a LIKE "%abc%", 3, 0) + '
+                    . 'IF(t.a LIKE "%a%", 1, 0) DESC'
+                )
+        ;
     }
 }
