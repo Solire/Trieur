@@ -265,14 +265,18 @@ class DataTables extends Driver
             'language'   => $this->getJsLanguageConfig(),
         ];
 
-        if (isset($this->config->autoWidth)) {
-            $config['autoWidth'] = $this->config->autoWidth;
-        }
         if (isset($this->config->defaultSort)) {
             $config['order'] = static::objectToArray($this->config->defaultSort);
         }
+        if (isset($this->config->autoWidth)) {
+            $config['autoWidth'] = $this->config->autoWidth;
+        }
         if (isset($this->config->dom)) {
             $config['dom'] = $this->config->dom;
+        }
+
+        if (!empty($this->config->config)) {
+            $config = array_merge($config, (array) $this->config->config);
         }
 
         return $config;
