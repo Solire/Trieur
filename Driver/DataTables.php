@@ -165,6 +165,10 @@ class DataTables extends Driver
     {
         $cols = [];
         foreach ($this->columns as $ii => $column) {
+            if (isset($column->driverHidden) && $column->driverHidden) {
+                continue;
+            }
+
             $dCol = [
                 'orderable' => (bool) $column->sort,
                 'searchable' => (bool) $column->filter,
