@@ -49,12 +49,7 @@ class DataTables extends Driver
             return $filteredColumns;
         }
 
-        $index = 0;
-        foreach ($this->columns as $column) {
-            if (isset($column->driverHidden) && $column->driverHidden) {
-                continue;
-            }
-
+        foreach ($this->columns as $index => $column) {
             $clientColumn = $this->request['columns'][$index];
             if (!$clientColumn['searchable']
                 || !$column->filter
@@ -87,8 +82,6 @@ class DataTables extends Driver
             }
 
             $filteredColumns[] = [$sourceFilter, $terms, $filterType];
-
-            $index++;
         }
 
         if ($this->getFilterTerm() !== '') {
@@ -138,6 +131,7 @@ class DataTables extends Driver
                 $order['dir'],
             ];
         }
+
         return $orders;
     }
 
@@ -172,10 +166,6 @@ class DataTables extends Driver
     {
         $cols = [];
         foreach ($this->columns as $ii => $column) {
-            if (isset($column->driverHidden) && $column->driverHidden) {
-                continue;
-            }
-
             $dCol = [
                 'orderable' => (bool) $column->sort,
                 'searchable' => (bool) $column->filter,
@@ -183,6 +173,10 @@ class DataTables extends Driver
                 'name' => $column->name,
                 'title' => $column->label,
             ];
+
+            if (isset($column->driverHidden) && $column->driverHidden) {
+                $dCol['visible'] = false;
+            }
 
             if (isset($column->width)) {
                 $dCol['width'] = $column->width;
