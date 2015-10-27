@@ -175,7 +175,9 @@ class DataTables extends Driver
             ];
 
             if (isset($column->driverHidden) && $column->driverHidden) {
-                $dCol['visible'] = false;
+                $dCol['visible']   = false;
+                $dCol['className'] = 'never';
+
             }
 
             if (isset($column->width)) {
