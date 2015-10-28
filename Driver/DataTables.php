@@ -309,6 +309,9 @@ class DataTables extends Driver
 
             $columnConfig = [];
             $columnConfig['type'] = $column->driverFilterType;
+            if (isset($column->driverOption)) {
+                $columnConfig = array_merge($columnConfig, self::objectToArray($column->driverOption));
+            }
 
             $config[$index] = $columnConfig;
         }
