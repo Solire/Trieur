@@ -14,14 +14,14 @@ class Exact extends Filter
          * Variable qui contient la chaine de recherche
          */
         if (!is_array($this->terms)) {
-            $stringSearch = [$this->terms];
+            $terms = [$this->terms];
         } else {
-            $stringSearch = $this->terms;
+            $terms = $this->terms;
         }
 
 
         $conds = [];
-        foreach ($this->terms as $term) {
+        foreach ($terms as $term) {
             foreach ($this->columns as $colName) {
                 $cond = $colName . ' = '
                       . $this->queryBuilder->getConnection()->quote($term);
