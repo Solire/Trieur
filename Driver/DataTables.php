@@ -131,6 +131,7 @@ class DataTables extends Driver
                 $order['dir'],
             ];
         }
+
         return $orders;
     }
 
@@ -172,6 +173,12 @@ class DataTables extends Driver
                 'name' => $column->name,
                 'title' => $column->label,
             ];
+
+            if (isset($column->driverHidden) && $column->driverHidden) {
+                $dCol['visible']   = false;
+                $dCol['className'] = 'never';
+
+            }
 
             if (isset($column->width)) {
                 $dCol['width'] = $column->width;
@@ -265,14 +272,18 @@ class DataTables extends Driver
             'language'   => $this->getJsLanguageConfig(),
         ];
 
-        if (isset($this->config->autoWidth)) {
-            $config['autoWidth'] = $this->config->autoWidth;
-        }
         if (isset($this->config->defaultSort)) {
             $config['order'] = static::objectToArray($this->config->defaultSort);
         }
+        if (isset($this->config->autoWidth)) {
+            $config['autoWidth'] = $this->config->autoWidth;
+        }
         if (isset($this->config->dom)) {
             $config['dom'] = $this->config->dom;
+        }
+
+        if (!empty($this->config->config)) {
+            $config = array_merge($config, (array) $this->config->config);
         }
 
         return $config;
@@ -288,12 +299,19 @@ class DataTables extends Driver
         $config = [];
 
         foreach ($this->columns as $index => $column) {
+            if (isset($column->driverHidden) && $column->driverHidden) {
+                continue;
+            }
+
             if (!$column->filter) {
                 continue;
             }
 
             $columnConfig = [];
             $columnConfig['type'] = $column->driverFilterType;
+            if (isset($column->driverOption)) {
+                $columnConfig = array_merge($columnConfig, self::objectToArray($column->driverOption));
+            }
 
             $config[$index] = $columnConfig;
         }

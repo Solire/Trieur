@@ -75,118 +75,58 @@ class Format
      */
     protected function formateCell($row, Conf $column)
     {
-        if (isset($column->view)) {
-            return $this->view($row, $column);
+        if (!isset($column->format)) {
+            return $this->getCell($row, $column);
         }
 
-        if (isset($column->callback)) {
-            return $this->callBack($row, $column);
+        if (!isset($column->format->class)) {
+            throw new Exception(
+                sprintf(
+                    'Undefined format class for column [%s]',
+                    $column->name
+                )
+            );
+        }
+
+        if (!class_exists($column->format->class)) {
+            throw new Exception(
+                sprintf(
+                    'Format class [%s] for column [%s] does not exist',
+                    $column->format->class,
+                    $column->name
+                )
+            );
+        }
+
+        if (!is_subclass_of($column->format->class, '\Solire\Trieur\AbstractFormat')) {
+            throw new Exception(
+                sprintf(
+                    'Format class "%s" does not extend abstract class "%s"',
+                    $column->format->class,
+                    '\Solire\Trieur\AbstractFormat'
+                )
+            );
+        }
+
+        $formatInstance = new $column->format->class($column->format, $row, $this->getCell($row, $column));
+        return $formatInstance->render();
+    }
+
+    /**
+     * Get a source cell by its row and column
+     *
+     * @param array $row    The source row
+     * @param Conf  $column The cell's column
+     *
+     * @return string
+     * @throws Exception If the column index doesn't exist in the row
+     */
+    protected function getCell($row, Conf $column)
+    {
+        if (!isset($row[$column->sourceName])) {
+            return '';
         }
 
         return $row[$column->sourceName];
-    }
-
-    /**
-     * Return the content of a view
-     *
-     * @param array $row    The source row
-     * @param Conf  $column The cell's column
-     *
-     * @return string
-     * @throws Exception If the view file doesn't exist
-     */
-    protected function view($row, Conf $column)
-    {
-        ob_start();
-
-        if (!file_exists($column->view)
-            || !is_readable($column->view)
-        ) {
-            $message = sprintf(
-                'The view file "%s" does not exist or is not readable',
-                $column->view
-            );
-            throw new Exception($message);
-        }
-
-        include $column->view;
-        return ob_get_clean();
-    }
-
-    /**
-     * Return the result of a callback function
-     *
-     * @param array $row    The source row
-     * @param Conf  $column The cell's column
-     *
-     * @return string
-     */
-    protected function callBack($row, Conf $column)
-    {
-        $cell = $row[$column->sourceName];
-        $function = $column->callback;
-
-        $arguments = [];
-
-        if (is_string($function)) {
-            $functionName = $function;
-            $arguments[] = $cell;
-        } else {
-            $functionName = $function->name;
-
-            if (isset($function->arguments)) {
-                $arguments = (array) $function->arguments;
-            }
-
-            if (isset($function->cell)) {
-                $this->insertToArray($arguments, $cell, $function->cell);
-            }
-
-            if (isset($function->row)) {
-                $this->insertToArray($arguments, $row, $function->row);
-            }
-        }
-
-        $t = explode('::', $functionName);
-
-        if (count($t) > 1) {
-            list($class, $methodName) = $t;
-            $exists = method_exists($class, $methodName);
-        } else {
-            $exists = function_exists($functionName) || is_callable($functionName);
-        }
-
-        if (!$exists) {
-            $message = sprintf(
-                'The function "%s" does not exist',
-                $functionName
-            );
-            throw new Exception($message);
-        }
-
-        return call_user_func_array($functionName, $arguments);
-    }
-
-    /**
-     * Inserts a row in an array in a given offset (numeric offset only)
-     *
-     * @param array $array  The array
-     * @param mixed $row    The row to insert
-     * @param int   $offset The offset
-     *
-     * @return void
-     */
-    protected function insertToArray(&$array, $row, $offset)
-    {
-        if ($offset >= count($array)) {
-            $array[$offset] = $row;
-            return;
-        }
-
-        $array = array_merge(
-            array_slice($array, 0, $offset),
-            [$row],
-            array_slice($array, $offset)
-        );
     }
 }

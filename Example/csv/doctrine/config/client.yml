@@ -18,7 +18,7 @@ source:
       - c.email
       - a.tel1 tel
       - IF(c.ns > 0, "Oui", "Non") AS offre
-      - CONCAT(a.adresse1, "<br>", IF(a.adresse2 IS NULL, "", a.adresse2), "<br>", a.cp, " ", a.ville, "<br>", a.pays) AS adresse
+      - CONCAT(a.adresse1, "\n", IF(a.adresse2 IS NULL, "", a.adresse2), "\n", a.cp, " ", a.ville, "\n", a.pays) AS adresse
 
     from:
       name: client
