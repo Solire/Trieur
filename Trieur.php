@@ -137,14 +137,20 @@ class Trieur extends \Pimple\Container
         if (isset($this->conf->driver->class)) {
             if (!class_exists($this->conf->driver->class)) {
                 throw new Exception(
-                    'class "' . $this->conf->driver->class . '" does not exist'
+                    sprintf(
+                        'class "%s" does not exist',
+                        $this->conf->driver->class
+                    )
                 );
             }
 
             if (!is_subclass_of($this->conf->driver->class, '\Solire\Trieur\Driver')) {
                 throw new Exception(
-                    'class "' . $this->conf->driver->class . '" does not extend '
-                    . 'abstract class "\Solire\Trieur\Driver"'
+                    sprintf(
+                        'class "%s" does not extend abstract class '
+                        . '"\Solire\Trieur\Driver"',
+                        $this->conf->driver->class
+                    )
                 );
             }
         } elseif (isset($this->conf->driver->name)
@@ -193,14 +199,20 @@ class Trieur extends \Pimple\Container
         if (isset($this->conf->source->class)) {
             if (!class_exists($this->conf->source->class)) {
                 throw new Exception(
-                    'class "' . $this->conf->source->class . '" does not exist'
+                    sprintf(
+                        'class "%s" does not exist',
+                        $this->conf->source->class
+                    )
                 );
             }
 
             if (!is_subclass_of($this->conf->source->class, '\Solire\Trieur\Source')) {
                 throw new Exception(
-                    'class "' . $this->conf->source->class . '" does not extend '
-                    . 'abstract class "\Solire\Trieur\Source"'
+                    sprintf(
+                        'class "%s" does not extend '
+                        . 'abstract class "\Solire\Trieur\Source"',
+                        $this->conf->source->class
+                    )
                 );
             }
 

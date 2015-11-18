@@ -311,26 +311,6 @@ class Trieur extends Atoum
 
     public function testGetResponse()
     {
-        $conf = arrayToConf([
-            'driver' => [
-                'name' => 'csv',
-            ],
-            'source' => [
-                'name' => 'csv',
-            ],
-            'columns' => [
-                '0' => [
-                    'view' => 'notexisting.php',
-                ],
-            ],
-        ]);
-        $this
-            ->if($trieur = new TestClass($conf, $this->csvPath()))
-            ->exception(function()use($trieur){
-                $trieur->getResponse();
-            })
-                ->hasMessage('The view file "notexisting.php" does not exist or is not readable')
-        ;
 
         $conf = arrayToConf([
             'driver' => [
@@ -341,7 +321,17 @@ class Trieur extends Atoum
             ],
             'columns' => [
                 '4' => [
-                    'callback' => 'Solire\Trieur\Example\Format::sqlTo',
+                    'format' => [
+                        'class' => 'Solire\Trieur\Format\Callback',
+                        'name' => [
+                            '\Solire\Trieur\Example\Format',
+                            'sqlTo'
+                        ],
+                        'cell' => 'dateSql',
+                        'arguments' => [
+                            'format' => 'd/m/Y'
+                        ]
+                    ]
                 ],
             ],
         ]);
@@ -367,10 +357,14 @@ class Trieur extends Atoum
             ],
             'columns' => [
                 '0' => [
-                    'callback' => [
-                        'name' => '\Solire\Trieur\Example\Format::serialize',
-                        'row' => 0,
-                        'cell' => 1,
+                    'format' => [
+                        'class' => 'Solire\Trieur\Format\Callback',
+                        'name' => [
+                            '\Solire\Trieur\Example\Format',
+                            'serialize'
+                        ],
+                        'row' => 'row',
+                        'cell' => 'value',
                     ],
                 ],
             ],
@@ -385,49 +379,6 @@ class Trieur extends Atoum
                     '"a:5:{i:0;s:1:""4"";i:1;s:1:""t"";i:2;s:1:""5"";i:3;s:5:""julie"";i:4;s:10:""2014-02-22"";}|4"' . "\n" .
                     '"a:5:{i:0;s:1:""5"";i:1;s:1:""t"";i:2;s:1:""5"";i:3;s:4:""abel"";i:4;s:10:""2014-02-01"";}|5"' . "\n" .
                     '"a:5:{i:0;s:1:""6"";i:1;s:1:""c"";i:2;s:1:""5"";i:3;s:5:""julie"";i:4;s:10:""2014-02-11"";}|6"' . "\n"
-                )
-        ;
-
-        $conf = arrayToConf([
-            'driver' => [
-                'name' => 'csv',
-            ],
-            'source' => [
-                'name' => 'csv',
-            ],
-            'columns' => [
-                '0' => [],
-                '1' => [],
-                '2' => [],
-                '3' => [
-                    'hide' => true,
-                ],
-                '4' => [
-                    'callback' => [
-                        'name' => 'Solire\Trieur\Example\Format::sqlTo',
-                        'cell' => 0,
-                        'arguments' => [
-                            'd/m/Y',
-                        ],
-                    ],
-                ],
-                '5' => [
-                    'source' => 0,
-                    'sourceName' => 0,
-                    'view' => '../data/view.php',
-                ],
-            ],
-        ]);
-        $this
-            ->if($trieur = new TestClass($conf, $this->csvPath()))
-            ->string($trieur->getResponse())
-                ->isEqualTo(
-                    '1,a,3,06/02/2014,<b>1|a|3|thomas|2014-02-06</b>' . "\n" .
-                    '2,z,2,08/02/2014,<b>2|z|2|thomas|2014-02-08</b>' . "\n" .
-                    '3,z,2,16/02/2014,<b>3|z|2|jérôme|2014-02-16</b>' . "\n" .
-                    '4,t,5,22/02/2014,<b>4|t|5|julie|2014-02-22</b>' . "\n" .
-                    '5,t,5,01/02/2014,<b>5|t|5|abel|2014-02-01</b>' . "\n" .
-                    '6,c,5,11/02/2014,<b>6|c|5|julie|2014-02-11</b>' . "\n"
                 )
         ;
 
