@@ -27,7 +27,6 @@
     "phpmd/phpmd": "~2.2",
     "sebastian/phpcpd": "~2.0",
     "mayflower/php-codebrowser": "~1.1"
-
   },
   "suggest": {
     "symfony/yaml": "version 2.5.* to read yaml config file (used in examples)",
@@ -37,5 +36,8 @@
     "psr-4": {
       "Solire\\Trieur\\": "./"
     }
+  },
+  "scripts": {
+    "test": "cd tests/units; ../../vendor/bin/atoum -d ."
   }
 }

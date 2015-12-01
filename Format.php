@@ -88,7 +88,9 @@ class Format
             );
         }
 
-        if (!class_exists($column->format->class)) {
+        $className = $this->getFormatClassName($column->format->class);
+
+        if ($className === null) {
             throw new Exception(
                 sprintf(
                     'Format class [%s] for column [%s] does not exist',
@@ -98,10 +100,12 @@ class Format
             );
         }
 
+        $column->format->class = $className;
+
         if (!is_subclass_of($column->format->class, '\Solire\Trieur\AbstractFormat')) {
             throw new Exception(
                 sprintf(
-                    'Format class "%s" does not extend abstract class "%s"',
+                    'Format class [%s] does not extend abstract class [%s]',
                     $column->format->class,
                     '\Solire\Trieur\AbstractFormat'
                 )
@@ -128,5 +132,28 @@ class Format
         }
 
         return $row[$column->sourceName];
+    }
+
+    /**
+     * Returns the name of the filter class
+     *
+     * @param string $filterType The filter type (Contain, DateRange etc.)
+     *
+     * @return string
+     */
+    private function getFormatClassName($formatType)
+    {
+        $className = $formatType;
+        if (class_exists($className)) {
+            return $className;
+        }
+
+        $r = new \ReflectionClass($this);
+        $className = $r->getName() . '\\' . $formatType;
+        if (class_exists($className)) {
+            return $className;
+        }
+
+        return null;
     }
 }
