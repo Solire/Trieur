@@ -44,6 +44,20 @@ class Csv extends Source
     protected $data = [];
 
     /**
+     * Current row
+     *
+     * @var array
+     */
+    protected $row = null;
+
+    /**
+     * Header row
+     *
+     * @var array
+     */
+    protected $header = null;
+
+    /**
      * State of the request (to ensure we don't parse the file multiple times)
      *
      * @var string
@@ -68,11 +82,11 @@ class Csv extends Source
         parent::__construct($conf, $columns, $connection);
 
         if (!file_exists($this->connection)) {
-            throw new Exception('No csv file founed : "' . $connection . '"');
+            throw new Exception('No csv file founed : "' . $this->connection . '"');
         }
 
         if (!is_readable($this->connection)) {
-            throw new Exception('Csv file not readable : "' . realpath($connection) . '"');
+            throw new Exception('Csv file not readable : "' . realpath($this->connection) . '"');
         }
 
         if (!isset($this->conf->length)) {
@@ -103,12 +117,14 @@ class Csv extends Source
      */
     protected function fetch()
     {
-        return fgetcsv(
+        $this->row = fgetcsv(
             $this->handle,
             $this->conf->length,
             $this->conf->delimiter,
             $this->conf->enclosure
         );
+
+        return $this->row;
     }
 
     /**
@@ -153,6 +169,20 @@ class Csv extends Source
     public function getData()
     {
         $this->parse();
+
+        if (!empty($this->header)) {
+            $data = $this->data;
+            $this->data = [];
+
+            foreach ($data as $row) {
+                $fRow = [];
+                foreach ($row as $ind => $cell) {
+                    $fRow[$this->header[$ind]] = $cell;
+                }
+                $this->data[] = $fRow;
+            }
+        }
+
         return $this->data;
     }
 
@@ -163,8 +193,12 @@ class Csv extends Source
      *
      * @return void
      */
-    protected function addToEligible($newRow)
+    protected function addToEligible($newRow = null)
     {
+        if ($newRow === null) {
+            $newRow = $this->row;
+        }
+
         $newOffset = count($this->data);
         foreach ($this->data as $offset => $row) {
             if ($this->lowerThan($newRow, $row)) {
@@ -213,8 +247,8 @@ class Csv extends Source
             list($column, $dir) = $order;
 
             $test = strnatcasecmp(
-                $row1[$column->sourceName],
-                $row2[$column->sourceName]
+                self::getCell($row1, $column->sourceName),
+                self::getCell($row2, $column->sourceName)
             );
 
             if ($test == 0) {
@@ -255,9 +289,31 @@ class Csv extends Source
         $this->handle();
 
         $this->data = [];
-        while ($this->row = $this->fetch()) {
+
+        $count = 0;
+        if (isset($this->conf->header)) {
+            while ($this->fetch()) {
+                if ($this->conf->header == $count) {
+                    $this->header = $this->row;
+                    break;
+                }
+
+                $count++;
+            }
+        }
+
+        while ($this->fetch()) {
+//            if (!empty($this->header)) {
+//                $row = $this->row;
+//                $this->row = [];
+//                foreach ($row as $ind => $cell) {
+//                    $this->row[$this->header[$ind]] = $cell;
+//                }
+//                unset($row);
+//            }
+
             if ($this->filter()) {
-                $this->addToEligible($this->row);
+                $this->addToEligible();
                 $this->filteredCount++;
             }
             $this->count++;
@@ -275,6 +331,16 @@ class Csv extends Source
     protected function processFilter(SourceFilter $filter)
     {
         $filter->setRow($this->row);
+        $filter->setSource($this);
         return $filter->filter();
+    }
+
+    public function getCell($row, $index)
+    {
+        if ($this->header && !is_numeric($index)) {
+            $index = array_search($index, $this->header);
+        }
+
+        return $row[$index];
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Solire\Trieur\Source\Csv;
 
+use Solire\Trieur\Source\Csv;
 use Solire\Trieur\SourceFilter;
 
 /**
@@ -14,9 +15,16 @@ abstract class Filter extends SourceFilter
     /**
      * QueryBuilder
      *
-     * @var QueryBuilder
+     * @var array
      */
     protected $row;
+
+    /**
+     * Source
+     *
+     * @var Csv
+     */
+    protected $source;
 
     /**
      * Sets the row
@@ -28,5 +36,17 @@ abstract class Filter extends SourceFilter
     public function setRow(array $row)
     {
         $this->row = $row;
+    }
+
+    /**
+     * Sets the row
+     *
+     * @param array $row The row
+     *
+     * @return void
+     */
+    public function setSource(Csv $source)
+    {
+        $this->source = $source;
     }
 }

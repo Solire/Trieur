@@ -53,6 +53,11 @@ class Format
     protected function formateRow($row)
     {
         $rowFormated = array();
+
+        if (empty($this->columns)) {
+            return $row;
+        }
+
         foreach ($this->columns as $column) {
             if (isset($column->hide) && $column->hide) {
                 continue;
