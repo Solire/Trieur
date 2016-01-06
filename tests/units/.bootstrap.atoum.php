@@ -18,6 +18,11 @@ if (!is_dir(TEST_TMP_DIR)) {
     mkdir(TEST_TMP_DIR);
 }
 
+define('TEST_DATA_DIR', __DIR__ . '/../data');
+if (!is_dir(TEST_TMP_DIR)) {
+    mkdir(TEST_TMP_DIR);
+}
+
 /**
  * Converts an array to a Conf object
  *
