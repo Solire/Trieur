@@ -93,6 +93,12 @@ class DoctrineOrm extends Source
                 $this->queryBuilder->andWhere($where);
             }
         }
+
+        if (isset($this->conf->parameters)) {
+            foreach ($this->conf->parameters as $key => $value) {
+                $this->queryBuilder->setParameter($key, $value);
+            }
+        }
     }
 
 
@@ -191,7 +197,7 @@ class DoctrineOrm extends Source
 
         return implode(
             ', ',
-            $this->queryBuilder->getQueryPart('select')
+            $this->queryBuilder->getDQLPart('select')
         );
     }
 

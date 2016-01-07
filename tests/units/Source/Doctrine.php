@@ -2,26 +2,10 @@
 namespace Solire\Trieur\test\units\Source;
 
 use atoum as Atoum;
-use Solire\Trieur\Source\Doctrine as TestClass;
-
-use Solire\Trieur\Columns;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Solire\Conf\Conf;
-
-class MockDatabasePF
-{
-    public function modifyLimitQuery($query, $limit, $offset)
-    {
-        if ($limit !== null) {
-            $query .= ' LIMIT ' . $limit;
-        }
-
-        if ($offset !== null) {
-            $query .= ' OFFSET ' . $offset;
-        }
-
-        return $query;
-    }
-}
+use Solire\Trieur\Columns;
+use Solire\Trieur\Source\Doctrine as TestClass;
 
 class Doctrine extends Atoum
 {
@@ -46,7 +30,7 @@ class Doctrine extends Atoum
         };
 
         $this->connection->getMockController()->getDatabasePlatform = function() {
-            return new MockDatabasePF;
+            return new MySqlPlatform;
         };
 
         $this->mockGenerator->unshuntParentClassCalls();

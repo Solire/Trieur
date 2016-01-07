@@ -3,6 +3,7 @@ namespace Solire\Trieur\test\units\Source;
 
 use atoum as Atoum;
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Setup;
@@ -10,10 +11,6 @@ use Solire\Conf\Conf;
 use Solire\Trieur\Columns;
 use Solire\Trieur\Source\DoctrineOrm as TestClass;
 use Solire\Trieur\tests\data\Entity\Profil;
-
-class MockDatabasePF extends \Doctrine\DBAL\Platforms\MySqlPlatform
-{
-}
 
 class DoctrineOrm extends Atoum
 {
@@ -46,7 +43,7 @@ class DoctrineOrm extends Atoum
             return new EventManager();;
         };
         $db->getMockController()->getDatabasePlatform = function() {
-            return new MockDatabasePF;
+            return new MySqlPlatform;
         };
         $this->mockGenerator->unshuntParentClassCalls();
 
@@ -63,19 +60,27 @@ class DoctrineOrm extends Atoum
     {
         $connection = $this->getConnection();
 
-        $conf = new Conf;
-        $conf->select = [
-            'c.nom'
-        ];
-        $conf->from = new Conf;
-        $conf->from->name = Profil::class;
-        $conf->from->alias = 'c';
+        $conf = \Solire\Conf\Loader::load([
+            'select' => [
+                'c.nom',
+            ],
+            'from' => [
+                [
+                    'name' => Profil::class,
+                    'alias' => 'c',
+                ],
+            ],
+        ]);
 
         $columns = new Columns(new Conf);
+
+        /* @var $c TestClass */
 
         $this
             ->if($c = new TestClass($conf, $columns, $connection))
                 ->object($c)
+
+
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
@@ -83,160 +88,141 @@ class DoctrineOrm extends Atoum
                     ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c')
 
                 ->string($this->getConnection()->createQuery($dql)->getSQL())
-        ;
+                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1$#')
 
-//                ->object($qB = $c->getDataQuery())
-//                    ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
-//                    ->string($qB->getSQL())
-//                    ->isEqualTo('SELECT a, v FROM tt t')
-//
-//                ->object($qB = $c->getCountQuery())
-//                    ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
-//                    ->string($qB->getSQL())
-//                    ->isEqualTo('SELECT COUNT(DISTINCT a, v) FROM tt t')
-//
-//                ->object($qB = $c->getFilteredCountQuery())
-//                    ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
-//                    ->string($qB->getSQL())
-//                    ->isEqualTo('SELECT COUNT(DISTINCT a, v) FROM tt t')
+
+                ->object($qB = $c->getDataQuery())
+                    ->isInstanceOf(QueryBuilder::class)
+
+                ->string($dql = $qB->getDQL())
+                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c')
+
+                ->string($this->getConnection()->createQuery($dql)->getSQL())
+                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1$#')
+
+
+                ->object($qB = $c->getCountQuery())
+                    ->isInstanceOf(QueryBuilder::class)
+
+                ->string($dql = $qB->getDQL())
+                    ->isEqualTo('SELECT COUNT(DISTINCT c.nom) FROM ' . Profil::class . ' c')
+
+                ->string($this->getConnection()->createQuery($dql)->getSQL())
+                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.nom\) AS (\w+) FROM profil \1$#')
+
+
+                ->object($qB = $c->getFilteredCountQuery())
+                    ->isInstanceOf(QueryBuilder::class)
+
+                ->string($dql = $qB->getDQL())
+                    ->isEqualTo('SELECT COUNT(DISTINCT c.nom) FROM ' . Profil::class . ' c')
+
+                ->string($this->getConnection()->createQuery($dql)->getSQL())
+                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.nom\) AS (\w+) FROM profil \1$#')
+
+
+                ->if ($c->addFilter([
+                    'c.nom',
+                    'audi',
+                    'Contain'
+                ]))
+
+                ->object($qB = $c->getDataQuery())
+                    ->isInstanceOf(QueryBuilder::class)
+
+                ->string($dql = $qB->getDQL())
+                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :word_1')
+
+                ->string($this->getConnection()->createQuery($dql)->getSQL())
+                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
         ;
     }
 
-//    public function testConstruct02()
-//    {
-//        $connection = $this->getConnection();
-//
-//        $conf = arrayToConf([
-//            'select' => [
-//                'a',
-//                'v',
-//            ],
-//            'from' => [
-//                'name' => 'tt',
-//                'alias' => 't',
-//            ],
-//            'where' => [
-//                'a = v',
-//            ],
-//            'innerJoin' => [
-//                [
-//                    'name' => 'uu',
-//                    'alias' => 'u',
-//                    'on' => 'u.c = t.v',
-//                ]
-//            ]
-//        ]);
-//
-//        $columns = new Columns(new Conf);
-//
-//        $this
-//            ->if($c = new TestClass($conf, $columns, $connection))
-//                ->object($c)
-//                ->object($qB = $c->getQuery())
-//                    ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
-//
-//                ->string($qB->getSQL())
-//                    ->isEqualTo('SELECT a, v FROM tt t INNER JOIN uu u ON u.c = t.v WHERE a = v')
-//
-//                ->object($qB = $c->getDataQuery())
-//                    ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
-//                    ->string($qB->getSQL())
-//                    ->isEqualTo('SELECT a, v FROM tt t INNER JOIN uu u ON u.c = t.v WHERE a = v')
-//
-//                ->object($qB = $c->getCountQuery())
-//                    ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
-//                    ->string($qB->getSQL())
-//                    ->isEqualTo('SELECT COUNT(DISTINCT a, v) FROM tt t INNER JOIN uu u ON u.c = t.v WHERE a = v')
-//
-//                ->object($qB = $c->getFilteredCountQuery())
-//                    ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
-//                    ->string($qB->getSQL())
-//                    ->isEqualTo('SELECT COUNT(DISTINCT a, v) FROM tt t INNER JOIN uu u ON u.c = t.v WHERE a = v')
-//        ;
-//    }
-//    public function testConstruct03()
-//    {
-//        $connection = $this->getConnection();
-//
-//        $conf = arrayToConf([
-//            'select' => [
-//                'a',
-//                'v',
-//            ],
-//            'from' => [
-//                'name' => 'tt',
-//                'alias' => 't',
-//            ],
-//            'where' => [
-//                'a = v',
-//            ],
-//            'innerJoin' => [
-//                [
-//                    'name' => 'uu',
-//                    'alias' => 'u',
-//                    'on' => 'u.c = t.v',
-//                ]
-//            ],
-//            'group' => 't.a',
-//        ]);
-//
-//        $columns = new Columns(arrayToConf([
-//            'a' => [
-//                'source' => 't.a'
-//            ]
-//        ]));
-//
-//        $this
-//            ->if($c = new TestClass($conf, $columns, $connection))
-//            ->and($c->addOrder('a', 'ASC'))
-//            ->and($c->addFilter([
-//                ['t.a'],
-//                'trieur php',
-//                'Contain'
-//            ]))
-//            ->and($c->setOffset(10))
-//            ->and($c->setLength(5))
-//
-//            ->and($qB = $c->getQuery())
-//            ->string($qB->getSQL())
-//                ->isEqualTo('SELECT a, v FROM tt t INNER JOIN uu u ON u.c = t.v WHERE a = v')
-//
-//            ->and($qB = $c->getDataQuery())
-//            ->string($qB->getSQL())
-//                ->isEqualTo(
-//                    'SELECT a, v '
-//                    . 'FROM tt t '
-//                    . 'INNER JOIN uu u ON u.c = t.v '
-//                    . 'WHERE (a = v) '
-//                    . 'AND (t.a LIKE "%trieur php%" OR t.a LIKE "%trieur%" OR t.a LIKE "%php%") '
-//                    . 'GROUP BY t.a '
-//                    . 'ORDER BY IF(t.a LIKE "%trieur php%", 10, 0) + IF(t.a LIKE "%trieur%", 6, 0) + IF(t.a LIKE "%php%", 3, 0) DESC, '
-//                    . 't.a '
-//                    . 'ASC '
-//                    . 'LIMIT 5 '
-//                    . 'OFFSET 10'
-//                )
-//
-//            ->and($qB = $c->getCountQuery())
-//            ->string($qB->getSQL())
-//                ->isEqualTo(
-//                    'SELECT COUNT(DISTINCT t.a) '
-//                    . 'FROM tt t '
-//                    . 'INNER JOIN uu u ON u.c = t.v '
-//                    . 'WHERE a = v'
-//                )
-//
-//            ->and($qB = $c->getFilteredCountQuery())
-//            ->string($qB->getSQL())
-//                ->isEqualTo(
-//                    'SELECT COUNT(DISTINCT t.a) '
-//                    . 'FROM tt t '
-//                    . 'INNER JOIN uu u '
-//                    . 'ON u.c = t.v '
-//                    . 'WHERE (a = v) '
-//                    . 'AND (t.a LIKE "%trieur php%" OR t.a LIKE "%trieur%" OR t.a LIKE "%php%")'
-//                )
-//        ;
-//
-//    }
+    public function testConstruct02()
+    {
+        $connection = $this->getConnection();
+
+        $conf = \Solire\Conf\Loader::load([
+            'select' => [
+                'c.nom',
+            ],
+            'from' => [
+                [
+                    'name' => Profil::class,
+                    'alias' => 'c',
+                ],
+            ],
+            'where' => [
+                'c.nom LIKE :foo',
+            ],
+            'parameters' => [
+                'foo' => 'a',
+            ]
+        ]);
+
+        $columns = new Columns(new Conf);
+
+        /* @var $c TestClass */
+
+        $this
+            ->if($c = new TestClass($conf, $columns, $connection))
+                ->object($c)
+
+
+                ->object($qB = $c->getQuery())
+                    ->isInstanceOf(QueryBuilder::class)
+
+                ->string($dql = $qB->getDQL())
+                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo')
+
+                ->string($this->getConnection()->createQuery($dql)->getSQL())
+                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
+
+
+                ->object($qB = $c->getDataQuery())
+                    ->isInstanceOf(QueryBuilder::class)
+
+                ->string($dql = $qB->getDQL())
+                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo')
+
+                ->string($this->getConnection()->createQuery($dql)->getSQL())
+                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
+
+
+                ->object($qB = $c->getCountQuery())
+                    ->isInstanceOf(QueryBuilder::class)
+
+                ->string($dql = $qB->getDQL())
+                    ->isEqualTo('SELECT COUNT(DISTINCT c.nom) FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo')
+
+                ->string($this->getConnection()->createQuery($dql)->getSQL())
+                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.nom\) AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
+
+
+                ->object($qB = $c->getFilteredCountQuery())
+                    ->isInstanceOf(QueryBuilder::class)
+
+                ->string($dql = $qB->getDQL())
+                    ->isEqualTo('SELECT COUNT(DISTINCT c.nom) FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo')
+
+                ->string($this->getConnection()->createQuery($dql)->getSQL())
+                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.nom\) AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
+
+
+                ->if ($c->addFilter([
+                    'c.nom',
+                    'audi',
+                    'Contain'
+                ]))
+
+                ->object($qB = $c->getDataQuery())
+                    ->isInstanceOf(QueryBuilder::class)
+
+                ->string($dql = $qB->getDQL())
+                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo AND c.nom LIKE :word_1')
+
+                ->string($this->getConnection()->createQuery($dql)->getSQL())
+                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \? AND \1\.nom LIKE \?$#')
+        ;
+    }
 }

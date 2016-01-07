@@ -38,14 +38,15 @@ class Contain extends Filter
         $words = array_unique($words);
 
         $conds = [];
-        foreach ($words as $word) {
+        foreach ($words as $index => $word) {
             foreach ($this->columns as $colName) {
                 /**
                  * @todo add a ponderation array to the constructor
                  */
                 $pond    = 1;
 
-                $cond = $this->queryBuilder->expr()->like($colName, '%' . $word . '%');
+                $cond = $this->queryBuilder->expr()->like($colName, ':word_' . ($index + 1));
+                $this->queryBuilder->setParameter('word_' . ($index + 1), $word);
 
                 $conds[] = $cond;
             }
