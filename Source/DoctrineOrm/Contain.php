@@ -40,13 +40,8 @@ class Contain extends Filter
         $conds = [];
         foreach ($words as $index => $word) {
             foreach ($this->columns as $colName) {
-                /**
-                 * @todo add a ponderation array to the constructor
-                 */
-                $pond    = 1;
-
                 $cond = $this->queryBuilder->expr()->like($colName, ':word_' . ($index + 1));
-                $this->queryBuilder->setParameter('word_' . ($index + 1), $word);
+                $this->queryBuilder->setParameter('word_' . ($index + 1), '%' . $word . '%');
 
                 $conds[] = $cond;
             }

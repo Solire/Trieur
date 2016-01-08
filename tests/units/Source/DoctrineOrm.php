@@ -62,6 +62,7 @@ class DoctrineOrm extends Atoum
 
         $conf = \Solire\Conf\Loader::load([
             'select' => [
+                'c.id',
                 'c.nom',
             ],
             'from' => [
@@ -70,11 +71,20 @@ class DoctrineOrm extends Atoum
                     'alias' => 'c',
                 ],
             ],
+            'group' => 'c.id',
         ]);
 
-        $columns = new Columns(new Conf);
+        $columns = new Columns(\Solire\Conf\Loader::load([
+            'id' => [
+                'source' => 'c.id',
+            ],
+            'nom' => [
+                'source' => 'c.nom',
+            ],
+        ]));
 
         /* @var $c TestClass */
+        /* @var $param \Doctrine\ORM\Query\Parameter */
 
         $this
             ->if($c = new TestClass($conf, $columns, $connection))
@@ -85,45 +95,46 @@ class DoctrineOrm extends Atoum
                     ->isInstanceOf(QueryBuilder::class)
 
                 ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c')
+                    ->isEqualTo('SELECT c.id, c.nom FROM ' . Profil::class . ' c')
 
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1$#')
+                ->string($qB->getQuery()->getSQL())
+                    ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1$#')
 
 
                 ->object($qB = $c->getDataQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
                 ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c')
+                    ->isEqualTo('SELECT c.id, c.nom FROM ' . Profil::class . ' c GROUP BY c.id')
 
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1$#')
+                ->string($qB->getQuery()->getSQL())
+                    ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1 GROUP BY \1.id$#')
 
 
                 ->object($qB = $c->getCountQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
                 ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT COUNT(DISTINCT c.nom) FROM ' . Profil::class . ' c')
+                    ->isEqualTo('SELECT COUNT(DISTINCT c.id) FROM ' . Profil::class . ' c')
 
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.nom\) AS (\w+) FROM profil \1$#')
+                ->string($qB->getQuery()->getSQL())
+                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.id\) AS (\w+) FROM profil \1$#')
 
 
                 ->object($qB = $c->getFilteredCountQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
                 ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT COUNT(DISTINCT c.nom) FROM ' . Profil::class . ' c')
+                    ->isEqualTo('SELECT COUNT(DISTINCT c.id) FROM ' . Profil::class . ' c')
 
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.nom\) AS (\w+) FROM profil \1$#')
+                ->string($qB->getQuery()->getSQL())
+                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.id\) AS (\w+) FROM profil \1$#')
 
 
-                ->if ($c->addFilter([
+                ->if ($term = 'audi')
+                ->and ($c->addFilter([
                     'c.nom',
-                    'audi',
+                    $term,
                     'Contain'
                 ]))
 
@@ -131,98 +142,38 @@ class DoctrineOrm extends Atoum
                     ->isInstanceOf(QueryBuilder::class)
 
                 ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :word_1')
+                    ->isEqualTo('SELECT c.id, c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :word_1 GROUP BY c.id')
 
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
-        ;
-    }
+                ->string($qB->getQuery()->getSQL())
+                    ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \? GROUP BY \1\.id$#')
 
-    public function testConstruct02()
-    {
-        $connection = $this->getConnection();
+                ->object($param = $qB->getParameter('word_1'))
+                    ->isInstanceOf(\Doctrine\ORM\Query\Parameter::class)
 
-        $conf = \Solire\Conf\Loader::load([
-            'select' => [
-                'c.nom',
-            ],
-            'from' => [
-                [
-                    'name' => Profil::class,
-                    'alias' => 'c',
-                ],
-            ],
-            'where' => [
-                'c.nom LIKE :foo',
-            ],
-            'parameters' => [
-                'foo' => 'a',
-            ]
-        ]);
+                ->string($param->getValue())
+                    ->isEqualTo('%' . $term . '%')
 
-        $columns = new Columns(new Conf);
-
-        /* @var $c TestClass */
-
-        $this
-            ->if($c = new TestClass($conf, $columns, $connection))
-                ->object($c)
-
-
-                ->object($qB = $c->getQuery())
-                    ->isInstanceOf(QueryBuilder::class)
-
-                ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo')
-
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
-
-
+                ->if ($c->setLength(1))
+                ->and ($c->setOffset(1))
                 ->object($qB = $c->getDataQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
                 ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo')
+                    ->isEqualTo('SELECT c.id, c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :word_1 GROUP BY c.id')
 
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
+                ->string($qB->getQuery()->getSQL())
+                    ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \? GROUP BY \1\.id LIMIT 1 OFFSET 1$#')
 
-
-                ->object($qB = $c->getCountQuery())
-                    ->isInstanceOf(QueryBuilder::class)
-
-                ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT COUNT(DISTINCT c.nom) FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo')
-
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.nom\) AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
-
-
-                ->object($qB = $c->getFilteredCountQuery())
-                    ->isInstanceOf(QueryBuilder::class)
-
-                ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT COUNT(DISTINCT c.nom) FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo')
-
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT COUNT\(DISTINCT (\w+)\.nom\) AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \?$#')
-
-
-                ->if ($c->addFilter([
-                    'c.nom',
-                    'audi',
-                    'Contain'
-                ]))
-
+                ->if ($c->addOrder('id'))
                 ->object($qB = $c->getDataQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
                 ->string($dql = $qB->getDQL())
-                    ->isEqualTo('SELECT c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :foo AND c.nom LIKE :word_1')
+                    ->isEqualTo('SELECT c.id, c.nom FROM ' . Profil::class . ' c WHERE c.nom LIKE :word_1 GROUP BY c.id ORDER BY c.id ASC')
 
-                ->string($this->getConnection()->createQuery($dql)->getSQL())
-                    ->match('#^SELECT (\w+)\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \? AND \1\.nom LIKE \?$#')
+                ->string($qB->getQuery()->getSQL())
+                    ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \? GROUP BY \1\.id ORDER BY \1\.id ASC LIMIT 1 OFFSET 1$#')
         ;
     }
+
 }

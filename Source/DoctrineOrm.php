@@ -86,6 +86,23 @@ class DoctrineOrm extends Source
         }
 
         /*
+         * Inner join, right join, left join
+         */
+        $joinTypes = [
+            'join',
+            'innerJoin',
+            'leftJoin',
+            'rightJoin',
+        ];
+
+        foreach ($joinTypes as $joinType) {
+            if (isset($this->conf->$joinType)) {
+                $joins = $this->conf->$joinType;
+                $this->buildJoins($joinType, $joins);
+            }
+        }
+
+        /*
          * Condition
          */
         if (isset($this->conf->where)) {
@@ -101,7 +118,26 @@ class DoctrineOrm extends Source
         }
     }
 
-
+    /**
+     * Add the joins to the main query builder
+     *
+     * @param string $joinType The join types 'innerJoin', 'leftJoin', 'rightJoin'
+     * @param array  $joins    An array of joins (defined by an object with at
+     * least 'name', 'alias' and 'on' keys)
+     *
+     * @return void
+     */
+    protected function buildJoins($joinType, $joins)
+    {
+        foreach ($joins as $join) {
+            $this->queryBuilder->$joinType(
+                $join->name,
+                $join->alias,
+                $join->type,
+                $join->on
+            );
+        }
+    }
 
     public function getCount()
     {
