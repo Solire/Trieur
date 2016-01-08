@@ -3,11 +3,13 @@
 namespace Solire\Trieur\Source;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Solire\Conf\Conf;
-use Solire\Trieur\Source;
-use Solire\Trieur\SourceFilter;
 use Solire\Trieur\Columns;
+use Solire\Trieur\Source;
+use Solire\Trieur\Source\DoctrineOrm\Filter;
+use Solire\Trieur\SourceFilter;
 
 /**
  * Description of DoctrineOrm
@@ -141,17 +143,17 @@ class DoctrineOrm extends Source
 
     public function getCount()
     {
-        return $this->getCountQuery()->getQuery()->getOneOrNullResult();
+        return $this->getCountQuery()->getQuery()->getResult(Query::HYDRATE_SINGLE_SCALAR);
     }
 
     public function getData()
     {
-        return $this->getDataQuery()->getQuery()->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        return $this->getDataQuery()->getQuery()->getResult(Query::HYDRATE_ARRAY);
     }
 
     public function getFilteredCount()
     {
-        return $this->getFilteredCountQuery()->getQuery()->getOneOrNullResult();
+        return $this->getFilteredCountQuery()->getQuery()->getResult(Query::HYDRATE_SINGLE_SCALAR);
     }
 
     /**
@@ -240,7 +242,7 @@ class DoctrineOrm extends Source
     /**
      * Process the filter
      *
-     * @param DoctrineOrm\Filter $filter The filter class
+     * @param Filter $filter The filter class
      *
      * @return void
      */
