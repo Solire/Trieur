@@ -1,4 +1,5 @@
 <?php
+
 namespace Solire\Trieur;
 
 use ArrayIterator;

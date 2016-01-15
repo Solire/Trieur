@@ -1,6 +1,13 @@
 <?php
+
 namespace Solire\Trieur\Source\DoctrineOrm;
 
+/**
+ * Doctrine ORM filter class for Exact filter
+ *
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
+ */
 class Exact extends Filter
 {
     /**

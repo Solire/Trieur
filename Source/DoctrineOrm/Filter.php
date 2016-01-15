@@ -1,4 +1,5 @@
 <?php
+
 namespace Solire\Trieur\Source\DoctrineOrm;
 
 use Solire\Trieur\SourceFilter;

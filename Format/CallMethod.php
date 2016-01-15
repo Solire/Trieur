@@ -4,14 +4,14 @@ namespace Solire\Trieur\Format;
 
 use Exception;
 use ReflectionClass;
-use ReflectionFunction;
 use ReflectionParameter;
 use Solire\Trieur\AbstractFormat;
 
 /**
- * Description of Function
+ * Description of CallMethod Format class
  *
- * @author thansen
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
  */
 class CallMethod extends AbstractFormat
 {
@@ -104,8 +104,6 @@ class CallMethod extends AbstractFormat
 
     /**
      * Get a class method arguments' name list
-     *
-     * @param array $callable A callable array
      *
      * @return ReflectionParameter[]
      */

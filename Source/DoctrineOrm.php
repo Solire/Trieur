@@ -12,9 +12,10 @@ use Solire\Trieur\Source\DoctrineOrm\Filter;
 use Solire\Trieur\SourceFilter;
 
 /**
- * Description of DoctrineOrm
+ * Doctrine ORM connection wrapper
  *
- * @author thansen
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
  */
 class DoctrineOrm extends Source
 {
@@ -141,16 +142,31 @@ class DoctrineOrm extends Source
         }
     }
 
+    /**
+     * Return the total of available lines
+     *
+     * @return int Total number
+     */
     public function getCount()
     {
         return $this->getCountQuery()->getQuery()->getResult(Query::HYDRATE_SINGLE_SCALAR);
     }
 
+    /**
+     * Returns the data filtered by the current filters
+     *
+     * @return mixed
+     */
     public function getData()
     {
         return $this->getDataQuery()->getQuery()->getResult(Query::HYDRATE_ARRAY);
     }
 
+    /**
+     * Return the total of available lines filtered by the current filters
+     *
+     * @return int Total number
+     */
     public function getFilteredCount()
     {
         return $this->getFilteredCountQuery()->getQuery()->getResult(Query::HYDRATE_SINGLE_SCALAR);

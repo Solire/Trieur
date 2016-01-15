@@ -1,4 +1,5 @@
 <?php
+
 namespace Solire\Trieur\Source\Csv;
 
 use Solire\Trieur\SourceFilter;

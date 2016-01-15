@@ -16,11 +16,11 @@
     "pimple/pimple": "~3.0"
   },
   "require-dev": {
-    "m6web/coke": "1.2",
     "filp/whoops": "1.0.*",
     "doctrine/orm": "^2.4",
     "symfony/yaml": "^2.5",
 
+    "m6web/coke": "~2.1",
     "siwayll/phpcs-norme-dpsi": "~3.2",
     "atoum/atoum": "~2.2",
     "phploc/phploc": "~2.1",

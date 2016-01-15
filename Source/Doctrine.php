@@ -1,4 +1,5 @@
 <?php
+
 namespace Solire\Trieur\Source;
 
 use Solire\Trieur\Source;
