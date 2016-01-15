@@ -1,19 +1,18 @@
 <?php
+
 namespace Solire\Trieur\test\units\Driver;
 
-use atoum as Atoum;
-use Solire\Trieur\Driver\Csv as TestClass;
-
+use atoum;
+use Solire\Conf\Loader;
 use Solire\Trieur\Columns;
-use Solire\Conf\Conf;
 
-class Csv extends Atoum
+class Csv extends atoum
 {
     public function testContrustor00()
     {
-        $config = arrayToConf([]);
+        $config = Loader::load([]);
 
-        $columns = new Columns(arrayToConf([
+        $columns = new Columns(Loader::load([
             'nom' => [
                 'filter' => true,
                 'sort' => true,
@@ -25,7 +24,7 @@ class Csv extends Atoum
         ]));
 
         $this
-            ->if($c = new TestClass($config, $columns))
+            ->if($c = $this->newTestedInstance($config, $columns))
             ->and($c->setRequest([]))
             ->array($c->getOrder())
                 ->isEqualTo([])

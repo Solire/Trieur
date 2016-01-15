@@ -1,18 +1,19 @@
 <?php
+
 namespace Solire\Trieur\test\units\Source;
 
-use atoum as Atoum;
+use atoum;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Setup;
-use Solire\Conf\Conf;
+use Solire\Conf\Loader;
 use Solire\Trieur\Columns;
-use Solire\Trieur\Source\DoctrineOrm as TestClass;
 use Solire\Trieur\tests\data\Entity\Profil;
 
-class DoctrineOrm extends Atoum
+class DoctrineOrm extends atoum
 {
     /**
      * Manager d'entité
@@ -60,7 +61,7 @@ class DoctrineOrm extends Atoum
     {
         $connection = $this->getConnection();
 
-        $conf = \Solire\Conf\Loader::load([
+        $conf = Loader::load([
             'select' => [
                 'c.id',
                 'c.nom',
@@ -74,7 +75,7 @@ class DoctrineOrm extends Atoum
             'group' => 'c.id',
         ]);
 
-        $columns = new Columns(\Solire\Conf\Loader::load([
+        $columns = new Columns(Loader::load([
             'id' => [
                 'source' => 'c.id',
             ],
@@ -83,11 +84,10 @@ class DoctrineOrm extends Atoum
             ],
         ]));
 
-        /* @var $c TestClass */
-        /* @var $param \Doctrine\ORM\Query\Parameter */
+        /* @var $param Parameter */
 
         $this
-            ->if($c = new TestClass($conf, $columns, $connection))
+            ->if($c = $this->newTestedInstance($conf, $columns, $connection))
                 ->object($c)
 
 
@@ -148,7 +148,7 @@ class DoctrineOrm extends Atoum
                     ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \? GROUP BY \1\.id$#')
 
                 ->object($param = $qB->getParameter('word_1'))
-                    ->isInstanceOf(\Doctrine\ORM\Query\Parameter::class)
+                    ->isInstanceOf(Parameter::class)
 
                 ->string($param->getValue())
                     ->isEqualTo('%' . $term . '%')

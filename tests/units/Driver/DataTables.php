@@ -1,17 +1,16 @@
 <?php
+
 namespace Solire\Trieur\test\units\Driver;
 
-use atoum as Atoum;
-use Solire\Trieur\Driver\DataTables as TestClass;
-
+use atoum;
+use Solire\Conf\Loader;
 use Solire\Trieur\Columns;
-use Solire\Conf\Conf;
 
-class DataTables extends Atoum
+class DataTables extends atoum
 {
     public function testContrustor00()
     {
-        $config = arrayToConf([
+        $config = Loader::load([
             'requestUrl' => 'url.url',
             'requestMethod' => 'get',
             'dom' => 'abcd',
@@ -20,7 +19,7 @@ class DataTables extends Atoum
             'itemGenre' => 'e',
         ]);
 
-        $columns = new Columns(arrayToConf([
+        $columns = new Columns(Loader::load([
             'nom' => [
                 'filter' => true,
                 'sort' => true,
@@ -38,7 +37,7 @@ class DataTables extends Atoum
         ]));
 
         $this
-            ->if($c = new TestClass($config, $columns))
+            ->if($c = $this->newTestedInstance($config, $columns))
         ;
 
         return $c;
@@ -46,7 +45,7 @@ class DataTables extends Atoum
 
     public function testContrustor01()
     {
-        $config = arrayToConf([
+        $config = Loader::load([
             'requestUrl' => 'url.url',
             'requestMethod' => 'get',
             'dom' => 'abcd',
@@ -64,7 +63,7 @@ class DataTables extends Atoum
             'autoWidth' => true,
         ]);
 
-        $columns = new Columns(arrayToConf([
+        $columns = new Columns(Loader::load([
             'nom' => [
                 'filter' => true,
                 'sort' => true,
@@ -82,7 +81,7 @@ class DataTables extends Atoum
         ]));
 
         $this
-            ->if($c = new TestClass($config, $columns))
+            ->if($c = $this->newTestedInstance($config, $columns))
         ;
 
         return $c;

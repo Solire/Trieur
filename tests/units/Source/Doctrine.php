@@ -1,11 +1,12 @@
 <?php
+
 namespace Solire\Trieur\test\units\Source;
 
 use atoum as Atoum;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Solire\Conf\Conf;
+use Solire\Conf\Loader;
 use Solire\Trieur\Columns;
-use Solire\Trieur\Source\Doctrine as TestClass;
 
 class Doctrine extends Atoum
 {
@@ -54,7 +55,7 @@ class Doctrine extends Atoum
         $columns = new Columns(new Conf);
 
         $this
-            ->if($c = new TestClass($conf, $columns, $connection))
+            ->if($c = $this->newTestedInstance($conf, $columns, $connection))
                 ->object($c)
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
@@ -83,7 +84,7 @@ class Doctrine extends Atoum
     {
         $connection = $this->getConnection();
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'select' => [
                 'a',
                 'v',
@@ -107,7 +108,7 @@ class Doctrine extends Atoum
         $columns = new Columns(new Conf);
 
         $this
-            ->if($c = new TestClass($conf, $columns, $connection))
+            ->if($c = $this->newTestedInstance($conf, $columns, $connection))
                 ->object($c)
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
@@ -135,7 +136,7 @@ class Doctrine extends Atoum
     {
         $connection = $this->getConnection();
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'select' => [
                 'a',
                 'v',
@@ -157,14 +158,14 @@ class Doctrine extends Atoum
             'group' => 't.a',
         ]);
 
-        $columns = new Columns(arrayToConf([
+        $columns = new Columns(Loader::load([
             'a' => [
                 'source' => 't.a'
             ]
         ]));
 
         $this
-            ->if($c = new TestClass($conf, $columns, $connection))
+            ->if($c = $this->newTestedInstance($conf, $columns, $connection))
             ->and($c->addOrder('a', 'ASC'))
             ->and($c->addFilter([
                 ['t.a'],

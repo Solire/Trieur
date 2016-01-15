@@ -1,12 +1,12 @@
 <?php
+
 namespace Solire\Trieur\test\units;
 
-use atoum as Atoum;
-use Solire\Trieur\Trieur as TestClass;
-
+use atoum;
 use Solire\Conf\Conf;
+use Solire\Conf\Loader;
 
-class Trieur extends Atoum
+class Trieur extends atoum
 {
     /**
      *
@@ -77,12 +77,12 @@ class Trieur extends Atoum
         $conf = new Conf;
         $this
             ->exception(function()use($conf){
-                new TestClass($conf);
+                $this->newTestedInstance($conf);
             })
             ->hasMessage('No class for driver class founed or given')
         ;
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'name' => 'dataTables',
                 'conf' => [
@@ -106,12 +106,12 @@ class Trieur extends Atoum
         $doctrineConnection = $this->getConnection();
         $this
             ->exception(function()use($conf){
-                new TestClass($conf, true);
+                $this->newTestedInstance($conf, true);
             })
             ->hasMessage('No wrapper class for source class founed')
         ;
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'name' => 'dataTables',
                 'conf' => [
@@ -134,10 +134,10 @@ class Trieur extends Atoum
         ]);
         $doctrineConnection = $this->getConnection();
         $this
-            ->object(new TestClass($conf, $doctrineConnection))
+            ->object($this->newTestedInstance($conf, $doctrineConnection))
         ;
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'class' => '\Solire\Trieur\Driver\Csv',
                 'conf' => [
@@ -159,10 +159,10 @@ class Trieur extends Atoum
             'columns' => [],
         ]);
         $this
-            ->object(new TestClass($conf, $doctrineConnection))
+            ->object($this->newTestedInstance($conf, $doctrineConnection))
         ;
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'class' => '\stdClass',
                 'conf' => [
@@ -185,11 +185,11 @@ class Trieur extends Atoum
         ]);
         $this
             ->exception(function()use($conf){
-                new TestClass($conf);
+                $this->newTestedInstance($conf);
             })
             ->hasMessage('class "\stdClass" does not extend abstract class "\Solire\Trieur\Driver"')
         ;
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'class' => '\stddddClass',
                 'conf' => [
@@ -212,12 +212,12 @@ class Trieur extends Atoum
         ]);
         $this
             ->exception(function()use($conf){
-                new TestClass($conf);
+                $this->newTestedInstance($conf);
             })
             ->hasMessage('class "\stddddClass" does not exist')
         ;
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'class' => '\Solire\Trieur\Driver\Csv',
                 'conf' => [
@@ -240,12 +240,12 @@ class Trieur extends Atoum
         ]);
         $this
             ->exception(function()use($conf){
-                new TestClass($conf, true);
+                $this->newTestedInstance($conf, true);
             })
             ->hasMessage('class "\PDO" does not extend abstract class "\Solire\Trieur\Source"')
         ;
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'class' => '\Solire\Trieur\Driver\Csv',
                 'conf' => [
@@ -268,7 +268,7 @@ class Trieur extends Atoum
         ]);
         $this
             ->exception(function()use($conf){
-                new TestClass($conf, true);
+                $this->newTestedInstance($conf, true);
             })
             ->hasMessage('class "\PDOHOHOH" does not exist')
         ;
@@ -276,7 +276,7 @@ class Trieur extends Atoum
 
     public function testGet()
     {
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'name' => 'dataTables',
                 'conf' => [
@@ -299,7 +299,7 @@ class Trieur extends Atoum
         ]);
         $doctrineConnection = $this->getConnection();
         $this
-            ->if($trieur = new TestClass($conf, $doctrineConnection))
+            ->if($trieur = $this->newTestedInstance($conf, $doctrineConnection))
             ->object($trieur->getDriver())
                 ->isInstanceOf('\Solire\Trieur\Driver\DataTables')
             ->object($trieur->getSource())
@@ -312,7 +312,7 @@ class Trieur extends Atoum
     public function testGetResponse()
     {
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'name' => 'csv',
             ],
@@ -336,7 +336,7 @@ class Trieur extends Atoum
             ],
         ]);
         $this
-            ->if($trieur = new TestClass($conf, $this->csvPath()))
+            ->if($trieur = $this->newTestedInstance($conf, $this->csvPath()))
             ->string($trieur->getResponse())
                 ->isEqualTo(
                     '06/02/2014' . "\n" .
@@ -348,7 +348,7 @@ class Trieur extends Atoum
                 )
         ;
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'name' => 'csv',
             ],
@@ -370,7 +370,7 @@ class Trieur extends Atoum
             ],
         ]);
         $this
-            ->if($trieur = new TestClass($conf, $this->csvPath()))
+            ->if($trieur = $this->newTestedInstance($conf, $this->csvPath()))
             ->string($trieur->getResponse())
                 ->isEqualTo(
                     '"a:5:{i:0;s:1:""1"";i:1;s:1:""a"";i:2;s:1:""3"";i:3;s:6:""thomas"";i:4;s:10:""2014-02-06"";}|1"' . "\n" .
@@ -382,7 +382,7 @@ class Trieur extends Atoum
                 )
         ;
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'driver' => [
                 'name' => 'csv',
             ],
@@ -396,7 +396,7 @@ class Trieur extends Atoum
             ],
         ]);
         $this
-            ->if($trieur = new TestClass($conf, $this->csvPath()))
+            ->if($trieur = $this->newTestedInstance($conf, $this->csvPath()))
             ->string($trieur->getResponse())
                 ->isEqualTo(
                     '1,a,3' . "\n" .
