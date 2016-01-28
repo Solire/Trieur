@@ -2,17 +2,15 @@
 
 namespace Solire\Trieur\test\units\Source\Doctrine;
 
-use atoum as Atoum;
-//use Doctrine\DBAL\Connection;
-//use Doctrine\DBAL\Query\QueryBuilder;
-use Solire\Trieur\Source\Doctrine\DateRange as TestClass;
+use atoum;
+use Doctrine\DBAL\Connection;
 
 /**
  * Description of Contain
  *
  * @author thansen
  */
-class DateRange extends Atoum
+class DateRange extends atoum
 {
     /**
      * Connection bdd
@@ -66,11 +64,6 @@ class DateRange extends Atoum
         return $columns;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testConstruct01()
     {
         $columns = $this->getColumns();
@@ -80,16 +73,11 @@ class DateRange extends Atoum
         ];
 
         $this
-            ->object($contain = new TestClass($columns, $terms))
+            ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
         return $contain;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testSetQueryBuilder01()
     {
         $contain = $this->testConstruct01();
@@ -118,11 +106,6 @@ class DateRange extends Atoum
         ;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testConstruct02()
     {
         $columns = $this->getColumns();
@@ -132,16 +115,11 @@ class DateRange extends Atoum
         ];
 
         $this
-            ->object($contain = new TestClass($columns, $terms))
+            ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
         return $contain;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testSetQueryBuilder02()
     {
         $contain = $this->testConstruct02();
@@ -169,11 +147,6 @@ class DateRange extends Atoum
         ;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testConstruct03()
     {
         $columns = $this->getColumns();
@@ -183,16 +156,11 @@ class DateRange extends Atoum
         ];
 
         $this
-            ->object($contain = new TestClass($columns, $terms))
+            ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
         return $contain;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testSetQueryBuilder03()
     {
         $contain = $this->testConstruct03();

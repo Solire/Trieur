@@ -1,7 +1,10 @@
 <?php
+
 include '../../init.php';
 
-use \Symfony\Component\Yaml\Yaml;
+use Solire\Conf\Loader;
+use Solire\Trieur\Trieur;
+use Symfony\Component\Yaml\Yaml;
 
 class Data
 {
@@ -9,16 +12,9 @@ class Data
     {
         $configPath = 'config/client.yml';
         $array = Yaml::parse($configPath);
-        $conf = arrayToConf($array);
+        $conf = Loader::load($array);
 
-//        $configDbPath = 'config/connection.ini';
-//        $configDb = parse_ini_file($configDbPath);
-//        $configDb['driverOptions'] = [
-//            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
-//        ];
-//        $doctrineConnection = \Doctrine\DBAL\DriverManager::getConnection($configDb);
-
-        $trieur = new \Solire\Trieur\Trieur($conf, 'data/clients.csv');
+        $trieur = new Trieur($conf, 'data/clients.csv');
         $trieur->setRequest($_POST);
 
         $response = $trieur->getResponse();

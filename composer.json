@@ -12,14 +12,15 @@
   ],
   "require": {
     "php": ">=5.6.0",
-    "solire/conf": "~2.2",
+    "solire/conf": "^2.4",
     "pimple/pimple": "~3.0"
   },
   "require-dev": {
-    "m6web/coke": "1.2",
     "filp/whoops": "1.0.*",
-    "doctrine/dbal": "2.4.*",
+    "doctrine/orm": "^2.4",
+    "symfony/yaml": "^2.5",
 
+    "m6web/coke": "~2.1",
     "siwayll/phpcs-norme-dpsi": "~3.2",
     "atoum/atoum": "~2.2",
     "phploc/phploc": "~2.1",

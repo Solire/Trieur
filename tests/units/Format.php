@@ -2,27 +2,26 @@
 
 namespace Solire\Trieur\test\units;
 
-use atoum as Atoum;
-use Solire\Conf\Loader\ArrayToConf;
-use Solire\Trieur\Format as TestClass;
+use atoum;
+use Solire\Conf\Loader;
 
 /**
  * Description of Format
  *
  * @author thansen
  */
-class Format extends Atoum
+class Format extends atoum
 {
     public function testConstruct()
     {
-        $conf = new ArrayToConf([
+        $conf = Loader::load([
             'nom' => [
                 'format' => [],
             ],
         ]);
         $columns = new \Solire\Trieur\Columns($conf);
         $this
-            ->if ($f = new TestClass($columns))
+            ->if ($f = $this->newTestedInstance($columns))
             ->exception (function () use ($f) {
                 $f->format([
                     [
@@ -33,7 +32,7 @@ class Format extends Atoum
             ->hasMessage('Undefined format class for column [nom]')
         ;
 
-        $conf = new ArrayToConf([
+        $conf = Loader::load([
             'nom' => [
                 'format' => [
                     'class' => 'arg',
@@ -42,7 +41,7 @@ class Format extends Atoum
         ]);
         $columns = new \Solire\Trieur\Columns($conf);
         $this
-            ->if ($f = new TestClass($columns))
+            ->if ($f = $this->newTestedInstance($columns))
             ->exception (function () use ($f) {
                 $f->format([
                     [
@@ -53,7 +52,7 @@ class Format extends Atoum
             ->hasMessage('Format class [arg] for column [nom] does not exist')
         ;
 
-        $conf = new ArrayToConf([
+        $conf = Loader::load([
             'nom' => [
                 'format' => [
                     'class' => '\DateTime',
@@ -62,7 +61,7 @@ class Format extends Atoum
         ]);
         $columns = new \Solire\Trieur\Columns($conf);
         $this
-            ->if ($f = new TestClass($columns))
+            ->if ($f = $this->newTestedInstance($columns))
             ->exception (function () use ($f) {
                 $f->format([
                     [
@@ -73,7 +72,7 @@ class Format extends Atoum
             ->hasMessage('Format class [\DateTime] does not extend abstract class [\Solire\Trieur\AbstractFormat]')
         ;
 
-        $conf = new ArrayToConf([
+        $conf = Loader::load([
             'nom' => [
                 'format' => [
                     'class' => 'Callback',
@@ -93,7 +92,7 @@ class Format extends Atoum
         $columns = new \Solire\Trieur\Columns($conf);
 
         $this
-            ->if ($f = new TestClass($columns))
+            ->if ($f = $this->newTestedInstance($columns))
             ->array ($f->format([
                     [
                         'nom' => 'solire',

@@ -137,7 +137,7 @@ class Format
     /**
      * Returns the name of the filter class
      *
-     * @param string $filterType The filter type (Contain, DateRange etc.)
+     * @param string $formatType The filter type (Contain, DateRange etc.)
      *
      * @return string
      */

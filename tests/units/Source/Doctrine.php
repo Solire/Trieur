@@ -1,27 +1,12 @@
 <?php
+
 namespace Solire\Trieur\test\units\Source;
 
 use atoum as Atoum;
-use Solire\Trieur\Source\Doctrine as TestClass;
-
-use Solire\Trieur\Columns;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Solire\Conf\Conf;
-
-class MockDatabasePF
-{
-    public function modifyLimitQuery($query, $limit, $offset)
-    {
-        if ($limit !== null) {
-            $query .= ' LIMIT ' . $limit;
-        }
-
-        if ($offset !== null) {
-            $query .= ' OFFSET ' . $offset;
-        }
-
-        return $query;
-    }
-}
+use Solire\Conf\Loader;
+use Solire\Trieur\Columns;
 
 class Doctrine extends Atoum
 {
@@ -46,7 +31,7 @@ class Doctrine extends Atoum
         };
 
         $this->connection->getMockController()->getDatabasePlatform = function() {
-            return new MockDatabasePF;
+            return new MySqlPlatform;
         };
 
         $this->mockGenerator->unshuntParentClassCalls();
@@ -70,7 +55,7 @@ class Doctrine extends Atoum
         $columns = new Columns(new Conf);
 
         $this
-            ->if($c = new TestClass($conf, $columns, $connection))
+            ->if($c = $this->newTestedInstance($conf, $columns, $connection))
                 ->object($c)
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
@@ -99,7 +84,7 @@ class Doctrine extends Atoum
     {
         $connection = $this->getConnection();
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'select' => [
                 'a',
                 'v',
@@ -123,7 +108,7 @@ class Doctrine extends Atoum
         $columns = new Columns(new Conf);
 
         $this
-            ->if($c = new TestClass($conf, $columns, $connection))
+            ->if($c = $this->newTestedInstance($conf, $columns, $connection))
                 ->object($c)
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf('\Doctrine\DBAL\Query\QueryBuilder')
@@ -151,7 +136,7 @@ class Doctrine extends Atoum
     {
         $connection = $this->getConnection();
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'select' => [
                 'a',
                 'v',
@@ -173,14 +158,14 @@ class Doctrine extends Atoum
             'group' => 't.a',
         ]);
 
-        $columns = new Columns(arrayToConf([
+        $columns = new Columns(Loader::load([
             'a' => [
                 'source' => 't.a'
             ]
         ]));
 
         $this
-            ->if($c = new TestClass($conf, $columns, $connection))
+            ->if($c = $this->newTestedInstance($conf, $columns, $connection))
             ->and($c->addOrder('a', 'ASC'))
             ->and($c->addFilter([
                 ['t.a'],

@@ -1,6 +1,9 @@
 <?php
+
 namespace Solire\Trieur;
 
+use ArrayIterator;
+use IteratorAggregate;
 use Solire\Conf\Conf;
 
 /**
@@ -9,7 +12,7 @@ use Solire\Conf\Conf;
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Columns implements \IteratorAggregate
+class Columns implements IteratorAggregate
 {
     protected static $fields = [
         'label' => [
@@ -138,10 +141,10 @@ class Columns implements \IteratorAggregate
     /**
      * Method making possible to iterate through the list of columns
      *
-     * @return \ArrayIterator
+     * @return ArrayIterator
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->columnsByIndex);
+        return new ArrayIterator($this->columnsByIndex);
     }
 }

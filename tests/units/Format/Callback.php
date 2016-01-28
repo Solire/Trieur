@@ -1,11 +1,11 @@
 <?php
+
 namespace Solire\Trieur\test\units\Format;
 
-use atoum as Atoum;
-use Solire\Trieur\Format\Callback as TestClass;
+use atoum;
 use Solire\Conf\Conf;
 
-class Callback extends Atoum
+class Callback extends atoum
 {
     public function testConstruct1()
     {
@@ -14,7 +14,7 @@ class Callback extends Atoum
 
         $this
             ->exception(function()use($conf, $row, $value){
-                new TestClass($conf, $row, $value);
+                $this->newTestedInstance($conf, $row, $value);
             })
                 ->isInstanceOf('Exception')
                 ->hasMessage('Missing output callback\'s name')
@@ -29,7 +29,7 @@ class Callback extends Atoum
         $row = null;
         $this
             ->exception(function()use($conf, $row, $value){
-                new TestClass($conf, $row, $value);
+                $this->newTestedInstance($conf, $row, $value);
             })
                 ->isInstanceOf('Exception')
                 ->hasMessage('Callback [trimZ] does not exist')
@@ -44,7 +44,7 @@ class Callback extends Atoum
         $value = ' aa aa ';
         $row = null;
         $this
-            ->object($clb = new TestClass($conf, $row, $value))
+            ->object($clb = $this->newTestedInstance($conf, $row, $value))
         ;
 
         return $clb;
@@ -58,7 +58,7 @@ class Callback extends Atoum
         $row = null;
         $this
             ->exception(function()use($conf, $row, $value){
-                new TestClass($conf, $row, $value);
+                $this->newTestedInstance($conf, $row, $value);
             })
                 ->isInstanceOf('Exception')
                 ->hasMessage('Callback [(array) Datetime::createFromFormatZ] does not exist')
@@ -73,7 +73,7 @@ class Callback extends Atoum
         $row = null;
         $this
             ->exception(function()use($conf, $row, $value){
-                new TestClass($conf, $row, $value);
+                $this->newTestedInstance($conf, $row, $value);
             })
                 ->isInstanceOf('Exception')
                 ->hasMessage('Missing argument [format] for callback [(array) Datetime::createFromFormat]')
@@ -91,7 +91,7 @@ class Callback extends Atoum
         $value = '2015-10-10';
         $row = null;
         $this
-            ->object($clb = new TestClass($conf, $row, $value))
+            ->object($clb = $this->newTestedInstance($conf, $row, $value))
         ;
 
         return $clb;
@@ -115,7 +115,7 @@ class Callback extends Atoum
             'e' => 11.1,
         ];
         $this
-            ->object($clb = new TestClass($conf, $row, $value))
+            ->object($clb = $this->newTestedInstance($conf, $row, $value))
         ;
 
         return $clb;

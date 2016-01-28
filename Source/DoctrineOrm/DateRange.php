@@ -1,6 +1,6 @@
 <?php
 
-namespace Solire\Trieur\Source\Doctrine;
+namespace Solire\Trieur\Source\DoctrineOrm;
 
 /**
  * Doctrine filter class for DateRange filter
@@ -52,24 +52,14 @@ class DateRange extends Filter
      */
     public function filter()
     {
-        $conds = [];
-
         if (preg_match(self::MASK, $this->from)) {
-            $this->queryBuilder->andWhere(
-                $this->queryBuilder->expr()->gte(
-                    $this->columns[0],
-                    $this->queryBuilder->getConnection()->quote($this->from)
-                )
-            );
+            $cond = $this->queryBuilder->expr()->gte($this->columns[0], ':from');
+            $this->queryBuilder->andWhere($cond)->setParameter('from', $this->from);
         }
 
         if (preg_match(self::MASK, $this->to)) {
-            $this->queryBuilder->andWhere(
-                $this->queryBuilder->expr()->lte(
-                    $this->columns[0],
-                    $this->queryBuilder->getConnection()->quote($this->to)
-                )
-            );
+            $cond = $this->queryBuilder->expr()->lte($this->columns[0], ':to');
+            $this->queryBuilder->andWhere($cond)->setParameter('to', $this->to);
         }
     }
 }

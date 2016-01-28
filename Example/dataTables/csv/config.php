@@ -1,8 +1,10 @@
 <?php
+
 include '../../init.php';
 
-use Symfony\Component\Yaml\Yaml;
+use Solire\Conf\Loader;
 use Solire\Trieur\Trieur;
+use Symfony\Component\Yaml\Yaml;
 
 class Config
 {
@@ -13,7 +15,7 @@ class Config
     {
         $configPath = 'config/client.yml';
         $array = Yaml::parse($configPath);
-        $conf = arrayToConf($array);
+        $conf = Loader::load($array);
 
         $trieur = new Trieur($conf);
 
