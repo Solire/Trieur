@@ -2,17 +2,16 @@
 
 namespace Solire\Trieur\test\units\Source\Doctrine;
 
-use atoum as Atoum;
+use atoum;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Solire\Trieur\Source\Doctrine\Exact as TestClass;
 
 /**
  * Description of Contain
  *
  * @author thansen
  */
-class Exact extends Atoum
+class Exact extends atoum
 {
     /**
      * Connection bdd
@@ -57,34 +56,24 @@ class Exact extends Atoum
         return $columns;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testConstruct01()
     {
         $columns = $this->getColumns();
         $terms = 'abc';
 
         $this
-            ->object($contain = new TestClass($columns, $terms))
+            ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
         return $contain;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testConstruct02()
     {
         $columns = $this->getColumns();
         $terms = ['abc', 'a a a '];
 
         $this
-            ->object($contain = new TestClass($columns, $terms))
+            ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
         return $contain;
     }

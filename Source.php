@@ -1,4 +1,5 @@
 <?php
+
 namespace Solire\Trieur;
 
 use Solire\Trieur\Columns;
@@ -183,8 +184,8 @@ abstract class Source
     /**
      * Add an order
      *
-     * @param string|Column $column    A column
-     * @param string        $direction A direction string 'ASC' or 'DESC'
+     * @param string|Conf $column    A column
+     * @param string      $direction A direction string 'ASC' or 'DESC'
      *
      * @return void
      */

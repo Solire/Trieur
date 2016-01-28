@@ -2,26 +2,27 @@
 
 namespace Solire\Trieur\Source;
 
-use Solire\Trieur\Source;
-use Solire\Trieur\Columns;
-use Solire\Trieur\Exception;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Solire\Conf\Conf;
+use Solire\Trieur\Columns;
+use Solire\Trieur\Source;
+use Solire\Trieur\Source\DoctrineOrm\Filter;
 use Solire\Trieur\SourceFilter;
-use Doctrine\DBAL\Connection as DoctrineConnection;
-use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
- * Doctrine connection wrapper
+ * Doctrine ORM connection wrapper
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
  */
-class Doctrine extends Source
+class DoctrineOrm extends Source
 {
     /**
-     * The connection
+     * The entity manager
      *
-     * @var DoctrineConnection
+     * @var EntityManager
      */
     protected $connection;
 
@@ -42,14 +43,14 @@ class Doctrine extends Source
     /**
      * Constructor
      *
-     * @param Conf               $conf       The configuration
-     * @param Columns            $columns    The columns configuration
-     * @param DoctrineConnection $connection The connection
+     * @param Conf          $conf       The configuration
+     * @param Columns       $columns    The columns configuration
+     * @param EntityManager $connection The entity manager
      */
     public function __construct(
         Conf $conf,
         Columns $columns,
-        DoctrineConnection $connection
+        EntityManager $connection
     ) {
         parent::__construct($conf, $columns, $connection);
 
@@ -57,20 +58,13 @@ class Doctrine extends Source
     }
 
     /**
-     * Returns the sql expression to determinate the distincts numbers of lines
+     * Returns the main query builder
      *
-     * @return string
+     * @return QueryBuilder
      */
-    protected function getDistinct()
+    public function getQuery()
     {
-        if (isset($this->conf->group)) {
-            return $this->conf->group;
-        }
-
-        return implode(
-            ', ',
-            $this->queryBuilder->getQueryPart('select')
-        );
+        return $this->queryBuilder;
     }
 
     /**
@@ -87,15 +81,18 @@ class Doctrine extends Source
         /*
          * Main table
          */
-        $this->queryBuilder->from(
-            $this->conf->from->name,
-            $this->conf->from->alias
-        );
+        foreach ($this->conf->from as $from) {
+            $this->queryBuilder->from(
+                $from->name,
+                $from->alias
+            );
+        }
 
         /*
          * Inner join, right join, left join
          */
         $joinTypes = [
+            'join',
             'innerJoin',
             'leftJoin',
             'rightJoin',
@@ -116,6 +113,12 @@ class Doctrine extends Source
                 $this->queryBuilder->andWhere($where);
             }
         }
+
+        if (isset($this->conf->parameters)) {
+            foreach ($this->conf->parameters as $key => $value) {
+                $this->queryBuilder->setParameter($key, $value);
+            }
+        }
     }
 
     /**
@@ -131,49 +134,57 @@ class Doctrine extends Source
     {
         foreach ($joins as $join) {
             $this->queryBuilder->$joinType(
-                $this->conf->from->alias,
                 $join->name,
                 $join->alias,
+                $join->type,
                 $join->on
             );
         }
     }
 
     /**
-     * Returns the main query builder
+     * Return the total of available lines
+     *
+     * @return int Total number
+     */
+    public function getCount()
+    {
+        return $this->getCountQuery()->getQuery()->getResult(Query::HYDRATE_SINGLE_SCALAR);
+    }
+
+    /**
+     * Returns the data filtered by the current filters
+     *
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->getDataQuery()->getQuery()->getResult(Query::HYDRATE_ARRAY);
+    }
+
+    /**
+     * Return the total of available lines filtered by the current filters
+     *
+     * @return int Total number
+     */
+    public function getFilteredCount()
+    {
+        return $this->getFilteredCountQuery()->getQuery()->getResult(Query::HYDRATE_SINGLE_SCALAR);
+    }
+
+    /**
+     * Build the count of raw query
      *
      * @return QueryBuilder
      */
-    public function getQuery()
-    {
-        return $this->queryBuilder;
-    }
-
-    /**
-     * Build the filtered query
-     *
-     * @return void
-     */
-    protected function buildFilteredQuery()
+    public function getCountQuery()
     {
         $this->currentQueryBuilder = clone $this->queryBuilder;
 
-        if ($this->filters !== null) {
-            $this->filter();
-        }
-    }
+        $this->currentQueryBuilder->select('COUNT(DISTINCT ' . $this->getDistinct() . ')');
+        $this->currentQueryBuilder->resetDQLPart('orderBy');
 
-    /**
-     * Process the filter
-     *
-     * @param Doctrine\Filter $filter The filter class
-     *
-     * @return void
-     */
-    protected function processFilter(SourceFilter $filter)
-    {
-        $filter->setQueryBuilder($this->currentQueryBuilder);
-        $filter->filter();
+        return $this->currentQueryBuilder;
     }
 
     /**
@@ -213,21 +224,6 @@ class Doctrine extends Source
     }
 
     /**
-     * Build the count of raw query
-     *
-     * @return QueryBuilder
-     */
-    public function getCountQuery()
-    {
-        $this->currentQueryBuilder = clone $this->queryBuilder;
-
-        $this->currentQueryBuilder->select('COUNT(DISTINCT ' . $this->getDistinct() . ')');
-        $this->currentQueryBuilder->resetQueryPart('orderBy');
-
-        return $this->currentQueryBuilder;
-    }
-
-    /**
      * Build the count of filtered query
      *
      * @return QueryBuilder
@@ -237,46 +233,52 @@ class Doctrine extends Source
         $this->buildFilteredQuery();
 
         $this->currentQueryBuilder->select('COUNT(DISTINCT ' . $this->getDistinct() . ')');
-        $this->currentQueryBuilder->resetQueryPart('orderBy');
+        $this->currentQueryBuilder->resetDQLPart('orderBy');
 
         return $this->currentQueryBuilder;
     }
 
     /**
-     * Return the total of available lines
+     * Returns the sql expression to determinate the distincts numbers of lines
      *
-     * @return int Total number
+     * @return string
      */
-    public function getCount()
+    protected function getDistinct()
     {
-        return $this->getCountQuery()
-            ->execute()
-            ->fetch(\PDO::FETCH_COLUMN);
+        if (isset($this->conf->group)) {
+            return $this->conf->group;
+        }
+
+        return implode(
+            ', ',
+            $this->queryBuilder->getDQLPart('select')
+        );
     }
 
     /**
-     * Return the total of available lines filtered by the current filters
+     * Process the filter
      *
-     * @return int Total number
+     * @param Filter $filter The filter class
+     *
+     * @return void
      */
-    public function getFilteredCount()
+    protected function processFilter(SourceFilter $filter)
     {
-        return $this->getFilteredCountQuery()
-            ->execute()
-            ->fetch(\PDO::FETCH_COLUMN);
+        $filter->setQueryBuilder($this->currentQueryBuilder);
+        $filter->filter();
     }
 
     /**
-     * Returns the data filtered by the current filters
+     * Build the filtered query
      *
-     * @return mixed
+     * @return void
      */
-    public function getData()
+    protected function buildFilteredQuery()
     {
-        $data = $this->getDataQuery()
-            ->execute()
-            ->fetchAll(\PDO::FETCH_ASSOC);
+        $this->currentQueryBuilder = clone $this->queryBuilder;
 
-        return $data;
+        if ($this->filters !== null) {
+            $this->filter();
+        }
     }
 }

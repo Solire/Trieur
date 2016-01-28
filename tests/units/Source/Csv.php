@@ -1,13 +1,12 @@
 <?php
+
 namespace Solire\Trieur\test\units\Source;
 
-use atoum as Atoum;
-use Solire\Trieur\Source\Csv as TestClass;
-
+use atoum;
+use Solire\Conf\Loader;
 use Solire\Trieur\Columns;
-use Solire\Conf\Conf;
 
-class Csv extends Atoum
+class Csv extends atoum
 {
     protected $fileName = 'clients.csv';
 
@@ -43,9 +42,9 @@ class Csv extends Atoum
 
     public function testConstruct00()
     {
-        $conf = arrayToConf([]);
+        $conf = Loader::load([]);
 
-        $columns = new Columns(arrayToConf([
+        $columns = new Columns(Loader::load([
             'lettre' => [],
             'numero' => [],
             'nom' => [],
@@ -53,7 +52,7 @@ class Csv extends Atoum
 
         $this
             ->exception(function()use($conf, $columns){
-                new TestClass(
+                $this->newTestedInstance(
                     $conf,
                     $columns,
                     TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notfouned.csv'
@@ -66,9 +65,9 @@ class Csv extends Atoum
 
     public function testConstruct01()
     {
-        $conf = arrayToConf([]);
+        $conf = Loader::load([]);
 
-        $columns = new Columns(arrayToConf([
+        $columns = new Columns(Loader::load([
             'lettre' => [],
             'numero' => [],
             'nom' => [],
@@ -76,7 +75,7 @@ class Csv extends Atoum
 
         $this
             ->exception(function()use($conf, $columns){
-                new TestClass(
+                $this->newTestedInstance(
                     $conf,
                     $columns,
                     TEST_TMP_DIR . DIRECTORY_SEPARATOR . 'notreadable.csv'
@@ -89,9 +88,9 @@ class Csv extends Atoum
 
     public function testConstruct02()
     {
-        $conf = arrayToConf([]);
+        $conf = Loader::load([]);
 
-        $columns = new Columns(arrayToConf([
+        $columns = new Columns(Loader::load([
             '0' => [
                 'sort' => 1,
             ],
@@ -107,7 +106,7 @@ class Csv extends Atoum
         ]));
 
         $this
-            ->if($c = new TestClass(
+            ->if($c = $this->newTestedInstance(
                     $conf,
                     $columns,
                     TEST_TMP_DIR . DIRECTORY_SEPARATOR . $this->fileName

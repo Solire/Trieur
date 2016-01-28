@@ -1,9 +1,11 @@
 <?php
+
 include '../../init.php';
 
-use Symfony\Component\Yaml\Yaml;
 use Doctrine\DBAL\DriverManager;
+use Solire\Conf\Loader;
 use Solire\Trieur\Trieur;
+use Symfony\Component\Yaml\Yaml;
 
 class Data
 {
@@ -11,7 +13,7 @@ class Data
     {
         $configPath = 'config/client.yml';
         $array = Yaml::parse($configPath);
-        $conf = arrayToConf($array);
+        $conf = Loader::load($array);
 
         $configDbPath = 'config/connection.ini';
         $configDb = parse_ini_file($configDbPath);

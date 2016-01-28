@@ -1,1 +1,6 @@
 standard=vendor/siwayll/phpcs-norme-dpsi/DPSI
+
+!tests/
+!Example/
+!vendor/
+!build-tools/

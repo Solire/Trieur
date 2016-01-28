@@ -9,9 +9,10 @@ use ReflectionParameter;
 use Solire\Trieur\AbstractFormat;
 
 /**
- * Description of Function
+ * Description of Callback Format class
  *
- * @author thansen
+ * @author  thansen <thansen@solire.fr>
+ * @license MIT http://mit-license.org/
  */
 class Callback extends AbstractFormat
 {

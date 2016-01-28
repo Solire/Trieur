@@ -1,0 +1,33 @@
+Solire\Trieur\tests\data\Entity\Profil:
+    type: entity
+    table: profil
+    uniqueConstraints:
+        UNIQ_NOM:
+            columns:
+                - nom
+        UNIQ_CODE:
+            columns:
+                - code
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        code:
+            type: string
+            nullable: false
+            length: 8
+            fixed: false
+            comment: ''
+        nom:
+            type: string
+            nullable: false
+            length: 45
+            fixed: false
+            comment: ''
+    lifecycleCallbacks: {  }

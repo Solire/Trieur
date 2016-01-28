@@ -1,9 +1,9 @@
 <?php
 
-namespace Solire\Trieur\Source\Doctrine;
+namespace Solire\Trieur\Source\DoctrineOrm;
 
 use Solire\Trieur\SourceFilter;
-use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * Doctrine abstract filter class

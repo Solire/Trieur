@@ -2,19 +2,15 @@
 
 namespace Solire\Trieur\test\units\Source\Doctrine;
 
-use atoum as Atoum;
-use Solire\Trieur\Source\Doctrine\Contain as TestClass;
-
-use \Doctrine\DBAL\Connection;
-
-use Solire\Conf\Loader\ArrayToConf;
+use atoum;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
  * Description of Contain
  *
  * @author thansen
  */
-class Contain extends Atoum
+class Contain extends atoum
 {
     private $connection = null;
 
@@ -38,59 +34,39 @@ class Contain extends Atoum
         return $this->connection;
     }
 
-    /**
-     *
-     *
-     * @return ArrayToConf
-     */
     private function getColumns()
     {
         $columns = ['t.a'];
         return $columns;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testConstruct01()
     {
         $columns = $this->getColumns();
         $terms = 'abc';
 
         $this
-            ->object($contain = new TestClass($columns, $terms))
+            ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
         return $contain;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testConstruct02()
     {
         $columns = $this->getColumns();
         $terms = ['abc', 'a a a '];
 
         $this
-            ->object($contain = new TestClass($columns, $terms))
+            ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
         return $contain;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testSetQueryBuilder01()
     {
         $contain = $this->testConstruct01();
 
-        $queryBuilder = new \Doctrine\DBAL\Query\QueryBuilder($this->getConnection());
+        $queryBuilder = new QueryBuilder($this->getConnection());
         $queryBuilder->select('*')->from('table', 't');
 
         $contain->setQueryBuilder($queryBuilder);
@@ -98,16 +74,11 @@ class Contain extends Atoum
         return $contain;
     }
 
-    /**
-     *
-     *
-     * @return TestClass
-     */
     public function testSetQueryBuilder02()
     {
         $contain = $this->testConstruct02();
 
-        $queryBuilder = new \Doctrine\DBAL\Query\QueryBuilder($this->getConnection());
+        $queryBuilder = new QueryBuilder($this->getConnection());
         $queryBuilder->select('*')->from('table', 't');
 
         $contain->setQueryBuilder($queryBuilder);

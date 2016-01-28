@@ -1,9 +1,9 @@
 <?php
 
-namespace Solire\Trieur\Source\Doctrine;
+namespace Solire\Trieur\Source\DoctrineOrm;
 
 /**
- * Doctrine filter class for Exact filter
+ * Doctrine ORM filter class for Exact filter
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -30,8 +30,8 @@ class Exact extends Filter
         $conds = [];
         foreach ($terms as $term) {
             foreach ($this->columns as $colName) {
-                $cond = $colName . ' = '
-                      . $this->queryBuilder->getConnection()->quote($term);
+                $cond = $this->queryBuilder->expr()->like($colName, ':word_' . ($index + 1));
+                $this->queryBuilder->setParameter('word_' . ($index + 1), $term);
                 $conds[] = $cond;
             }
         }

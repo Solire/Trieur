@@ -1,6 +1,6 @@
 <?php
 
-namespace Solire\Trieur\Source\Doctrine;
+namespace Solire\Trieur\Source\DoctrineOrm;
 
 /**
  * Doctrine filter class for Contain filter
@@ -38,22 +38,15 @@ class Contain extends Filter
         $words = array_unique($words);
 
         $conds = [];
-        $orderBy = [];
-        foreach ($words as $word) {
+        foreach ($words as $index => $word) {
             foreach ($this->columns as $colName) {
-                /**
-                 * @todo add a ponderation array to the constructor
-                 */
-                $pond    = 1;
+                $cond = $this->queryBuilder->expr()->like($colName, ':word_' . ($index + 1));
+                $this->queryBuilder->setParameter('word_' . ($index + 1), '%' . $word . '%');
 
-                $cond = $colName . ' LIKE '
-                      . $this->queryBuilder->getConnection()->quote('%' . $word . '%');
                 $conds[] = $cond;
-                $orderBy[] = 'IF(' . $cond . ', ' . mb_strlen($word) * $pond . ', 0)';
             }
         }
 
         $this->queryBuilder->andWhere(implode(' OR ', $conds));
-        $this->queryBuilder->addOrderBy(implode(' + ', $orderBy), 'DESC');
     }
 }

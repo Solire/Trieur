@@ -1,4 +1,5 @@
 <?php
+
 namespace Solire\Trieur\Source;
 
 use Solire\Trieur\Source;
@@ -8,7 +9,7 @@ use Solire\Trieur\Exception;
 use Solire\Conf\Conf;
 
 /**
- * Doctrine connection wrapper
+ * Csv connection wrapper
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -53,10 +54,10 @@ class Csv extends Source
     /**
      * Constructeur
      *
-     * @param string  $connection Chemin du fichier csv
      * @param Conf    $conf       Configuration for the csv parse (length,
      * delimiter, enclosure)
      * @param Columns $columns    Configuration des colonnes
+     * @param string  $connection Chemin du fichier csv
      *
      * @throws Exception Si le fichier source n'existe pas ou n'est pas lisible
      */
@@ -272,6 +273,13 @@ class Csv extends Source
         );
     }
 
+    /**
+     * Process the filter
+     *
+     * @param Filter $filter The filter class
+     *
+     * @return void
+     */
     protected function processFilter(SourceFilter $filter)
     {
         $filter->setRow($this->row);

@@ -2,21 +2,19 @@
 
 namespace Solire\Trieur\test\units;
 
-use atoum as Atoum;
-use Solire\Trieur\Columns as TestClass;
-
-use Solire\Conf\Conf;
+use atoum;
+use Solire\Conf\Loader;
 
 /**
  * Description of Columns
  *
  * @author thansen
  */
-class Columns extends Atoum
+class Columns extends atoum
 {
     public function testConstructor01()
     {
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'offset01' => [
                 'attr01' => 'value.01.01',
                 'attr02' => 'value.01.02',
@@ -28,7 +26,7 @@ class Columns extends Atoum
         ]);
 
         $this
-            ->if($columns = new TestClass($conf))
+            ->if($columns = $this->newTestedInstance($conf))
             ->object($columns)
                 ->isInstanceOf('\Solire\Trieur\Columns')
         ;
@@ -36,7 +34,7 @@ class Columns extends Atoum
 
     public function testGet()
     {
-        $col03 = arrayToConf([
+        $col03 = Loader::load([
             'attr01' => 'value.03.01',
             'attr02' => 'value.03.02',
             'source' => 'source.03',
@@ -45,7 +43,7 @@ class Columns extends Atoum
             'filterType' => 'select',
         ]);
 
-        $conf = arrayToConf([
+        $conf = Loader::load([
             'offset01' => [
                 'attr01' => 'value.01.01',
                 'attr02' => 'value.01.02',
@@ -59,7 +57,7 @@ class Columns extends Atoum
         ]);
 
         $this
-            ->if($columns = new TestClass($conf))
+            ->if($columns = $this->newTestedInstance($conf))
             ->object($columns->get(0))
                 ->isInstanceOf('\Solire\Conf\Conf')
             ->object($columns->get('offset01'))
