@@ -137,7 +137,7 @@ class DoctrineOrm extends Source
                 $join->name,
                 $join->alias,
                 $join->type,
-                $join->on
+                $join->cond
             );
         }
     }
