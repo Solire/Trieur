@@ -309,7 +309,7 @@ class DataTables extends Driver
             }
 
             $columnConfig = [];
-            $columnConfig['type'] = $column->driverFilterType;
+            $columnConfig['html'] = $column->driverFilterType;
             if (isset($column->driverOption)) {
                 $columnConfig = array_merge($columnConfig, self::objectToArray($column->driverOption));
             }
