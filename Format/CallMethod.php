@@ -8,7 +8,7 @@ use ReflectionParameter;
 use Solire\Trieur\AbstractFormat;
 
 /**
- * Description of CallMethod Format class
+ * Description of CallMethod Format class.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -16,14 +16,14 @@ use Solire\Trieur\AbstractFormat;
 class CallMethod extends AbstractFormat
 {
     /**
-     * The argument's array to pass to the callable
+     * The argument's array to pass to the callable.
      *
      * @var array
      */
     private $arguments = [];
 
     /**
-     * The method's name
+     * The method's name.
      *
      * @var string
      */
@@ -103,7 +103,7 @@ class CallMethod extends AbstractFormat
     }
 
     /**
-     * Get a class method arguments' name list
+     * Get a class method arguments' name list.
      *
      * @return ReflectionParameter[]
      */

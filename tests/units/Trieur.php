@@ -9,15 +9,11 @@ use Solire\Conf\Loader;
 class Trieur extends atoum
 {
     /**
-     *
-     *
      * @var \Doctrine\DBAL\Connection
      */
     public $connection = null;
 
     /**
-     *
-     *
      * @var string
      */
     protected $fileName = 'clients.csv';
@@ -49,8 +45,6 @@ class Trieur extends atoum
     }
 
     /**
-     *
-     *
      * @return \Doctrine\DBAL\Connection
      */
     public function getConnection()
@@ -62,10 +56,10 @@ class Trieur extends atoum
         $this->mockGenerator->shuntParentClassCalls();
 
         $this->mockGenerator->orphanize('__construct');
-        $pdo = new \mock\PDO;
+        $pdo = new \mock\PDO();
 
         $this->mockGenerator->orphanize('__construct');
-        $this->connection = new \mock\Doctrine\DBAL\Connection;
+        $this->connection = new \mock\Doctrine\DBAL\Connection();
 
         $this->mockGenerator->unshuntParentClassCalls();
 
@@ -74,9 +68,9 @@ class Trieur extends atoum
 
     public function testConstruct()
     {
-        $conf = new Conf;
+        $conf = new Conf();
         $this
-            ->exception(function()use($conf){
+            ->exception(function () use ($conf) {
                 $this->newTestedInstance($conf);
             })
             ->hasMessage('No class for driver class founed or given')
@@ -89,7 +83,7 @@ class Trieur extends atoum
                     'itemName' => 'objet',
                     'itemsName' => 'objets',
                     'itemsGenre' => '',
-                ]
+                ],
             ],
             'source' => [
                 'name' => 'aaa',
@@ -105,7 +99,7 @@ class Trieur extends atoum
         ]);
         $doctrineConnection = $this->getConnection();
         $this
-            ->exception(function()use($conf){
+            ->exception(function () use ($conf) {
                 $this->newTestedInstance($conf, true);
             })
             ->hasMessage('No wrapper class for source class founed')
@@ -118,7 +112,7 @@ class Trieur extends atoum
                     'itemName' => 'objet',
                     'itemsName' => 'objets',
                     'itemsGenre' => '',
-                ]
+                ],
             ],
             'source' => [
                 'name' => 'doctrine',
@@ -144,7 +138,7 @@ class Trieur extends atoum
                     'itemName' => 'objet',
                     'itemsName' => 'objets',
                     'itemsGenre' => '',
-                ]
+                ],
             ],
             'source' => [
                 'class' => '\Solire\Trieur\Source\Doctrine',
@@ -169,7 +163,7 @@ class Trieur extends atoum
                     'itemName' => 'objet',
                     'itemsName' => 'objets',
                     'itemsGenre' => '',
-                ]
+                ],
             ],
             'source' => [
                 'class' => '\Solire\Trieur\Source\Doctrine',
@@ -184,7 +178,7 @@ class Trieur extends atoum
             'columns' => [],
         ]);
         $this
-            ->exception(function()use($conf){
+            ->exception(function () use ($conf) {
                 $this->newTestedInstance($conf);
             })
             ->hasMessage('class "\stdClass" does not extend abstract class "\Solire\Trieur\Driver"')
@@ -196,7 +190,7 @@ class Trieur extends atoum
                     'itemName' => 'objet',
                     'itemsName' => 'objets',
                     'itemsGenre' => '',
-                ]
+                ],
             ],
             'source' => [
                 'class' => '\Solire\Trieur\Source\Doctrine',
@@ -211,7 +205,7 @@ class Trieur extends atoum
             'columns' => [],
         ]);
         $this
-            ->exception(function()use($conf){
+            ->exception(function () use ($conf) {
                 $this->newTestedInstance($conf);
             })
             ->hasMessage('class "\stddddClass" does not exist')
@@ -224,7 +218,7 @@ class Trieur extends atoum
                     'itemName' => 'objet',
                     'itemsName' => 'objets',
                     'itemsGenre' => '',
-                ]
+                ],
             ],
             'source' => [
                 'class' => '\PDO',
@@ -239,7 +233,7 @@ class Trieur extends atoum
             'columns' => [],
         ]);
         $this
-            ->exception(function()use($conf){
+            ->exception(function () use ($conf) {
                 $this->newTestedInstance($conf, true);
             })
             ->hasMessage('class "\PDO" does not extend abstract class "\Solire\Trieur\Source"')
@@ -252,7 +246,7 @@ class Trieur extends atoum
                     'itemName' => 'objet',
                     'itemsName' => 'objets',
                     'itemsGenre' => '',
-                ]
+                ],
             ],
             'source' => [
                 'class' => '\PDOHOHOH',
@@ -267,7 +261,7 @@ class Trieur extends atoum
             'columns' => [],
         ]);
         $this
-            ->exception(function()use($conf){
+            ->exception(function () use ($conf) {
                 $this->newTestedInstance($conf, true);
             })
             ->hasMessage('class "\PDOHOHOH" does not exist')
@@ -283,7 +277,7 @@ class Trieur extends atoum
                     'itemName' => 'objet',
                     'itemsName' => 'objets',
                     'itemsGenre' => '',
-                ]
+                ],
             ],
             'source' => [
                 'name' => 'doctrine',
@@ -311,7 +305,6 @@ class Trieur extends atoum
 
     public function testGetResponse()
     {
-
         $conf = Loader::load([
             'driver' => [
                 'name' => 'csv',
@@ -325,13 +318,13 @@ class Trieur extends atoum
                         'class' => 'Solire\Trieur\Format\Callback',
                         'name' => [
                             '\Solire\Trieur\Example\Format',
-                            'sqlTo'
+                            'sqlTo',
                         ],
                         'cell' => 'dateSql',
                         'arguments' => [
-                            'format' => 'd/m/Y'
-                        ]
-                    ]
+                            'format' => 'd/m/Y',
+                        ],
+                    ],
                 ],
             ],
         ]);
@@ -361,7 +354,7 @@ class Trieur extends atoum
                         'class' => 'Solire\Trieur\Format\Callback',
                         'name' => [
                             '\Solire\Trieur\Example\Format',
-                            'serialize'
+                            'serialize',
                         ],
                         'row' => 'row',
                         'cell' => 'value',

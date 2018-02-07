@@ -3,7 +3,7 @@
 namespace Solire\Trieur;
 
 /**
- * Trieur Exception
+ * Trieur Exception.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/

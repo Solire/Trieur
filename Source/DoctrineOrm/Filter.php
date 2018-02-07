@@ -6,7 +6,7 @@ use Solire\Trieur\SourceFilter;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * Doctrine abstract filter class
+ * Doctrine abstract filter class.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -14,14 +14,14 @@ use Doctrine\ORM\QueryBuilder;
 abstract class Filter extends SourceFilter
 {
     /**
-     * QueryBuilder
+     * QueryBuilder.
      *
      * @var QueryBuilder
      */
     protected $queryBuilder;
 
     /**
-     * Set the query builder
+     * Set the query builder.
      *
      * @param QueryBuilder $queryBuilder The querybuilder
      *
@@ -33,7 +33,7 @@ abstract class Filter extends SourceFilter
     }
 
     /**
-     * Get the query builder
+     * Get the query builder.
      *
      * @return QueryBuilder
      */

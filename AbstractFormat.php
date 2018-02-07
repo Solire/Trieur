@@ -5,7 +5,7 @@ namespace Solire\Trieur;
 use Solire\Conf\Conf;
 
 /**
- * Data connection abstract class
+ * Data connection abstract class.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -13,28 +13,28 @@ use Solire\Conf\Conf;
 abstract class AbstractFormat
 {
     /**
-     * The columns conf
+     * The columns conf.
      *
      * @var Conf
      */
     protected $conf;
 
     /**
-     * The cell's value
+     * The cell's value.
      *
      * @var mixed
      */
     protected $cell;
 
     /**
-     * The value's row
+     * The value's row.
      *
      * @var mixed
      */
     protected $row;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Conf  $conf Conf
      * @param array $row  Row
@@ -50,15 +50,16 @@ abstract class AbstractFormat
     }
 
     /**
-     * Initialize
+     * Initialize.
      *
      * @return void
+     *
      * @throws Exception If the conf is invalid
      */
     abstract protected function init();
 
     /**
-     * Returns formated value
+     * Returns formated value.
      *
      * @return mixed
      */

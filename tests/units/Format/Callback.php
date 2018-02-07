@@ -13,7 +13,7 @@ class Callback extends atoum
         $value = $row = null;
 
         $this
-            ->exception(function()use($conf, $row, $value){
+            ->exception(function () use ($conf, $row, $value) {
                 $this->newTestedInstance($conf, $row, $value);
             })
                 ->isInstanceOf('Exception')
@@ -28,7 +28,7 @@ class Callback extends atoum
         $value = ' aa aa ';
         $row = null;
         $this
-            ->exception(function()use($conf, $row, $value){
+            ->exception(function () use ($conf, $row, $value) {
                 $this->newTestedInstance($conf, $row, $value);
             })
                 ->isInstanceOf('Exception')
@@ -57,7 +57,7 @@ class Callback extends atoum
         $value = ' aa aa ';
         $row = null;
         $this
-            ->exception(function()use($conf, $row, $value){
+            ->exception(function () use ($conf, $row, $value) {
                 $this->newTestedInstance($conf, $row, $value);
             })
                 ->isInstanceOf('Exception')
@@ -72,7 +72,7 @@ class Callback extends atoum
         $value = ' aa aa ';
         $row = null;
         $this
-            ->exception(function()use($conf, $row, $value){
+            ->exception(function () use ($conf, $row, $value) {
                 $this->newTestedInstance($conf, $row, $value);
             })
                 ->isInstanceOf('Exception')

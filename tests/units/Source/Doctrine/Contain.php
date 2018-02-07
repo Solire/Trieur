@@ -6,7 +6,7 @@ use atoum;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
- * Description of Contain
+ * Description of Contain.
  *
  * @author thansen
  */
@@ -23,9 +23,10 @@ class Contain extends atoum
         $this->mockGenerator->shuntParentClassCalls();
 
         $this->mockGenerator->orphanize('__construct');
-        $this->connection = new \mock\Doctrine\DBAL\Connection;
-        $this->connection->getMockController()->connect = function() {};
-        $this->connection->getMockController()->quote = function($input) {
+        $this->connection = new \mock\Doctrine\DBAL\Connection();
+        $this->connection->getMockController()->connect = function () {
+        };
+        $this->connection->getMockController()->quote = function ($input) {
             return '"' . addslashes($input) . '"';
         };
 
@@ -37,6 +38,7 @@ class Contain extends atoum
     private function getColumns()
     {
         $columns = ['t.a'];
+
         return $columns;
     }
 
@@ -48,6 +50,7 @@ class Contain extends atoum
         $this
             ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
+
         return $contain;
     }
 
@@ -59,6 +62,7 @@ class Contain extends atoum
         $this
             ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
+
         return $contain;
     }
 

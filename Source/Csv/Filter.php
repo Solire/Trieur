@@ -5,7 +5,7 @@ namespace Solire\Trieur\Source\Csv;
 use Solire\Trieur\SourceFilter;
 
 /**
- * Csv abstract filter class
+ * Csv abstract filter class.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -13,14 +13,14 @@ use Solire\Trieur\SourceFilter;
 abstract class Filter extends SourceFilter
 {
     /**
-     * QueryBuilder
+     * QueryBuilder.
      *
      * @var QueryBuilder
      */
     protected $row;
 
     /**
-     * Sets the row
+     * Sets the row.
      *
      * @param array $row The row
      *

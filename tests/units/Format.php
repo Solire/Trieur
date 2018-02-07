@@ -6,7 +6,7 @@ use atoum;
 use Solire\Conf\Loader;
 
 /**
- * Description of Format
+ * Description of Format.
  *
  * @author thansen
  */
@@ -21,12 +21,12 @@ class Format extends atoum
         ]);
         $columns = new \Solire\Trieur\Columns($conf);
         $this
-            ->if ($f = $this->newTestedInstance($columns))
-            ->exception (function () use ($f) {
+            ->if($f = $this->newTestedInstance($columns))
+            ->exception(function () use ($f) {
                 $f->format([
                     [
                         'nom' => 'solire',
-                    ]
+                    ],
                 ]);
             })
             ->hasMessage('Undefined format class for column [nom]')
@@ -41,12 +41,12 @@ class Format extends atoum
         ]);
         $columns = new \Solire\Trieur\Columns($conf);
         $this
-            ->if ($f = $this->newTestedInstance($columns))
-            ->exception (function () use ($f) {
+            ->if($f = $this->newTestedInstance($columns))
+            ->exception(function () use ($f) {
                 $f->format([
                     [
                         'nom' => 'solire',
-                    ]
+                    ],
                 ]);
             })
             ->hasMessage('Format class [arg] for column [nom] does not exist')
@@ -61,12 +61,12 @@ class Format extends atoum
         ]);
         $columns = new \Solire\Trieur\Columns($conf);
         $this
-            ->if ($f = $this->newTestedInstance($columns))
-            ->exception (function () use ($f) {
+            ->if($f = $this->newTestedInstance($columns))
+            ->exception(function () use ($f) {
                 $f->format([
                     [
                         'nom' => 'solire',
-                    ]
+                    ],
                 ]);
             })
             ->hasMessage('Format class [\DateTime] does not extend abstract class [\Solire\Trieur\AbstractFormat]')
@@ -77,34 +77,34 @@ class Format extends atoum
                 'format' => [
                     'class' => 'Callback',
                     'name' => 'strtoupper',
-                    'cell' => 'str'
+                    'cell' => 'str',
                 ],
             ],
             'prenom' => [
                 'format' => [
                     'class' => 'Solire\Trieur\Format\Callback',
                     'name' => 'ucfirst',
-                    'cell' => 'str'
+                    'cell' => 'str',
                 ],
             ],
-            'age' => []
+            'age' => [],
         ]);
         $columns = new \Solire\Trieur\Columns($conf);
 
         $this
-            ->if ($f = $this->newTestedInstance($columns))
-            ->array ($f->format([
+            ->if($f = $this->newTestedInstance($columns))
+            ->array($f->format([
                     [
                         'nom' => 'solire',
                         'prenom' => 'thomas',
-                    ]
+                    ],
                 ]))
                 ->isEqualTo([
                     [
                         'nom' => 'SOLIRE',
                         'prenom' => 'Thomas',
                         'age' => '',
-                    ]
+                    ],
                 ])
         ;
     }

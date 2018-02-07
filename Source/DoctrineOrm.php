@@ -12,7 +12,7 @@ use Solire\Trieur\Source\DoctrineOrm\Filter;
 use Solire\Trieur\SourceFilter;
 
 /**
- * Doctrine ORM connection wrapper
+ * Doctrine ORM connection wrapper.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -20,28 +20,28 @@ use Solire\Trieur\SourceFilter;
 class DoctrineOrm extends Source
 {
     /**
-     * The entity manager
+     * The entity manager.
      *
      * @var EntityManager
      */
     protected $connection;
 
     /**
-     * The main doctrine query builder (cloned for each query)
+     * The main doctrine query builder (cloned for each query).
      *
      * @var QueryBuilder
      */
     protected $queryBuilder;
 
     /**
-     * The main doctrine query builder (cloned for each query)
+     * The main doctrine query builder (cloned for each query).
      *
      * @var QueryBuilder
      */
     protected $currentQueryBuilder;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Conf          $conf       The configuration
      * @param Columns       $columns    The columns configuration
@@ -58,7 +58,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Returns the main query builder
+     * Returns the main query builder.
      *
      * @return QueryBuilder
      */
@@ -68,7 +68,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Builds the raw query
+     * Builds the raw query.
      *
      * @return void
      */
@@ -122,11 +122,11 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Add the joins to the main query builder
+     * Add the joins to the main query builder.
      *
      * @param string $joinType The join types 'innerJoin', 'leftJoin', 'rightJoin'
      * @param array  $joins    An array of joins (defined by an object with at
-     * least 'name', 'alias' and 'on' keys)
+     *                         least 'name', 'alias' and 'on' keys)
      *
      * @return void
      */
@@ -143,7 +143,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Return the total of available lines
+     * Return the total of available lines.
      *
      * @return int Total number
      */
@@ -153,7 +153,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Returns the data filtered by the current filters
+     * Returns the data filtered by the current filters.
      *
      * @return mixed
      */
@@ -163,7 +163,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Return the total of available lines filtered by the current filters
+     * Return the total of available lines filtered by the current filters.
      *
      * @return int Total number
      */
@@ -173,7 +173,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Build the count of raw query
+     * Build the count of raw query.
      *
      * @return QueryBuilder
      */
@@ -188,7 +188,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Build the data query
+     * Build the data query.
      *
      * @return QueryBuilder
      */
@@ -206,7 +206,6 @@ class DoctrineOrm extends Source
 
         if ($this->orders !== null) {
             foreach ($this->orders as $order) {
-
                 list($column, $dir) = $order;
 
                 $this->currentQueryBuilder->addOrderBy(
@@ -224,7 +223,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Build the count of filtered query
+     * Build the count of filtered query.
      *
      * @return QueryBuilder
      */
@@ -239,7 +238,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Returns the sql expression to determinate the distincts numbers of lines
+     * Returns the sql expression to determinate the distincts numbers of lines.
      *
      * @return string
      */
@@ -256,7 +255,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Process the filter
+     * Process the filter.
      *
      * @param Filter $filter The filter class
      *
@@ -269,7 +268,7 @@ class DoctrineOrm extends Source
     }
 
     /**
-     * Build the filtered query
+     * Build the filtered query.
      *
      * @return void
      */

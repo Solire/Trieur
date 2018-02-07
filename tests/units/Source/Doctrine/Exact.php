@@ -7,21 +7,21 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
- * Description of Contain
+ * Description of Contain.
  *
  * @author thansen
  */
 class Exact extends atoum
 {
     /**
-     * Connection bdd
+     * Connection bdd.
      *
      * @var Connection
      */
     private $connection = null;
 
     /**
-     * Connect to the bdd
+     * Connect to the bdd.
      *
      * @return Connection
      */
@@ -34,9 +34,10 @@ class Exact extends atoum
         $this->mockGenerator->shuntParentClassCalls();
 
         $this->mockGenerator->orphanize('__construct');
-        $this->connection = new \mock\Doctrine\DBAL\Connection;
-        $this->connection->getMockController()->connect = function() {};
-        $this->connection->getMockController()->quote = function($input) {
+        $this->connection = new \mock\Doctrine\DBAL\Connection();
+        $this->connection->getMockController()->connect = function () {
+        };
+        $this->connection->getMockController()->quote = function ($input) {
             return '"' . addslashes($input) . '"';
         };
 
@@ -46,13 +47,12 @@ class Exact extends atoum
     }
 
     /**
-     *
-     *
      * @return array
      */
     private function getColumns()
     {
         $columns = ['t.a'];
+
         return $columns;
     }
 
@@ -64,6 +64,7 @@ class Exact extends atoum
         $this
             ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
+
         return $contain;
     }
 
@@ -75,12 +76,11 @@ class Exact extends atoum
         $this
             ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
+
         return $contain;
     }
 
     /**
-     *
-     *
      * @return TestClass
      */
     public function testSetQueryBuilder01()
@@ -96,8 +96,6 @@ class Exact extends atoum
     }
 
     /**
-     *
-     *
      * @return TestClass
      */
     public function testSetQueryBuilder02()

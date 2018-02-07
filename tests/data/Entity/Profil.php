@@ -4,12 +4,12 @@ namespace Solire\Trieur\tests\data\Entity;
 
 /**
  * Profil
- * Solire.Trieur.tests.data.Entity.Profil.dcm.yml
+ * Solire.Trieur.tests.data.Entity.Profil.dcm.yml.
  */
 class Profil
 {
     /**
-     * @var integer
+     * @var int
      */
     private $id;
 
@@ -23,11 +23,10 @@ class Profil
      */
     private $nom;
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -35,9 +34,10 @@ class Profil
     }
 
     /**
-     * Set code
+     * Set code.
      *
      * @param string $code
+     *
      * @return Profil
      */
     public function setCode($code)
@@ -48,7 +48,7 @@ class Profil
     }
 
     /**
-     * Get code
+     * Get code.
      *
      * @return string
      */
@@ -58,9 +58,10 @@ class Profil
     }
 
     /**
-     * Set nom
+     * Set nom.
      *
      * @param string $nom
+     *
      * @return Profil
      */
     public function setNom($nom)
@@ -71,7 +72,7 @@ class Profil
     }
 
     /**
-     * Get nom
+     * Get nom.
      *
      * @return string
      */

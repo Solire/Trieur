@@ -3,7 +3,7 @@
 namespace Solire\Trieur\Source\DoctrineOrm;
 
 /**
- * Doctrine filter class for Contain filter
+ * Doctrine filter class for Contain filter.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -11,7 +11,7 @@ namespace Solire\Trieur\Source\DoctrineOrm;
 class Contain extends Filter
 {
     /**
-     * Filter
+     * Filter.
      *
      * @return void
      */

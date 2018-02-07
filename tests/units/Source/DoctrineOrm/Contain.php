@@ -11,13 +11,12 @@ use Doctrine\ORM\Tools\Setup;
 use Solire\Trieur\tests\data\Entity\Profil;
 
 /**
- * Description of Contain
+ * Description of Contain.
  *
  * @author thansen
  */
 class Contain extends atoum
 {
-
     /**
      * @var EntityManager
      */
@@ -33,29 +32,28 @@ class Contain extends atoum
         $this->mockGenerator->shuntParentClassCalls();
 
         $this->mockGenerator->orphanize('__construct');
-        $pdo = new \mock\PDO;
+        $pdo = new \mock\PDO();
 
         $this->mockGenerator->orphanize('__construct');
-        $db = new \mock\Doctrine\DBAL\Connection;
-        $db->getMockController()->connect = function() {};
-        $db->getMockController()->getEventManager = function() {
+        $db = new \mock\Doctrine\DBAL\Connection();
+        $db->getMockController()->connect = function () {
+        };
+        $db->getMockController()->getEventManager = function () {
             return new EventManager();
         };
-        $db->getMockController()->getDatabasePlatform = function() {
-            return new MySqlPlatform;
+        $db->getMockController()->getDatabasePlatform = function () {
+            return new MySqlPlatform();
         };
         $this->mockGenerator->unshuntParentClassCalls();
 
         $config = Setup::createYAMLMetadataConfiguration([
-            TEST_DATA_DIR . '/doctrine-orm'
+            TEST_DATA_DIR . '/doctrine-orm',
         ], true);
 
         $this->connection = EntityManager::create($db, $config);
     }
 
     /**
-     *
-     *
      * @return \Solire\Trieur\Source\DoctrineOrm\Contain
      */
     public function testConstruct()
@@ -63,12 +61,11 @@ class Contain extends atoum
         $this
             ->object($contain = $this->newTestedInstance(['p.nom'], 'dupont'))
         ;
+
         return $contain;
     }
 
     /**
-     *
-     *
      * @return \Solire\Trieur\Source\DoctrineOrm\Contain
      */
     public function testGetQueryBuilder()
@@ -83,6 +80,7 @@ class Contain extends atoum
                 ->object($contain->getQueryBuilder())
                     ->isInstanceOf(QueryBuilder::class)
         ;
+
         return $contain;
     }
 

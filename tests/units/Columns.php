@@ -6,7 +6,7 @@ use atoum;
 use Solire\Conf\Loader;
 
 /**
- * Description of Columns
+ * Description of Columns.
  *
  * @author thansen
  */
@@ -62,7 +62,7 @@ class Columns extends atoum
                 ->isInstanceOf('\Solire\Conf\Conf')
             ->object($columns->get('offset01'))
                 ->isInstanceOf('\Solire\Conf\Conf')
-            ->exception(function()use($columns){
+            ->exception(function () use ($columns) {
                 $columns->get('wrongIndex');
             })
                 ->isInstanceOf('\Exception')

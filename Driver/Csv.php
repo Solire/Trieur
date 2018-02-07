@@ -8,7 +8,7 @@ use Solire\Trieur\Exception;
 use Solire\Conf\Conf;
 
 /**
- * Datatables driver
+ * Datatables driver.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -16,10 +16,10 @@ use Solire\Conf\Conf;
 class Csv extends Driver
 {
     /**
-     * Constructeur
+     * Constructeur.
      *
      * @param Conf    $config  The configuration to build the csv (maximum length,
-     * delimiter and the enclosure)
+     *                         delimiter and the enclosure)
      * @param Columns $columns The columns configuration
      */
     public function __construct(Conf $config, Columns $columns)
@@ -38,7 +38,7 @@ class Csv extends Driver
     }
 
     /**
-     * Return the offset
+     * Return the offset.
      *
      * @return int
      */
@@ -48,7 +48,7 @@ class Csv extends Driver
     }
 
     /**
-     * Return the number of lines
+     * Return the number of lines.
      *
      * @return int
      */
@@ -58,7 +58,7 @@ class Csv extends Driver
     }
 
     /**
-     * Return the order
+     * Return the order.
      *
      * @return mixed
      */
@@ -68,7 +68,7 @@ class Csv extends Driver
     }
 
     /**
-     * Return the filters
+     * Return the filters.
      *
      * @return mixed
      */
@@ -78,12 +78,12 @@ class Csv extends Driver
     }
 
     /**
-     * Return the content formated in csv
+     * Return the content formated in csv.
      *
      * @param array $data          The data filtered by the current filters,
-     * offset and length, sorted by the current orders
+     *                             offset and length, sorted by the current orders
      * @param int   $count         The total of available lines filtered by the
-     * current filters
+     *                             current filters
      * @param int   $filteredCount The total of available lines
      *
      * @return array
