@@ -5,7 +5,7 @@ namespace Solire\Trieur;
 use Solire\Conf\Conf;
 
 /**
- * Trieur
+ * Trieur.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -13,28 +13,28 @@ use Solire\Conf\Conf;
 class Trieur extends \Pimple\Container
 {
     /**
-     * Columns list
+     * Columns list.
      *
      * @var Columns
      */
     protected $columns = null;
 
     /**
-     * Configuration
+     * Configuration.
      *
      * @var Conf
      */
     protected $conf = null;
 
     /**
-     * Driver
+     * Driver.
      *
      * @var Driver
      */
     protected $driver = null;
 
     /**
-     * Source to the database
+     * Source to the database.
      *
      * @var Source
      */
@@ -62,7 +62,7 @@ class Trieur extends \Pimple\Container
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Conf  $conf        The configuration
      * @param mixed $sourceModel The database source object
@@ -75,7 +75,7 @@ class Trieur extends \Pimple\Container
 
     /**
      * Initialise the container, and prepare the instanciation of the driver
-     * and source class
+     * and source class.
      *
      * @param Conf  $conf        The configuration
      * @param mixed $sourceModel The data source object
@@ -97,7 +97,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Instanciate the driver and source class
+     * Instanciate the driver and source class.
      *
      * @return void
      */
@@ -111,14 +111,14 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Build Colmumns configuration object
+     * Build Colmumns configuration object.
      *
      * @return void
      */
     protected function initColumns()
     {
         if (!isset($this->conf->columns)) {
-            $this->conf->columns = new Conf;
+            $this->conf->columns = new Conf();
         }
 
         $this['columns'] = function ($c) {
@@ -129,7 +129,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Find the driver class
+     * Find the driver class.
      *
      * @return void
      */
@@ -168,7 +168,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Build Driver object
+     * Build Driver object.
      *
      * @return void
      */
@@ -177,11 +177,12 @@ class Trieur extends \Pimple\Container
         $this->findDriverClass();
 
         if (!isset($this->conf->driver->conf)) {
-            $this->conf->driver->conf = new Conf;
+            $this->conf->driver->conf = new Conf();
         }
 
         $this['driver'] = function ($c) {
             $className = $c->conf->driver->class;
+
             return new $className(
                 $c->conf->driver->conf,
                 $this['columns']
@@ -190,9 +191,10 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Find the source class
+     * Find the source class.
      *
      * @return void
+     *
      * @throws \Exception If no wrapper class found
      */
     protected function findSourceClass()
@@ -236,7 +238,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Build the source wrapper class
+     * Build the source wrapper class.
      *
      * @return void
      */
@@ -245,11 +247,12 @@ class Trieur extends \Pimple\Container
         $this->findSourceClass();
 
         if (!isset($this->conf->source->conf)) {
-            $this->conf->source->conf = new Conf;
+            $this->conf->source->conf = new Conf();
         }
 
         $this['source'] = function ($c) {
             $className = $c->conf->source->class;
+
             return new $className(
                 $c->conf->source->conf,
                 $this['columns'],
@@ -259,7 +262,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Build the format class
+     * Build the format class.
      *
      * @return void
      */
@@ -273,7 +276,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Sets the columns configuration
+     * Sets the columns configuration.
      *
      * @param Columns $columns The columns configuration
      *
@@ -287,7 +290,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Sets the driver
+     * Sets the driver.
      *
      * @param Driver $driver The driver
      *
@@ -301,7 +304,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Sets the source wrapper
+     * Sets the source wrapper.
      *
      * @param Source $source The data source
      *
@@ -315,7 +318,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Get the Driver
+     * Get the Driver.
      *
      * @return Driver
      */
@@ -325,7 +328,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Get the source wrapper object
+     * Get the source wrapper object.
      *
      * @return Source
      */
@@ -335,7 +338,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Set the request
+     * Set the request.
      *
      * @param mixed $request The request
      *
@@ -349,7 +352,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Prepare the fetch
+     * Prepare the fetch.
      *
      * @return self
      */
@@ -368,7 +371,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Prepare the fetch
+     * Prepare the fetch.
      *
      * @return self
      */
@@ -382,7 +385,7 @@ class Trieur extends \Pimple\Container
     }
 
     /**
-     * Returns the response
+     * Returns the response.
      *
      * @return array
      */

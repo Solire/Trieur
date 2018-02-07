@@ -3,7 +3,7 @@
 namespace Solire\Trieur\Source\DoctrineOrm;
 
 /**
- * Doctrine filter class for DateRange filter
+ * Doctrine filter class for DateRange filter.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -11,21 +11,21 @@ namespace Solire\Trieur\Source\DoctrineOrm;
 class DateRange extends Filter
 {
     /**
-     * Column containing the date
+     * Column containing the date.
      *
      * @var string
      */
     protected $column;
 
     /**
-     * Start's date
+     * Start's date.
      *
      * @var string
      */
     protected $from;
 
     /**
-     * End's date
+     * End's date.
      *
      * @var string
      */
@@ -34,7 +34,7 @@ class DateRange extends Filter
     const MASK = '#^\d{4}\-\d{2}\-\d{2}$#';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param mixed $columns Column
      * @param array $terms   Terms to search for
@@ -46,7 +46,7 @@ class DateRange extends Filter
     }
 
     /**
-     * Add a filter to the query builder
+     * Add a filter to the query builder.
      *
      * @return void
      */

@@ -3,7 +3,7 @@
 namespace Solire\Trieur\Source\Csv;
 
 /**
- * Csv filter class for Contain filter
+ * Csv filter class for Contain filter.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -11,9 +11,9 @@ namespace Solire\Trieur\Source\Csv;
 class Contain extends Filter
 {
     /**
-     * Filter
+     * Filter.
      *
-     * @return boolean
+     * @return bool
      */
     public function filter()
     {

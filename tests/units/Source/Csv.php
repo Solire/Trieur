@@ -51,7 +51,7 @@ class Csv extends atoum
         ]));
 
         $this
-            ->exception(function()use($conf, $columns){
+            ->exception(function () use ($conf, $columns) {
                 $this->newTestedInstance(
                     $conf,
                     $columns,
@@ -74,7 +74,7 @@ class Csv extends atoum
         ]));
 
         $this
-            ->exception(function()use($conf, $columns){
+            ->exception(function () use ($conf, $columns) {
                 $this->newTestedInstance(
                     $conf,
                     $columns,
@@ -125,7 +125,7 @@ class Csv extends atoum
             ])
 
             ->and($c->setOrders([
-                ['1', 'asc']
+                ['1', 'asc'],
             ]))
             ->phpArray($c->getData())
             ->isEqualTo([
@@ -177,7 +177,7 @@ class Csv extends atoum
                     [
                         [3],
                         ['a'],
-                        'Contain'
+                        'Contain',
                     ],
                 ])
             )
@@ -192,7 +192,7 @@ class Csv extends atoum
                 $c->addFilter([
                     [3],
                     'th',
-                    'Contain'
+                    'Contain',
                 ])
             )
             ->phpArray($c->getData())

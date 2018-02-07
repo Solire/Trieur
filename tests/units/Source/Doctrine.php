@@ -21,17 +21,18 @@ class Doctrine extends Atoum
         $this->mockGenerator->shuntParentClassCalls();
 
         $this->mockGenerator->orphanize('__construct');
-        $pdo = new \mock\PDO;
+        $pdo = new \mock\PDO();
 
         $this->mockGenerator->orphanize('__construct');
-        $this->connection = new \mock\Doctrine\DBAL\Connection;
-        $this->connection->getMockController()->connect = function() {};
-        $this->connection->getMockController()->quote = function($input) {
+        $this->connection = new \mock\Doctrine\DBAL\Connection();
+        $this->connection->getMockController()->connect = function () {
+        };
+        $this->connection->getMockController()->quote = function ($input) {
             return '"' . addslashes($input) . '"';
         };
 
-        $this->connection->getMockController()->getDatabasePlatform = function() {
-            return new MySqlPlatform;
+        $this->connection->getMockController()->getDatabasePlatform = function () {
+            return new MySqlPlatform();
         };
 
         $this->mockGenerator->unshuntParentClassCalls();
@@ -43,16 +44,16 @@ class Doctrine extends Atoum
     {
         $connection = $this->getConnection();
 
-        $conf = new Conf;
+        $conf = new Conf();
         $conf->select = [
             'a',
-            'v'
+            'v',
         ];
-        $conf->from = new Conf;
+        $conf->from = new Conf();
         $conf->from->name = 'tt';
         $conf->from->alias = 't';
 
-        $columns = new Columns(new Conf);
+        $columns = new Columns(new Conf());
 
         $this
             ->if($c = $this->newTestedInstance($conf, $columns, $connection))
@@ -101,11 +102,11 @@ class Doctrine extends Atoum
                     'name' => 'uu',
                     'alias' => 'u',
                     'on' => 'u.c = t.v',
-                ]
-            ]
+                ],
+            ],
         ]);
 
-        $columns = new Columns(new Conf);
+        $columns = new Columns(new Conf());
 
         $this
             ->if($c = $this->newTestedInstance($conf, $columns, $connection))
@@ -153,15 +154,15 @@ class Doctrine extends Atoum
                     'name' => 'uu',
                     'alias' => 'u',
                     'on' => 'u.c = t.v',
-                ]
+                ],
             ],
             'group' => 't.a',
         ]);
 
         $columns = new Columns(Loader::load([
             'a' => [
-                'source' => 't.a'
-            ]
+                'source' => 't.a',
+            ],
         ]));
 
         $this
@@ -170,7 +171,7 @@ class Doctrine extends Atoum
             ->and($c->addFilter([
                 ['t.a'],
                 'trieur php',
-                'Contain'
+                'Contain',
             ]))
             ->and($c->setOffset(10))
             ->and($c->setLength(5))
@@ -215,6 +216,5 @@ class Doctrine extends Atoum
                     . 'AND (t.a LIKE "%trieur php%" OR t.a LIKE "%trieur%" OR t.a LIKE "%php%")'
                 )
         ;
-
     }
 }

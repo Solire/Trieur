@@ -7,7 +7,7 @@ use IteratorAggregate;
 use Solire\Conf\Conf;
 
 /**
- * Columns configuration
+ * Columns configuration.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -55,21 +55,21 @@ class Columns implements IteratorAggregate
     ];
 
     /**
-     * List of columns with name index
+     * List of columns with name index.
      *
      * @var array
      */
     protected $columnsByName = [];
 
     /**
-     * List of columns with numeric index
+     * List of columns with numeric index.
      *
      * @var array
      */
     protected $columnsByIndex = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Conf $columns Columns configuration
      */
@@ -86,7 +86,7 @@ class Columns implements IteratorAggregate
     }
 
     /**
-     * Build / complete the configuration of a column
+     * Build / complete the configuration of a column.
      *
      * @param type $name   The name of the column
      * @param Conf $column The column configuration
@@ -118,11 +118,12 @@ class Columns implements IteratorAggregate
     }
 
     /**
-     * Get a column by its offset or name
+     * Get a column by its offset or name.
      *
      * @param type $index Offset or name
      *
      * @return Conf
+     *
      * @throws Exception If the index is undefined
      */
     public function get($index)
@@ -139,7 +140,7 @@ class Columns implements IteratorAggregate
     }
 
     /**
-     * Method making possible to iterate through the list of columns
+     * Method making possible to iterate through the list of columns.
      *
      * @return ArrayIterator
      */

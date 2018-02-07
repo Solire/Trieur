@@ -6,7 +6,7 @@ use Solire\Trieur\Driver;
 use Solire\Conf\Conf;
 
 /**
- * Datatables driver
+ * Datatables driver.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -14,7 +14,7 @@ use Solire\Conf\Conf;
 class DataTables extends Driver
 {
     /**
-     * Return the filter term
+     * Return the filter term.
      *
      * @return array
      */
@@ -25,7 +25,7 @@ class DataTables extends Driver
 
     /**
      * Determines if a column is filterable and has a filter, if so return the
-     * corresponding term
+     * corresponding term.
      *
      * @param Conf $column The column's configuration
      *
@@ -37,7 +37,7 @@ class DataTables extends Driver
     }
 
     /**
-     * Return the filter terms for each columns
+     * Return the filter terms for each columns.
      *
      * @return array
      */
@@ -93,7 +93,7 @@ class DataTables extends Driver
     }
 
     /**
-     * Return the number of lines
+     * Return the number of lines.
      *
      * @return int
      */
@@ -103,7 +103,7 @@ class DataTables extends Driver
     }
 
     /**
-     * Return the offset
+     * Return the offset.
      *
      * @return int
      */
@@ -113,7 +113,7 @@ class DataTables extends Driver
     }
 
     /**
-     * Return the list of columns for the sort with the direction
+     * Return the list of columns for the sort with the direction.
      *
      * @return array
      */
@@ -137,12 +137,12 @@ class DataTables extends Driver
     }
 
     /**
-     * Returns the response
+     * Returns the response.
      *
      * @param array $data          The data filtered by the current filters,
-     * offset and length, sorted by the currents orders
+     *                             offset and length, sorted by the currents orders
      * @param int   $count         The total of available lines filtered by the
-     * current filters
+     *                             current filters
      * @param int   $filteredCount The total of available lines
      *
      * @return array
@@ -157,9 +157,10 @@ class DataTables extends Driver
     }
 
     /**
-     * Return the jquery dataTables columns configuration array
+     * Return the jquery dataTables columns configuration array.
      *
      * @return array
+     *
      * @link http://datatables.net/reference/option/#Columns
      * official documentation
      */
@@ -176,9 +177,8 @@ class DataTables extends Driver
             ];
 
             if (isset($column->driverHidden) && $column->driverHidden) {
-                $dCol['visible']   = false;
+                $dCol['visible'] = false;
                 $dCol['className'] = 'never';
-
             }
 
             if (isset($column->width)) {
@@ -191,11 +191,12 @@ class DataTables extends Driver
 
             $cols[] = $dCol;
         }
+
         return $cols;
     }
 
     /**
-     * Return the jquery dataTables language configuration array
+     * Return the jquery dataTables language configuration array.
      *
      * @return array
      *
@@ -255,9 +256,10 @@ class DataTables extends Driver
     }
 
     /**
-     * The jquery dataTables configuration array
+     * The jquery dataTables configuration array.
      *
      * @return array
+     *
      * @link http://datatables.net/reference/option/ official documentation
      */
     public function getJsConfig()
@@ -265,12 +267,12 @@ class DataTables extends Driver
         $config = [
             'processing' => true,
             'serverSide' => true,
-            'ajax'       => [
-                'url'  => $this->config->requestUrl,
+            'ajax' => [
+                'url' => $this->config->requestUrl,
                 'type' => $this->config->requestMethod,
             ],
-            'columns'    => $this->getJsColsConfig(),
-            'language'   => $this->getJsLanguageConfig(),
+            'columns' => $this->getJsColsConfig(),
+            'language' => $this->getJsLanguageConfig(),
         ];
 
         if (isset($this->config->defaultSort)) {
@@ -291,7 +293,7 @@ class DataTables extends Driver
     }
 
     /**
-     * The jquery dataTables light columnfilter configuration array
+     * The jquery dataTables light columnfilter configuration array.
      *
      * @return array
      */
@@ -321,7 +323,7 @@ class DataTables extends Driver
     }
 
     /**
-     * Cast a PHP object to array recursively
+     * Cast a PHP object to array recursively.
      *
      * @param object $obj Object to cast
      *

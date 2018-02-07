@@ -6,21 +6,21 @@ use atoum;
 use Doctrine\DBAL\Connection;
 
 /**
- * Description of Contain
+ * Description of Contain.
  *
  * @author thansen
  */
 class DateRange extends atoum
 {
     /**
-     * Connection bdd
+     * Connection bdd.
      *
      * @var Connection
      */
     private $connection = null;
 
     /**
-     * Connect to the bdd
+     * Connect to the bdd.
      *
      * @return Connection
      */
@@ -33,9 +33,10 @@ class DateRange extends atoum
         $this->mockGenerator->shuntParentClassCalls();
 
         $this->mockGenerator->orphanize('__construct');
-        $this->connection = new \mock\Doctrine\DBAL\Connection;
-        $this->connection->getMockController()->connect = function() {};
-        $this->connection->getMockController()->quote = function($input) {
+        $this->connection = new \mock\Doctrine\DBAL\Connection();
+        $this->connection->getMockController()->connect = function () {
+        };
+        $this->connection->getMockController()->quote = function ($input) {
             return '"' . addslashes($input) . '"';
         };
 
@@ -47,20 +48,20 @@ class DateRange extends atoum
     private function createQueryBuilder()
     {
         $queryBuilder = new \mock\Doctrine\DBAL\Query\QueryBuilder($this->getConnection());
-        $queryBuilder->getMockController()->expr = function(){
+        $queryBuilder->getMockController()->expr = function () {
             return new \mock\Doctrine\DBAL\Query\Expression\ExpressionBuilder($this->getConnection());
         };
+
         return $queryBuilder;
     }
 
     /**
-     *
-     *
      * @return array
      */
     private function getColumns()
     {
         $columns = ['t.a'];
+
         return $columns;
     }
 
@@ -75,6 +76,7 @@ class DateRange extends atoum
         $this
             ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
+
         return $contain;
     }
 
@@ -117,6 +119,7 @@ class DateRange extends atoum
         $this
             ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
+
         return $contain;
     }
 
@@ -158,6 +161,7 @@ class DateRange extends atoum
         $this
             ->object($contain = $this->newTestedInstance($columns, $terms))
         ;
+
         return $contain;
     }
 

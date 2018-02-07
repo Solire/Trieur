@@ -2,11 +2,10 @@
 
 namespace Solire\Trieur;
 
-use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 
 /**
- * Data connection abstract class
+ * Data connection abstract class.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -14,21 +13,21 @@ use Solire\Conf\Conf;
 abstract class Source
 {
     /**
-     * The configuration
+     * The configuration.
      *
      * @var Conf
      */
     protected $conf = null;
 
     /**
-     * The columns configuration
+     * The columns configuration.
      *
      * @var Columns
      */
     protected $columns = null;
 
     /**
-     * The connection
+     * The connection.
      *
      * @var mixed
      */
@@ -36,7 +35,7 @@ abstract class Source
 
     /**
      * An array of arrays where the first element is an array of columns or
-     * expressions and the second element is an array of terms to look for
+     * expressions and the second element is an array of terms to look for.
      *
      * @var array
      */
@@ -44,28 +43,28 @@ abstract class Source
 
     /**
      * An associative array where keys are a sql column or expression and values
-     * are a string 'ASC' or 'DESC'
+     * are a string 'ASC' or 'DESC'.
      *
      * @var array
      */
     protected $orders = [];
 
     /**
-     * Offset of the query
+     * Offset of the query.
      *
      * @var int
      */
     protected $offset = null;
 
     /**
-     * Length of the query
+     * Length of the query.
      *
      * @var int
      */
     protected $length = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Conf    $conf       The configuration
      * @param Columns $columns    The columns configuration
@@ -76,18 +75,18 @@ abstract class Source
         Columns $columns,
         $connection = null
     ) {
-        $this->conf       = $conf;
-        $this->columns    = $columns;
+        $this->conf = $conf;
+        $this->columns = $columns;
         $this->connection = $connection;
     }
 
     /**
-     * Set the filters
+     * Set the filters.
      *
      * @param array $filters An array of filters, a filter being an array where
-     * - the first element is an (array of) columns or expressions
-     * - the second element is an (array of) terms to look for
-     * - the third element is the filter type (example : Contain)
+     *                       - the first element is an (array of) columns or expressions
+     *                       - the second element is an (array of) terms to look for
+     *                       - the third element is the filter type (example : Contain)
      *
      * @return void
      */
@@ -98,12 +97,12 @@ abstract class Source
     }
 
     /**
-     * Add multiple filters
+     * Add multiple filters.
      *
      * @param array $filters An array of filters, a filter being an array where
-     * - the first element is an (array of) columns or expressions
-     * - the second element is an (array of) terms to look for
-     * - the third element is the filter type (example : Contain)
+     *                       - the first element is an (array of) columns or expressions
+     *                       - the second element is an (array of) terms to look for
+     *                       - the third element is the filter type (example : Contain)
      *
      * @return void
      */
@@ -113,12 +112,12 @@ abstract class Source
     }
 
     /**
-     * Add a filter
+     * Add a filter.
      *
      * @param array $filter An array where
-     * - the first element is an (array of) columns or expressions
-     * - the second element is an (array of) terms to look for
-     * - the third element is the filter type (example : Contain)
+     *                      - the first element is an (array of) columns or expressions
+     *                      - the second element is an (array of) terms to look for
+     *                      - the third element is the filter type (example : Contain)
      *
      * @return void
      */
@@ -128,7 +127,7 @@ abstract class Source
     }
 
     /**
-     * Sets the offset
+     * Sets the offset.
      *
      * @param int $offset Offset of the query
      *
@@ -140,7 +139,7 @@ abstract class Source
     }
 
     /**
-     * Sets the length
+     * Sets the length.
      *
      * @param int $length Length of the query
      *
@@ -152,10 +151,10 @@ abstract class Source
     }
 
     /**
-     * Sets orders
+     * Sets orders.
      *
      * @param array $orders An array of two elements array where first element
-     * is a column or expression and second element is a string 'ASC' or 'DESC'
+     *                      is a column or expression and second element is a string 'ASC' or 'DESC'
      *
      * @return void
      */
@@ -166,10 +165,10 @@ abstract class Source
     }
 
     /**
-     * Add orders
+     * Add orders.
      *
      * @param array $orders An array of two elements array where first element
-     * is a column or expression and second element is a string 'ASC' or 'DESC'
+     *                      is a column or expression and second element is a string 'ASC' or 'DESC'
      *
      * @return void
      */
@@ -182,7 +181,7 @@ abstract class Source
     }
 
     /**
-     * Add an order
+     * Add an order.
      *
      * @param string|Conf $column    A column
      * @param string      $direction A direction string 'ASC' or 'DESC'
@@ -197,14 +196,14 @@ abstract class Source
 
         $this->orders[] = [
             $column,
-            $direction
+            $direction,
         ];
     }
 
     /**
-     * Adds the different filters
+     * Adds the different filters.
      *
-     * @return boolean
+     * @return bool
      */
     final public function filter()
     {
@@ -229,7 +228,7 @@ abstract class Source
     }
 
     /**
-     * Instantiate an object to process the filter
+     * Instantiate an object to process the filter.
      *
      * @param array  $columns    Array of columns
      * @param mixed  $term       The term(s) we're looking for
@@ -242,15 +241,15 @@ abstract class Source
         $className = $this->getFilterClassName($filterType);
 
         return new $className($columns, $term);
-
     }
 
     /**
-     * Returns the name of the filter class
+     * Returns the name of the filter class.
      *
      * @param string $filterType The filter type (Contain, DateRange etc.)
      *
      * @return string
+     *
      * @throws Exception
      */
     private function getFilterClassName($filterType)
@@ -272,7 +271,7 @@ abstract class Source
     }
 
     /**
-     * Do the filter and returns true if it's a success, false otherwise
+     * Do the filter and returns true if it's a success, false otherwise.
      *
      * @param SourceFilter $filter The filter object
      *
@@ -281,21 +280,21 @@ abstract class Source
     abstract protected function processFilter(SourceFilter $filter);
 
     /**
-     * Return the total of available lines
+     * Return the total of available lines.
      *
      * @return int Total number
      */
     abstract public function getCount();
 
     /**
-     * Return the total of available lines filtered by the current filters
+     * Return the total of available lines filtered by the current filters.
      *
      * @return int Total number
      */
     abstract public function getFilteredCount();
 
     /**
-     * Returns the data filtered by the current filters
+     * Returns the data filtered by the current filters.
      *
      * @return mixed
      */

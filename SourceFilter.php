@@ -3,7 +3,7 @@
 namespace Solire\Trieur;
 
 /**
- * Description of SourceFilter
+ * Description of SourceFilter.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -11,21 +11,21 @@ namespace Solire\Trieur;
 abstract class SourceFilter
 {
     /**
-     * Columns where to look
+     * Columns where to look.
      *
      * @var type
      */
     protected $columns;
 
     /**
-     * Terms to look for
+     * Terms to look for.
      *
      * @var type
      */
     protected $terms;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param mixed $columns The columns where to search
      * @param mixed $terms   The terms to look for
@@ -40,7 +40,7 @@ abstract class SourceFilter
     }
 
     /**
-     * Filter
+     * Filter.
      *
      * @return void
      */

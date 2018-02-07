@@ -16,14 +16,13 @@ use Solire\Trieur\tests\data\Entity\Profil;
 class DoctrineOrm extends atoum
 {
     /**
-     * Manager d'entité
+     * Manager d'entité.
      *
      * @var EntityManager
      */
     public $connection = null;
 
     /**
-     *
      * @return EntityManager
      */
     private function getConnection()
@@ -35,21 +34,22 @@ class DoctrineOrm extends atoum
         $this->mockGenerator->shuntParentClassCalls();
 
         $this->mockGenerator->orphanize('__construct');
-        $pdo = new \mock\PDO;
+        $pdo = new \mock\PDO();
 
         $this->mockGenerator->orphanize('__construct');
-        $db = new \mock\Doctrine\DBAL\Connection;
-        $db->getMockController()->connect = function() {};
-        $db->getMockController()->getEventManager = function() {
-            return new EventManager();;
+        $db = new \mock\Doctrine\DBAL\Connection();
+        $db->getMockController()->connect = function () {
         };
-        $db->getMockController()->getDatabasePlatform = function() {
-            return new MySqlPlatform;
+        $db->getMockController()->getEventManager = function () {
+            return new EventManager();
+        };
+        $db->getMockController()->getDatabasePlatform = function () {
+            return new MySqlPlatform();
         };
         $this->mockGenerator->unshuntParentClassCalls();
 
         $config = Setup::createYAMLMetadataConfiguration([
-            TEST_DATA_DIR . '/doctrine-orm'
+            TEST_DATA_DIR . '/doctrine-orm',
         ], true);
 
         $this->connection = EntityManager::create($db, $config);
@@ -90,7 +90,6 @@ class DoctrineOrm extends atoum
             ->if($c = $this->newTestedInstance($conf, $columns, $connection))
                 ->object($c)
 
-
                 ->object($qB = $c->getQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
@@ -99,7 +98,6 @@ class DoctrineOrm extends atoum
 
                 ->string($qB->getQuery()->getSQL())
                     ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1$#')
-
 
                 ->object($qB = $c->getDataQuery())
                     ->isInstanceOf(QueryBuilder::class)
@@ -110,7 +108,6 @@ class DoctrineOrm extends atoum
                 ->string($qB->getQuery()->getSQL())
                     ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1 GROUP BY \1.id$#')
 
-
                 ->object($qB = $c->getCountQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
@@ -119,7 +116,6 @@ class DoctrineOrm extends atoum
 
                 ->string($qB->getQuery()->getSQL())
                     ->match('#^SELECT COUNT\(DISTINCT (\w+)\.id\) AS (\w+) FROM profil \1$#')
-
 
                 ->object($qB = $c->getFilteredCountQuery())
                     ->isInstanceOf(QueryBuilder::class)
@@ -130,12 +126,11 @@ class DoctrineOrm extends atoum
                 ->string($qB->getQuery()->getSQL())
                     ->match('#^SELECT COUNT\(DISTINCT (\w+)\.id\) AS (\w+) FROM profil \1$#')
 
-
-                ->if ($term = 'audi')
-                ->and ($c->addFilter([
+                ->if($term = 'audi')
+                ->and($c->addFilter([
                     'c.nom',
                     $term,
-                    'Contain'
+                    'Contain',
                 ]))
 
                 ->object($qB = $c->getDataQuery())
@@ -153,8 +148,8 @@ class DoctrineOrm extends atoum
                 ->string($param->getValue())
                     ->isEqualTo('%' . $term . '%')
 
-                ->if ($c->setLength(1))
-                ->and ($c->setOffset(1))
+                ->if($c->setLength(1))
+                ->and($c->setOffset(1))
                 ->object($qB = $c->getDataQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
@@ -164,7 +159,7 @@ class DoctrineOrm extends atoum
                 ->string($qB->getQuery()->getSQL())
                     ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \? GROUP BY \1\.id LIMIT 1 OFFSET 1$#')
 
-                ->if ($c->addOrder('id'))
+                ->if($c->addOrder('id'))
                 ->object($qB = $c->getDataQuery())
                     ->isInstanceOf(QueryBuilder::class)
 
@@ -175,5 +170,4 @@ class DoctrineOrm extends atoum
                     ->match('#^SELECT (\w+)\.id AS (\w+), \1\.nom AS (\w+) FROM profil \1 WHERE \1\.nom LIKE \? GROUP BY \1\.id ORDER BY \1\.id ASC LIMIT 1 OFFSET 1$#')
         ;
     }
-
 }

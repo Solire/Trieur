@@ -32,7 +32,7 @@ class DataTables extends atoum
             'age' => [
                 'filter' => false,
                 'sort' => true,
-                'width' => '10px'
+                'width' => '10px',
             ],
         ]));
 
@@ -76,7 +76,7 @@ class DataTables extends atoum
             'age' => [
                 'filter' => false,
                 'sort' => true,
-                'width' => '10px'
+                'width' => '10px',
             ],
         ]));
 
@@ -111,7 +111,7 @@ class DataTables extends atoum
                 'data' => 'age',
                 'name' => 'age',
                 'title' => 'age',
-                'width' => '10px'
+                'width' => '10px',
             ],
         ];
 
@@ -124,22 +124,22 @@ class DataTables extends atoum
                         'searchable' => true,
                         'orderable' => true,
                         'search' => [
-                            'value' => ''
-                        ]
+                            'value' => '',
+                        ],
                     ],
                     [
                         'searchable' => true,
                         'orderable' => true,
                         'search' => [
-                            'value' => 'a'
-                        ]
+                            'value' => 'a',
+                        ],
                     ],
                     [
                         'searchable' => true,
                         'orderable' => true,
                         'search' => [
-                            'value' => ''
-                        ]
+                            'value' => '',
+                        ],
                     ],
                 ],
                 'start' => 0,
@@ -148,17 +148,17 @@ class DataTables extends atoum
                     [
                         'column' => 0,
                         'dir' => 'ASC',
-                    ]
+                    ],
                 ],
                 'search' => [
-                    'value' => 'u'
-                ]
+                    'value' => 'u',
+                ],
             ]))
             ->array($c->getOrder())
                 ->isEqualTo([
                     [
-                        0, 'ASC'
-                    ]
+                        0, 'ASC',
+                    ],
                 ])
             ->array($c->getFilters())
                 ->isEqualTo([
@@ -169,7 +169,7 @@ class DataTables extends atoum
                         [
                             'a',
                         ],
-                        'Contain'
+                        'Contain',
                     ],
                     [
                         [
@@ -177,8 +177,8 @@ class DataTables extends atoum
                             'prenom',
                         ],
                         'u',
-                        'Contain'
-                    ]
+                        'Contain',
+                    ],
             ])
             ->integer($c->getOffset())
                 ->isEqualTo(0)
@@ -189,26 +189,26 @@ class DataTables extends atoum
             ->phpArray($c->getResponse([
                 [
                     'nom' => 'dubois',
-                    'prenom' =>'jean',
-                    'age' =>'22',
+                    'prenom' => 'jean',
+                    'age' => '22',
                 ],
                 [
                     'nom' => 'duchmucl',
-                    'prenom' =>'patrick',
-                    'age' =>'41',
+                    'prenom' => 'patrick',
+                    'age' => '41',
                 ],
             ], 2, 2))
                 ->isEqualTo([
                     'data' => [
                         [
                             'nom' => 'dubois',
-                            'prenom' =>'jean',
-                            'age' =>'22',
+                            'prenom' => 'jean',
+                            'age' => '22',
                         ],
                         [
                             'nom' => 'duchmucl',
                             'prenom' => 'patrick',
-                            'age' =>'41',
+                            'age' => '41',
                         ],
                     ],
                     'recordsTotal' => 2,
@@ -217,11 +217,11 @@ class DataTables extends atoum
             ->phpArray($c->getColumnFilterConfig())
                 ->isEqualTo([
                     0 => [
-                        'type' => 'text'
+                        'html' => 'text',
                     ],
                     1 => [
-                        'type' => 'text'
-                    ]
+                        'html' => 'text',
+                    ],
                 ])
             ->phpArray($c->getJsColsConfig())
                 ->isEqualTo($jsColsConfig)
@@ -229,13 +229,13 @@ class DataTables extends atoum
                 ->isEqualTo([
                     'processing' => true,
                     'serverSide' => true,
-                    'ajax'       => [
-                        'url'  => 'url.url',
+                    'ajax' => [
+                        'url' => 'url.url',
                         'type' => 'get',
                     ],
-                    'columns'    => $jsColsConfig,
-                    'dom'        => 'abcd',
-                    'language'   => [
+                    'columns' => $jsColsConfig,
+                    'dom' => 'abcd',
+                    'language' => [
                         'emptyTable' => 'Aucun personne'
                             . ' trouvée',
                         'info' => 'personnes _START_ à  _END_ sur _TOTAL_ personnes',
@@ -282,7 +282,7 @@ class DataTables extends atoum
                 'data' => 'age',
                 'name' => 'age',
                 'title' => 'age',
-                'width' => '10px'
+                'width' => '10px',
             ],
         ];
 
@@ -295,22 +295,22 @@ class DataTables extends atoum
                         'searchable' => true,
                         'orderable' => true,
                         'search' => [
-                            'value' => ''
-                        ]
+                            'value' => '',
+                        ],
                     ],
                     [
                         'searchable' => true,
                         'orderable' => true,
                         'search' => [
-                            'value' => 'a'
-                        ]
+                            'value' => 'a',
+                        ],
                     ],
                     [
                         'searchable' => true,
                         'orderable' => true,
                         'search' => [
-                            'value' => ''
-                        ]
+                            'value' => '',
+                        ],
                     ],
                 ],
                 'start' => 0,
@@ -319,17 +319,17 @@ class DataTables extends atoum
                     [
                         'column' => 0,
                         'dir' => 'ASC',
-                    ]
+                    ],
                 ],
                 'search' => [
-                    'value' => 'u|v'
-                ]
+                    'value' => 'u|v',
+                ],
             ]))
             ->array($c->getOrder())
                 ->isEqualTo([
                     [
-                        0, 'ASC'
-                    ]
+                        0, 'ASC',
+                    ],
                 ])
             ->array($c->getFilters())
                 ->isEqualTo([
@@ -340,7 +340,7 @@ class DataTables extends atoum
                         [
                             'a',
                         ],
-                        'Contain'
+                        'Contain',
                     ],
                     [
                         [
@@ -348,8 +348,8 @@ class DataTables extends atoum
                             'prenom',
                         ],
                         'u|v',
-                        'Contain'
-                    ]
+                        'Contain',
+                    ],
             ])
             ->integer($c->getOffset())
                 ->isEqualTo(0)
@@ -360,26 +360,26 @@ class DataTables extends atoum
             ->phpArray($c->getResponse([
                 [
                     'nom' => 'dubois',
-                    'prenom' =>'jean',
-                    'age' =>'22',
+                    'prenom' => 'jean',
+                    'age' => '22',
                 ],
                 [
                     'nom' => 'duchmucl',
-                    'prenom' =>'patrick',
-                    'age' =>'41',
+                    'prenom' => 'patrick',
+                    'age' => '41',
                 ],
             ], 2, 2))
                 ->isEqualTo([
                     'data' => [
                         [
                             'nom' => 'dubois',
-                            'prenom' =>'jean',
-                            'age' =>'22',
+                            'prenom' => 'jean',
+                            'age' => '22',
                         ],
                         [
                             'nom' => 'duchmucl',
                             'prenom' => 'patrick',
-                            'age' =>'41',
+                            'age' => '41',
                         ],
                     ],
                     'recordsTotal' => 2,
@@ -388,11 +388,11 @@ class DataTables extends atoum
             ->phpArray($c->getColumnFilterConfig())
                 ->isEqualTo([
                     0 => [
-                        'type' => 'text'
+                        'html' => 'text',
                     ],
                     1 => [
-                        'type' => 'text'
-                    ]
+                        'html' => 'text',
+                    ],
                 ])
             ->phpArray($c->getJsConfig())
                 ->isEqualTo([
@@ -426,7 +426,7 @@ class DataTables extends atoum
                     ],
                     'order' => [
                       0,
-                      'asc'
+                      'asc',
                     ],
                     'autoWidth' => true,
                 ])

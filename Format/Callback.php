@@ -9,7 +9,7 @@ use ReflectionParameter;
 use Solire\Trieur\AbstractFormat;
 
 /**
- * Description of Callback Format class
+ * Description of Callback Format class.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -17,7 +17,7 @@ use Solire\Trieur\AbstractFormat;
 class Callback extends AbstractFormat
 {
     /**
-     * The argument's array to pass to the callable
+     * The argument's array to pass to the callable.
      *
      * @var array
      */
@@ -91,7 +91,7 @@ class Callback extends AbstractFormat
     }
 
     /**
-     * Get a callable arguments' name list
+     * Get a callable arguments' name list.
      *
      * @return ReflectionParameter[]
      */
@@ -105,7 +105,7 @@ class Callback extends AbstractFormat
     }
 
     /**
-     * Get a function arguments' name list
+     * Get a function arguments' name list.
      *
      * @param string $functionName The function name
      *
@@ -124,7 +124,7 @@ class Callback extends AbstractFormat
     }
 
     /**
-     * Get a class method arguments' name list
+     * Get a class method arguments' name list.
      *
      * @param array $callable A callable array
      *

@@ -2,11 +2,10 @@
 
 namespace Solire\Trieur;
 
-use Solire\Trieur\Columns;
 use Solire\Conf\Conf;
 
 /**
- * Datatables driver
+ * Datatables driver.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -14,28 +13,28 @@ use Solire\Conf\Conf;
 abstract class Driver
 {
     /**
-     * The configuration
+     * The configuration.
      *
      * @var Config
      */
     protected $config;
 
     /**
-     * The columns configuration
+     * The columns configuration.
      *
      * @var Columns
      */
     protected $columns;
 
     /**
-     * The request
+     * The request.
      *
      * @var array
      */
     protected $request;
 
     /**
-     * Constructeur
+     * Constructeur.
      *
      * @param Conf $config  The driver configuration
      * @param Conf $columns The columns configuration
@@ -47,7 +46,7 @@ abstract class Driver
     }
 
     /**
-     * Set the request
+     * Set the request.
      *
      * @param mixed $request The request
      *
@@ -59,40 +58,40 @@ abstract class Driver
     }
 
     /**
-     * Return the offset
+     * Return the offset.
      *
      * @return int
      */
     abstract public function getOffset();
 
     /**
-     * Return the number of lines
+     * Return the number of lines.
      *
      * @return int
      */
     abstract public function getLength();
 
     /**
-     * Return the order
+     * Return the order.
      *
      * @return mixed
      */
     abstract public function getOrder();
 
     /**
-     * Return the filters
+     * Return the filters.
      *
      * @return mixed
      */
     abstract public function getFilters();
 
     /**
-     * Returns the response
+     * Returns the response.
      *
      * @param array $data          The data filtered by the current filters,
-     * offset and length, sorted by the current orders
+     *                             offset and length, sorted by the current orders
      * @param int   $count         The total of available lines filtered by the
-     * current filters
+     *                             current filters
      * @param int   $filteredCount The total of available lines
      *
      * @return array

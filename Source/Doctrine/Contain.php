@@ -3,7 +3,7 @@
 namespace Solire\Trieur\Source\Doctrine;
 
 /**
- * Doctrine filter class for Contain filter
+ * Doctrine filter class for Contain filter.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -11,7 +11,7 @@ namespace Solire\Trieur\Source\Doctrine;
 class Contain extends Filter
 {
     /**
-     * Filter
+     * Filter.
      *
      * @return void
      */
@@ -44,7 +44,7 @@ class Contain extends Filter
                 /**
                  * @todo add a ponderation array to the constructor
                  */
-                $pond    = 1;
+                $pond = 1;
 
                 $cond = $colName . ' LIKE '
                       . $this->queryBuilder->getConnection()->quote('%' . $word . '%');

@@ -3,7 +3,7 @@
 namespace Solire\Trieur\Source\DoctrineOrm;
 
 /**
- * Doctrine ORM filter class for Exact filter
+ * Doctrine ORM filter class for Exact filter.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -11,7 +11,7 @@ namespace Solire\Trieur\Source\DoctrineOrm;
 class Exact extends Filter
 {
     /**
-     * Filter
+     * Filter.
      *
      * @return void
      */
@@ -25,7 +25,6 @@ class Exact extends Filter
         } else {
             $terms = $this->terms;
         }
-
 
         $conds = [];
         foreach ($terms as $term) {

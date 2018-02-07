@@ -5,7 +5,7 @@ namespace Solire\Trieur;
 use Solire\Conf\Conf;
 
 /**
- * Format the data coming from the source
+ * Format the data coming from the source.
  *
  * @author  thansen <thansen@solire.fr>
  * @license MIT http://mit-license.org/
@@ -13,7 +13,7 @@ use Solire\Conf\Conf;
 class Format
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Columns $columns Columns list
      */
@@ -23,7 +23,7 @@ class Format
     }
 
     /**
-     * Formate a source data
+     * Formate a source data.
      *
      * @param array $data The source data
      *
@@ -31,7 +31,7 @@ class Format
      */
     public function format($data)
     {
-        $dataFormated = array();
+        $dataFormated = [];
 
         foreach ($data as $row) {
             $rowFormated = $this->formateRow($row);
@@ -44,7 +44,7 @@ class Format
     }
 
     /**
-     * Formate a source row
+     * Formate a source row.
      *
      * @param array $row The source row
      *
@@ -52,7 +52,7 @@ class Format
      */
     protected function formateRow($row)
     {
-        $rowFormated = array();
+        $rowFormated = [];
         foreach ($this->columns as $column) {
             if (isset($column->hide) && $column->hide) {
                 continue;
@@ -66,7 +66,7 @@ class Format
     }
 
     /**
-     * Formate a source cell
+     * Formate a source cell.
      *
      * @param array $row    The source row
      * @param Conf  $column The cell's column
@@ -113,16 +113,18 @@ class Format
         }
 
         $formatInstance = new $column->format->class($column->format, $row, $this->getCell($row, $column));
+
         return $formatInstance->render();
     }
 
     /**
-     * Get a source cell by its row and column
+     * Get a source cell by its row and column.
      *
      * @param array $row    The source row
      * @param Conf  $column The cell's column
      *
      * @return string
+     *
      * @throws Exception If the column index doesn't exist in the row
      */
     protected function getCell($row, Conf $column)
@@ -135,7 +137,7 @@ class Format
     }
 
     /**
-     * Returns the name of the filter class
+     * Returns the name of the filter class.
      *
      * @param string $formatType The filter type (Contain, DateRange etc.)
      *
