@@ -1,6 +1,8 @@
 README
 ======
 
+@deprecated see https://github.com/polinome/trieur
+
 [![Latest Stable Version](https://poser.pugx.org/solire/trieur/v/stable.png)](https://packagist.org/packages/solire/trieur) 
 [![Total Downloads](https://poser.pugx.org/solire/trieur/downloads.png)](https://packagist.org/packages/solire/trieur)
 
